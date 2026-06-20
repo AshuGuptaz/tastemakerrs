@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import Script from "next/script";
 import toast from "react-hot-toast";
 import { CreditCard, Globe } from "lucide-react";
 import { useCart } from "@/context/CartContext";
@@ -25,6 +24,7 @@ const EMPTY: Address = { name: "", email: "", phone: "", street: "", city: "", s
 export default function CheckoutPage() {
   const { items, subtotal, clear, hydrated } = useCart();
   const [addr, setAddr] = useState<Address>(EMPTY);
+  const [razorpayReady, setRazorpayReady] = useState(false);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
   const [method, setMethod] = useState<"razorpay" | "stripe">("razorpay");
@@ -39,6 +39,15 @@ export default function CheckoutPage() {
       router.replace("/cart");
     }
   }, [hydrated, items.length, router]);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => setRazorpayReady(true);
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
 
   const applyCoupon = () => {
     const c = coupon.trim().toUpperCase();
@@ -93,9 +102,8 @@ export default function CheckoutPage() {
 
       if (method === "razorpay") {
         // 2a. Razorpay flow
-        // @ts-ignore
-        if (!window.Razorpay) {
-          throw new Error("Payment script not loaded. Please refresh the page and try again.");
+        if (!razorpayReady) {
+          throw new Error("Payment is loading, please wait a moment and try again.");
         }
 
         const rpRes = await fetch("/api/razorpay/create-order", {
@@ -161,7 +169,6 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
       <section className="bg-cream-50 py-16 md:py-24">
         <div className="container-x">
           <h1 className="display text-[clamp(2.5rem,7vw,5rem)]">CHECKOUT.</h1>
