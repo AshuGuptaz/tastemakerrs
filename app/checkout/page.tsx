@@ -93,13 +93,19 @@ export default function CheckoutPage() {
 
       if (method === "razorpay") {
         // 2a. Razorpay flow
-        const rp = await fetch("/api/razorpay/create-order", {
+        // @ts-ignore
+        if (!window.Razorpay) {
+          throw new Error("Payment script not loaded. Please refresh the page and try again.");
+        }
+
+        const rpRes = await fetch("/api/razorpay/create-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount: total, orderId: order.id }),
-        }).then((r) => r.json());
+        });
+        const rp = await rpRes.json();
 
-        if (!rp.id) throw new Error(rp.error || "Razorpay order failed");
+        if (!rpRes.ok || !rp.id) throw new Error(rp.error || "Razorpay order failed");
 
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -111,23 +117,28 @@ export default function CheckoutPage() {
           prefill: { name: addr.name, email: addr.email, contact: addr.phone },
           theme: { color: "#F26A8D" },
           handler: async (resp: any) => {
-            const verify = await fetch("/api/razorpay/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ ...resp, orderId: order.id }),
-            }).then((r) => r.json());
-            if (verify.ok) {
-              clear();
-              router.push(`/order-success?id=${order.id}`);
-            } else {
-              toast.error("Payment verification failed");
+            try {
+              const verify = await fetch("/api/razorpay/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...resp, orderId: order.id }),
+              }).then((r) => r.json());
+              if (verify.ok) {
+                clear();
+                router.push(`/order-success?id=${order.id}`);
+              } else {
+                toast.error("Payment verification failed. Contact us if amount was deducted.");
+              }
+            } catch {
+              toast.error("Verification error. Please contact support.");
             }
           },
-          modal: { ondismiss: () => toast("Payment cancelled") },
+          modal: { ondismiss: () => { toast("Payment cancelled"); setLoading(false); } },
         };
         // @ts-ignore Razorpay added by external script
         const r = new window.Razorpay(options);
         r.open();
+        return;
       } else {
         // 2b. Stripe Checkout flow
         const s = await fetch("/api/stripe/create-checkout", {
@@ -150,7 +161,7 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="beforeInteractive" />
       <section className="bg-cream-50 py-16 md:py-24">
         <div className="container-x">
           <h1 className="display text-[clamp(2.5rem,7vw,5rem)]">CHECKOUT.</h1>
