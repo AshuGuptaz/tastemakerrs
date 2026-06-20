@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Wheat, CookingPot, Flame, Palette, Package, Truck } from "lucide-react";
 import CTABanner from "@/components/CTABanner";
 import Underlined from "@/components/Underlined";
+import HeaderDecor from "@/components/HeaderDecor";
 
 export const metadata: Metadata = {
   title: "Our Kitchen",
@@ -20,8 +21,9 @@ const STEPS = [
 export default function KitchenPage() {
   return (
     <>
-      <section className="bg-sky-100 py-16 md:py-24">
-        <div className="container-x">
+      <section className="relative overflow-hidden bg-sky-100 py-16 md:py-24">
+        <HeaderDecor tone="light" />
+        <div className="container-x relative z-10">
           <p className="pill">Behind the scenes</p>
           <h1 className="display mt-3 text-[clamp(2.5rem,7vw,5.5rem)]">
             From our <Underlined>kitchen</Underlined><br /> to your doorstep.

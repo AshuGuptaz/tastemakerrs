@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { getBySlug } from "@/lib/products";
 import Underlined from "@/components/Underlined";
 import DatePicker from "@/components/DatePicker";
+import HeaderDecor from "@/components/HeaderDecor";
 
 const FLAVORS = [
   { id: "vanilla", label: "Classic Vanilla", price: 0 },
@@ -127,8 +128,9 @@ function CustomCakeContent() {
 
   return (
     <>
-      <section className="bg-peach-100 py-16 md:py-24">
-        <div className="container-x">
+      <section className="relative overflow-hidden bg-peach-100 py-16 md:py-24">
+        <HeaderDecor tone="light" />
+        <div className="container-x relative z-10">
           <p className="pill"><Sparkles className="h-3 w-3" /> Customize</p>
           <h1 className="display mt-3 text-[clamp(2.5rem,7vw,5.5rem)]">
             DESIGN YOUR <Underlined>DREAM</Underlined> CAKE

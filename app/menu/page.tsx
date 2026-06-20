@@ -9,6 +9,7 @@ import ProductCard from "@/components/ProductCard";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import Filters from "@/components/Filters";
 import Underlined from "@/components/Underlined";
+import HeaderDecor from "@/components/HeaderDecor";
 
 function MenuContent() {
   const sp = useSearchParams();
@@ -30,8 +31,9 @@ function MenuContent() {
   return (
     <>
       {/* Header */}
-      <section className="bg-peach-100 py-16 md:py-24">
-        <div className="container-x">
+      <section className="relative overflow-hidden bg-peach-100 py-16 md:py-24">
+        <HeaderDecor tone="light" />
+        <div className="container-x relative z-10">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="display text-[clamp(2.5rem,8vw,6rem)]">
             THE <Underlined>MENU</Underlined>.
           </motion.h1>

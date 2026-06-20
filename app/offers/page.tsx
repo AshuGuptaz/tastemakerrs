@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import CouponCodeChip from "@/components/CouponCodeChip";
+import HeaderDecor from "@/components/HeaderDecor";
 
 export const metadata: Metadata = {
   title: "Offers",
@@ -31,8 +32,9 @@ const OFFERS: Offer[] = [
 export default function OffersPage() {
   return (
     <>
-      <section className="bg-flame text-white py-16 md:py-24">
-        <div className="container-x">
+      <section className="relative overflow-hidden bg-flame text-white py-16 md:py-24">
+        <HeaderDecor tone="bold" />
+        <div className="container-x relative z-10">
           <p className="pill bg-white text-cocoa">Sweet deals</p>
           <h1 className="display mt-3 text-[clamp(2.5rem,7vw,5.5rem)] text-white">
             Offers you<br /> can&apos;t <span className="bg-white text-flame px-2">resist</span>
