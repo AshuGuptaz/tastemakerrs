@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 
 /**
  * Wraps any element so it gently "pulls" toward the cursor while hovered,
@@ -11,19 +11,21 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 export default function MagneticButton({
   children,
   className,
-  strength = 0.35,
+  strength = 0.22,
 }: {
   children: React.ReactNode;
   className?: string;
   strength?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 250, damping: 18, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 250, damping: 18, mass: 0.4 });
+  const sx = useSpring(x, { stiffness: 250, damping: 23, mass: 0.4 });
+  const sy = useSpring(y, { stiffness: 250, damping: 23, mass: 0.4 });
 
   function handleMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (reduced) return;
     if (typeof window !== "undefined" && !window.matchMedia("(pointer: fine)").matches) return;
     const rect = ref.current?.getBoundingClientRect();
     if (!rect) return;

@@ -90,8 +90,10 @@ const config: Config = {
           "50%": { transform: "translateY(-10px)" },
         },
         marquee: {
+          /* MarqueeStrip renders 3 identical item sets, so one set = 33.333%.
+             Shifting by exactly one set width gives a seamless, jump-free loop. */
           "0%": { transform: "translateX(0)" },
-          "100%": { transform: "translateX(-50%)" },
+          "100%": { transform: "translateX(-33.333%)" },
         },
         "ken-burns": {
           "0%": { transform: "scale(1)" },

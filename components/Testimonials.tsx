@@ -45,7 +45,7 @@ export default function Testimonials() {
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.7, ease: EASE, delay: i * 0.12 }}
+              transition={{ duration: 0.6, ease: EASE, delay: i * 0.08 }}
               className="card flex flex-col p-7"
             >
               <span aria-hidden className="font-display text-6xl leading-[0.6] text-flame/25">&ldquo;</span>

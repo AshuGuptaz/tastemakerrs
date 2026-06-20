@@ -38,8 +38,8 @@ export default function AdminLogin() {
         <h1 className="font-display text-3xl uppercase">ADMIN <span className="text-flame">LOGIN</span></h1>
         <p className="mt-2 text-sm text-cocoa/60">Restricted to authorized staff only.</p>
         <div className="mt-6 grid gap-4">
-          <div><label className="label">Email</label><input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
-          <div><label className="label">Password</label><input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
+          <div><label className="label" htmlFor="admin-email">Email</label><input id="admin-email" className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
+          <div><label className="label" htmlFor="admin-password">Password</label><input id="admin-password" className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required /></div>
           <button disabled={busy} className="btn-primary justify-center">{busy ? "Signing in..." : "Sign in"}</button>
         </div>
       </form>

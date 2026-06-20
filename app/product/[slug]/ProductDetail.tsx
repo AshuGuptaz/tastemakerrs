@@ -50,13 +50,9 @@ export default function ProductDetail({
                   className="object-cover"
                 />
               ) : (
-                <motion.div
-                  animate={{ y: [0, -12, 0], rotate: [0, 4, -4, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                  className="text-[12rem] drop-shadow-2xl md:text-[14rem]"
-                >
+                <div className="text-[12rem] drop-shadow-2xl md:text-[14rem]">
                   {product.image}
-                </motion.div>
+                </div>
               )}
               {product.bestseller && (
                 <span className="absolute left-5 top-5 rounded-pill bg-flame px-4 py-1.5 text-sm font-bold uppercase text-white shadow-soft">
@@ -84,11 +80,11 @@ export default function ProductDetail({
               {/* Qty + add */}
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1 rounded-pill border border-cocoa/15 bg-white">
-                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-11 w-11 place-items-center hover:text-flame">
+                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="focus-ring grid h-11 w-11 place-items-center hover:text-flame">
                     <Minus className="h-4 w-4" />
                   </button>
                   <span className="w-10 text-center font-semibold">{qty}</span>
-                  <button onClick={() => setQty((q) => q + 1)} className="grid h-11 w-11 place-items-center hover:text-flame">
+                  <button onClick={() => setQty((q) => q + 1)} className="focus-ring grid h-11 w-11 place-items-center hover:text-flame">
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
@@ -108,7 +104,7 @@ export default function ProductDetail({
                   </Link>
                 )}
 
-                <button className="grid h-11 w-11 place-items-center rounded-pill border border-cocoa/15 bg-white hover:text-flame" aria-label="Wishlist">
+                <button className="focus-ring grid h-11 w-11 place-items-center rounded-pill border border-cocoa/15 bg-white hover:text-flame" aria-label="Wishlist">
                   <Heart className="h-5 w-5" />
                 </button>
               </div>

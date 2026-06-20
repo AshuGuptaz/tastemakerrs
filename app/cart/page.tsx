@@ -29,7 +29,7 @@ export default function CartPage() {
             <div className="space-y-4">
               {items.map((it, i) => (
                 <motion.div
-                  key={it.id}
+                  key={it.id + (it.variant ?? "")}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
@@ -39,7 +39,7 @@ export default function CartPage() {
                     {it.image && (it.image.startsWith("/") || it.image.startsWith("http")) ? (
                       <Image src={it.image} alt={it.name} fill sizes="96px" className="object-cover" />
                     ) : (
-                      it.image || "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80"
+                      it.image || "🎂"
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -48,12 +48,12 @@ export default function CartPage() {
                     <p className="mt-1 font-display text-flame">₹{it.price}</p>
                   </div>
                   <div className="flex items-center gap-1 rounded-pill border border-cocoa/15 bg-white">
-                    <button onClick={() => setQty(it.id, it.qty - 1)} className="grid h-10 w-10 place-items-center hover:text-flame"><Minus className="h-4 w-4" /></button>
+                    <button onClick={() => setQty(it.id, it.variant, it.qty - 1)} aria-label="Decrease quantity" className="grid h-10 w-10 place-items-center hover:text-flame focus-ring"><Minus className="h-4 w-4" /></button>
                     <span className="w-8 text-center font-semibold">{it.qty}</span>
-                    <button onClick={() => setQty(it.id, it.qty + 1)} className="grid h-10 w-10 place-items-center hover:text-flame"><Plus className="h-4 w-4" /></button>
+                    <button onClick={() => setQty(it.id, it.variant, it.qty + 1)} aria-label="Increase quantity" className="grid h-10 w-10 place-items-center hover:text-flame focus-ring"><Plus className="h-4 w-4" /></button>
                   </div>
                   <p className="w-20 text-right font-display text-lg">₹{it.qty * it.price}</p>
-                  <button onClick={() => remove(it.id)} className="grid h-10 w-10 place-items-center rounded-pill text-cocoa/60 hover:bg-rose-500 hover:text-white" aria-label="Remove">
+                  <button onClick={() => remove(it.id, it.variant)} className="grid h-10 w-10 place-items-center rounded-pill text-cocoa/60 hover:bg-rose-500 hover:text-white focus-ring" aria-label="Remove">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </motion.div>

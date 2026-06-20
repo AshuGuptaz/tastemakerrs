@@ -19,7 +19,7 @@ const FLAVORS: Flavor[] = [
     { label: "Vanilla Bean Paste", pos: "bottom-6 right-6" },
     { label: "Whipped Cream", pos: "top-1/2 right-8" },
   ]},
-  { name: "Fresh Fruit", img: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-200", notes: [
+  { name: "Fresh Fruit", img: "/images/cakes/strawberry.jpg", bg: "bg-peach-200", notes: [
     { label: "Seasonal Fruit", pos: "top-6 right-10" },
     { label: "Light Sponge", pos: "top-1/3 left-6" },
     { label: "Mascarpone Cream", pos: "bottom-8 left-10" },
@@ -64,7 +64,7 @@ export default function FlavorsSection() {
               <li key={fl.name}>
                 <button
                   onClick={() => setActive(i)}
-                  className={`flex w-full items-center justify-between px-6 py-6 text-left transition-colors ${
+                  className={`flex w-full items-center justify-between px-6 py-6 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/50 focus-visible:ring-inset active:scale-[0.99] ${
                     active === i ? "bg-flame text-white" : "bg-white hover:bg-cream-100"
                   }`}
                 >
@@ -78,9 +78,9 @@ export default function FlavorsSection() {
           {/* Preview */}
           <motion.div
             key={f.name}
-            initial={{ opacity: 0, scale: 1.02 }}
+            initial={{ opacity: 0, scale: 1.015 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.6 }}
             className={`relative min-h-[420px] ${f.bg}`}
           >
             <Image src={f.img} alt={f.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />

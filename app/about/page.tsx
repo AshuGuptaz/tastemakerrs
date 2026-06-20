@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <section className="bg-cream-100 py-20 md:py-28">
+      <section className="bg-cream-100 py-16 md:py-24">
         <div className="container-x grid gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div>
             <p className="pill mb-4">Our Story</p>

@@ -51,7 +51,7 @@ export default function OccasionsStrip() {
               <div className="p-6">
                 <h3 className="font-display text-xl font-semibold tracking-tight">{o.title}</h3>
                 <p className="mt-1 text-sm text-cocoa/70">{o.desc}</p>
-                <Link href="/menu" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-flame transition-all hover:gap-2">
+                <Link href="/menu" className="mt-3 inline-flex items-center gap-1 rounded-pill text-sm font-semibold text-flame transition-all hover:gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-100">
                   Shop now →
                 </Link>
               </div>

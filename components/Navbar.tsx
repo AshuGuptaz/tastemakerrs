@@ -24,16 +24,16 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-flame/10 bg-cream-50/80 backdrop-blur-2xl shadow-[0_2px_24px_-4px_rgba(242,106,141,0.12)]">
+    <header className="sticky top-0 z-50 border-b border-flame/10 bg-cream-50/80 backdrop-blur-xl shadow-[0_2px_24px_-4px_rgba(242,106,141,0.12)]">
       <div className="container-x flex h-16 items-center justify-between md:h-20">
 
         {/* Brand */}
-        <Link href="/" className="group flex flex-col items-start leading-none">
+        <Link href="/" className="group flex flex-col items-start leading-none rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40">
           <span className="text-[0.58rem] font-semibold uppercase tracking-[0.42em] text-flame/70 transition-colors group-hover:text-flame">
             The
           </span>
           <span className="font-display text-[1.7rem] leading-none tracking-wide text-cocoa md:text-[2rem]">
-            Taste <span className="text-flame drop-shadow-[0_1px_8px_rgba(242,106,141,0.35)]">Makerrs</span>
+            Taste <span className="text-flame">Makerrs</span>
           </span>
         </Link>
 
@@ -45,12 +45,12 @@ export default function Navbar() {
               <Link
                 key={n.href}
                 href={n.href}
-                className={`group relative py-1 text-sm font-semibold uppercase tracking-wide transition-colors ${
+                className={`group relative rounded-md py-1 text-sm font-semibold uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 ${
                   active ? "text-flame" : "text-cocoa/70 hover:text-cocoa"
                 }`}
               >
                 {n.label}
-                <span className="pointer-events-none absolute -bottom-0.5 left-0 h-[2px] w-full origin-left scale-x-0 rounded-full bg-flame/60 transition-transform duration-300 ease-out group-hover:scale-x-100" />
+                <span className="pointer-events-none absolute -bottom-0.5 left-0 h-[2px] w-full origin-left scale-x-0 rounded-full bg-flame/60 transition-transform duration-300 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100" />
                 {active && (
                   <motion.span
                     layoutId="nav-underline"
@@ -98,8 +98,9 @@ export default function Navbar() {
             >
               {/* shimmer sweep */}
               <motion.span
-                className="pointer-events-none absolute inset-0 -translate-x-full skew-x-[-20deg] bg-white/20"
-                animate={{ translateX: ["−100%", "200%"] }}
+                className="pointer-events-none absolute inset-0 skew-x-[-20deg] bg-white/20"
+                initial={{ translateX: "-100%" }}
+                animate={{ translateX: ["-100%", "200%"] }}
                 transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
               />
               <Sparkles className="h-3.5 w-3.5" />
@@ -133,7 +134,7 @@ export default function Navbar() {
                   key={n.href}
                   href={n.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-xl px-3 py-3 text-base font-semibold uppercase tracking-wide text-cocoa hover:bg-peach-100/60 transition-colors"
+                  className="rounded-xl2 px-3 py-3 text-base font-semibold uppercase tracking-wide text-cocoa hover:bg-peach-100/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40"
                 >
                   {n.label}
                 </Link>

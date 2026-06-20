@@ -3,6 +3,7 @@
 import { CATEGORIES, CATEGORY_META, ALL_FLAVORS } from "@/lib/products";
 import type { Category } from "@/types/product";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   cat: Category | "all";
@@ -19,7 +20,22 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
     const next = new URLSearchParams(sp.toString());
     if (val === null || val === "") next.delete(key);
     else next.set(key, val);
-    router.push(`/menu?${next.toString()}`, { scroll: false });
+    router.replace(`/menu?${next.toString()}`, { scroll: false });
+  };
+
+  // Local state keeps the range thumb instant-responsive while the URL commit is debounced.
+  const [localMax, setLocalMax] = useState(max);
+  const maxTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  // Keep in sync when the URL-sourced prop changes (e.g. Reset, back/forward).
+  useEffect(() => setLocalMax(max), [max]);
+  useEffect(() => () => clearTimeout(maxTimeout.current), []);
+
+  const onMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocalMax(Number(val));
+    clearTimeout(maxTimeout.current);
+    maxTimeout.current = setTimeout(() => update("max", val), 150);
   };
 
   return (
@@ -43,10 +59,10 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
       </div>
 
       <div className="mt-5">
-        <p className="label">Max Price · ₹{max}</p>
+        <p className="label">Max Price · ₹{localMax}</p>
         <input
-          type="range" min={50} max={2500} step={50} value={max}
-          onChange={(e) => update("max", e.target.value)}
+          type="range" min={50} max={2500} step={50} value={localMax}
+          onChange={onMaxChange}
           className="w-full accent-flame"
         />
       </div>
@@ -74,7 +90,7 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
         <label htmlFor="bs" className="text-sm font-semibold">Bestsellers only</label>
       </div>
 
-      <button onClick={() => router.push("/menu")} className="btn-ghost mt-6 w-full justify-center">
+      <button onClick={() => router.replace("/menu")} className="btn-ghost mt-6 w-full justify-center">
         Reset filters
       </button>
     </div>

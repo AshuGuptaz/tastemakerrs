@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { Suspense, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
@@ -13,6 +13,7 @@ function OrderSuccessInner() {
   const id = sp.get("id");
   const { clear } = useCart();
   const cleared = useRef(false);
+  const reduce = useReducedMotion();
 
   // Clear the cart once an order is confirmed. The Razorpay flow clears in its
   // success handler; the Stripe redirect does not, so this covers that path too.
@@ -26,7 +27,7 @@ function OrderSuccessInner() {
   return (
     <section className="bg-cream-100 py-20 md:py-32 min-h-[70vh]">
       <div className="container-x text-center">
-        <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring" }} className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-flame text-white">
+        <motion.div initial={{ scale: reduce ? 1 : 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={reduce ? { duration: 0.2 } : { type: "spring", stiffness: 260, damping: 22, mass: 0.9 }} className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-flame text-white">
           <CheckCircle2 className="h-14 w-14" />
         </motion.div>
         <h1 className="display mt-6 text-[clamp(2.5rem,7vw,5rem)]">ORDER <Underlined>CONFIRMED</Underlined></h1>

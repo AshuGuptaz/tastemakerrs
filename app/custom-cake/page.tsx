@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Sparkles, UploadCloud } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Sparkles, UploadCloud, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
 import { useSearchParams } from "next/navigation";
@@ -47,6 +47,15 @@ function CustomCakeContent() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const reduce = useReducedMotion();
+
+  // Earliest selectable date from the local calendar day (TZ-safe, computed once)
+  const minDate = useMemo(() => {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }, []);
 
   const { add } = useCart();
 
@@ -132,14 +141,14 @@ function CustomCakeContent() {
 
       <section className="section bg-cream-50">
         <div className="container-x grid gap-8 lg:grid-cols-[1fr_380px]">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+          <motion.div initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="space-y-8">
             {/* Flavor */}
             <div className="card p-6">
               <h3 className="font-display text-xl uppercase">1 · Flavor</h3>
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {FLAVORS.map((f) => (
-                  <button key={f.id} onClick={() => setFlavor(f.id)}
-                    className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                  <button key={f.id} type="button" onClick={() => setFlavor(f.id)}
+                    className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 ${
                       flavor === f.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-cocoa/10 bg-white hover:border-cocoa/30"
                     }`}>
                     <span className="font-semibold">{f.label}</span>
@@ -154,8 +163,8 @@ function CustomCakeContent() {
               <h3 className="font-display text-xl uppercase">2 · Weight</h3>
               <div className="mt-4 flex flex-wrap gap-2">
                 {WEIGHTS.map((w) => (
-                  <button key={w.id} onClick={() => setWeight(w.id)}
-                    className={`rounded-pill px-5 py-2.5 text-sm font-semibold transition ${
+                  <button key={w.id} type="button" onClick={() => setWeight(w.id)}
+                    className={`rounded-pill px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 ${
                       weight === w.id ? "bg-flame text-white" : "bg-white border border-cocoa/10 hover:border-cocoa/30"
                     }`}>
                     {w.label}
@@ -169,8 +178,8 @@ function CustomCakeContent() {
               <h3 className="font-display text-xl uppercase">3 · Shape</h3>
               <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 {SHAPES.map((s) => (
-                  <button key={s.id} onClick={() => setShape(s.id)}
-                    className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                  <button key={s.id} type="button" onClick={() => setShape(s.id)}
+                    className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 ${
                       shape === s.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-cocoa/10 bg-white hover:border-cocoa/30"
                     }`}>
                     <span className="font-semibold">{s.label}</span>
@@ -200,25 +209,35 @@ function CustomCakeContent() {
               <h3 className="font-display text-xl uppercase">5 · Personalize</h3>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="label">Message on cake</label>
-                  <input value={message} onChange={(e) => setMessage(e.target.value)} maxLength={40}
+                  <label className="label" htmlFor="cake-message">Message on cake</label>
+                  <input id="cake-message" value={message} onChange={(e) => setMessage(e.target.value)} maxLength={40}
                     placeholder="e.g. Happy Birthday Riya!" className="input" />
                   <p className="mt-1 text-xs text-cocoa/50">{message.length}/40</p>
                 </div>
                 <div>
                   <label className="label">Delivery date</label>
-                  <DatePicker value={date} onChange={setDate} min={new Date().toISOString().split("T")[0]} />
+                  <DatePicker value={date} onChange={setDate} min={minDate} />
                 </div>
                 <div className="md:col-span-2">
                   <label className="label">Reference image (optional, +₹150 for edible print)</label>
                   <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-cocoa/30 bg-cream-100 px-5 py-6 hover:border-flame">
                     <UploadCloud className="h-6 w-6 text-flame" />
                     <span className="text-sm text-cocoa/70">{imageData ? "Image uploaded — click to change" : "Click to upload (max 4 MB)"}</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleFile} />
+                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
                   </label>
                   {imageData && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={imageData} alt="reference" className="mt-3 h-32 w-32 rounded-2xl object-cover" />
+                    <div className="relative mt-3 h-32 w-32">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imageData} alt="Reference image for custom cake" className="h-full w-full rounded-2xl object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => { setImageData(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                        aria-label="Remove reference image"
+                        className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-cocoa text-cream shadow-md transition hover:bg-flame focus-visible:outline focus-visible:outline-2 focus-visible:outline-flame"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -228,8 +247,8 @@ function CustomCakeContent() {
             <div className="card p-6">
               <h3 className="font-display text-xl uppercase">6 · Your details</h3>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <div><label className="label">Name</label><input value={name} onChange={(e) => setName(e.target.value)} className="input" /></div>
-                <div><label className="label">Phone</label><input value={phone} onChange={(e) => setPhone(e.target.value)} className="input" placeholder="+91 ..." /></div>
+                <div><label className="label" htmlFor="cake-name">Name</label><input id="cake-name" required aria-required="true" value={name} onChange={(e) => setName(e.target.value)} className="input" /></div>
+                <div><label className="label" htmlFor="cake-phone">Phone</label><input id="cake-phone" required aria-required="true" value={phone} onChange={(e) => setPhone(e.target.value)} className="input" placeholder="+91 ..." /></div>
               </div>
             </div>
           </motion.div>

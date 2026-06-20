@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { Plus } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
 import type { Product } from "@/types/product";
@@ -13,23 +13,29 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
   const { add } = useCart();
   const { flyToCart } = useCartUI();
   const cardRef = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+
+  const [added, setAdded] = useState(false);
+  const addedTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => () => clearTimeout(addedTimeout.current), []);
 
   function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     flyToCart(product.image, e.currentTarget.getBoundingClientRect());
     add({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image });
+    setAdded(true);
+    clearTimeout(addedTimeout.current);
+    addedTimeout.current = setTimeout(() => setAdded(false), 900);
   }
 
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
 
-  const rotateX = useSpring(useTransform(my, [0, 1], [7, -7]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(mx, [0, 1], [-7, 7]), { stiffness: 300, damping: 30 });
-
-  // Image drifts with the cursor (opposite the tilt) for a sense of depth.
-  const imgX = useSpring(useTransform(mx, [0, 1], [-10, 10]), { stiffness: 250, damping: 30 });
-  const imgY = useSpring(useTransform(my, [0, 1], [-10, 10]), { stiffness: 250, damping: 30 });
+  const rotateX = useSpring(useTransform(my, [0, 1], [4, -4]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(mx, [0, 1], [-4, 4]), { stiffness: 300, damping: 30 });
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (reduce) return;
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
     mx.set((e.clientX - rect.left) / rect.width);
@@ -56,10 +62,9 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       <Link href={`/product/${product.slug}`} className={`relative grid aspect-[4/3] place-items-center ${product.bg} overflow-hidden`}>
         {product.image.startsWith("/") || product.image.startsWith("http") ? (
           <motion.div
-            style={{ x: imgX, y: imgY }}
-            whileHover={{ scale: 1.06 }}
+            whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute -inset-[6%]"
+            className="absolute -inset-[3%]"
           >
             <Image
               src={product.image}
@@ -108,9 +113,31 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
             whileTap={{ scale: 0.88 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
             className="grid h-11 w-11 place-items-center rounded-pill bg-flame text-white shadow-soft transition-transform hover:scale-110"
-            aria-label={`Add ${product.name} to cart`}
+            aria-label={added ? `${product.name} added to cart` : `Add ${product.name} to cart`}
           >
-            <Plus className="h-5 w-5" />
+            <AnimatePresence mode="wait" initial={false}>
+              {added ? (
+                <motion.span
+                  key="check"
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Check className="h-5 w-5" />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="plus"
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.6, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Plus className="h-5 w-5" />
+                </motion.span>
+              )}
+            </AnimatePresence>
           </motion.button>
         </div>
       </div>

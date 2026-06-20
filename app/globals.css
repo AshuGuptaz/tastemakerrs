@@ -43,15 +43,20 @@ html, body {
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-pill bg-flame px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white shadow-soft transition-all duration-300 ease-out hover:bg-rose-500 hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0;
+    @apply inline-flex items-center gap-2 rounded-pill bg-flame px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white shadow-soft transition-all duration-300 ease-out hover:bg-rose-500 hover:-translate-y-0.5 hover:shadow-glow active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50;
   }
 
   .btn-dark {
-    @apply inline-flex items-center gap-2 rounded-pill bg-wine px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white shadow-soft transition-all duration-300 ease-out hover:bg-wine-dark hover:-translate-y-0.5 active:translate-y-0;
+    @apply inline-flex items-center gap-2 rounded-pill bg-wine px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white shadow-soft transition-all duration-300 ease-out hover:bg-wine-dark hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/50 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center gap-2 rounded-pill border border-cocoa/15 bg-white/70 px-5 py-2.5 font-medium text-cocoa transition-all hover:bg-white;
+    @apply inline-flex items-center gap-2 rounded-pill border border-cocoa/15 bg-white/70 px-5 py-2.5 font-medium text-cocoa transition-all hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50;
+  }
+
+  /* Reusable focus ring for icon-only / bespoke buttons (qty steppers, close, etc.) */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40;
   }
 
   .pill {
@@ -98,30 +103,16 @@ html, body {
   }
 }
 
-/* Custom cursor — hide the native pointer while the JS cursor is active.
-   Keep the text caret on real text fields so typing still feels right. */
-html.custom-cursor-active,
-html.custom-cursor-active a,
-html.custom-cursor-active button,
-html.custom-cursor-active [role="button"],
-html.custom-cursor-active label,
-html.custom-cursor-active select {
-  cursor: none;
-}
-html.custom-cursor-active input[type="text"],
-html.custom-cursor-active input[type="email"],
-html.custom-cursor-active input[type="tel"],
-html.custom-cursor-active input[type="search"],
-html.custom-cursor-active textarea {
-  cursor: text;
-}
-
 /* Marquee */
 .marquee-track {
   display: inline-flex;
   gap: 2.5rem;
   white-space: nowrap;
-  animation: marquee 40s linear infinite;
+  animation: marquee 60s linear infinite;
+}
+/* Pause the strip on hover so a curious eye can actually read it */
+.marquee-track:hover {
+  animation-play-state: paused;
 }
 
 /* Hide scrollbar utility */
@@ -146,16 +137,19 @@ html.custom-cursor-active textarea {
   100% { transform: translateX(100%); }
 }
 
-html { scroll-behavior: smooth; }
+/* NOTE: scroll-behavior is intentionally NOT set here — Lenis (SmoothScroll.tsx)
+   owns smooth scrolling. Native CSS smoothing double-eases against Lenis. */
 
-/* Film grain overlay — subtle noise for editorial premium feel */
+/* Film grain overlay — subtle noise for editorial premium feel.
+   Sits at a LOW z-index so it textures the page base only and never
+   muddies interactive overlays (cart drawer 9995, fly-to-cart 9990, toasts). */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 9997;
-  opacity: 0.038;
+  z-index: 1;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 200px 200px;
 }
@@ -167,5 +161,9 @@ body::after {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+  /* Stop the marquee outright rather than letting it freeze mid-strip */
+  .marquee-track {
+    animation: none !important;
   }
 }

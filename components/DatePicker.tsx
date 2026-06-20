@@ -17,7 +17,7 @@ const MONTHS = [
 
 export default function DatePicker({ value, onChange, min }: DatePickerProps) {
   const today = new Date();
-  const minDate = min ? new Date(min) : today;
+  const minDate = min ? new Date(min + "T00:00:00") : today;
 
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -43,9 +43,10 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
 
   const isDisabled = (d: number) => {
     const date = new Date(viewYear, viewMonth, d);
-    const min = new Date(minDate);
-    min.setHours(0, 0, 0, 0);
-    return date < min;
+    date.setHours(0, 0, 0, 0);
+    const m = new Date(minDate);
+    m.setHours(0, 0, 0, 0);
+    return date < m;
   };
 
   const prevMonth = () => {
@@ -114,6 +115,9 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
               key={day}
               type="button"
               disabled={disabled}
+              aria-label={`${MONTHS[viewMonth]} ${day}, ${viewYear}`}
+              aria-pressed={!!selected}
+              aria-current={todayMark ? "date" : undefined}
               onClick={() => onChange(toStr(viewYear, viewMonth, day))}
               className={`
                 mx-auto flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition

@@ -1,10 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion, type MotionValue } from "framer-motion";
 import Underlined from "./Underlined";
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const STEPS = [
   {
@@ -62,16 +60,22 @@ function StoryImage({
   index: number;
   progress: MotionValue<number>;
 }) {
+  const reduced = useReducedMotion();
   const n = STEPS.length;
   // Each image is fully visible at the center of its segment and crossfades out.
   const start = index / n;
   const end = (index + 1) / n;
+  // Index 0 must begin at full opacity at progress 0 (section just pinned),
+  // otherwise the wine background shows through the first image on entry.
+  const inStart = index === 0 ? start : start - 0.12;
   const opacity = useTransform(
     progress,
-    [start - 0.12, start + 0.04, end - 0.04, end + 0.12],
-    [0, 1, 1, 0]
+    [inStart, start + 0.04, end - 0.04, end + 0.12],
+    [index === 0 ? 1 : 0, 1, 1, 0]
   );
-  const scale = useTransform(progress, [start, end], [1.08, 1]);
+  // Scroll-linked scale zoom — drop it for reduced-motion users.
+  const scaleMotion = useTransform(progress, [start, end], [1.08, 1]);
+  const scale = reduced ? 1 : scaleMotion;
 
   return (
     <motion.img
@@ -94,9 +98,8 @@ export default function StickyStory() {
   return (
     <section ref={ref} className="relative bg-wine text-cream-50" style={{ height: "280vh" }}>
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        {/* ambient blobs */}
-        <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 animate-blob-drift rounded-full bg-flame/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 bottom-10 h-96 w-96 animate-blob-drift-alt rounded-full bg-peach-300/15 blur-3xl" />
+        {/* ambient glow — a single static soft glow for depth */}
+        <div className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-flame/12 blur-3xl" />
 
         <div className="container-x grid w-full items-center gap-12 md:grid-cols-2">
           {/* Pinned image stack */}

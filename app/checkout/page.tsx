@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -21,22 +21,49 @@ type Address = {
 
 const EMPTY: Address = { name: "", email: "", phone: "", street: "", city: "", state: "", pincode: "", notes: "" };
 
+// Friendly labels for validation toasts (never expose raw object keys)
+const LABELS: Record<keyof Address, string> = {
+  name: "full name",
+  email: "email",
+  phone: "phone",
+  street: "street address",
+  city: "city",
+  state: "state",
+  pincode: "pincode",
+  notes: "notes",
+};
+
+// Pure helper — rupee discount for a coupon at a given subtotal
+function couponValue(code: string, subtotal: number): number {
+  const map: Record<string, number> = {
+    FIRSTBITE: Math.round(subtotal * 0.10),
+    BDAY150: subtotal >= 999 ? 150 : 0,
+    HAMPER20: Math.round(subtotal * 0.20),
+    BULK10: subtotal >= 3000 ? Math.round(subtotal * 0.10) : 0,
+  };
+  return map[code] || 0;
+}
+
 export default function CheckoutPage() {
   const { items, subtotal, clear, hydrated } = useCart();
   const [addr, setAddr] = useState<Address>(EMPTY);
   const [razorpayReady, setRazorpayReady] = useState(false);
   const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState("");
   const [method, setMethod] = useState<"razorpay" | "stripe">("razorpay");
   const [loading, setLoading] = useState(false);
+  const [errorField, setErrorField] = useState<keyof Address | null>(null);
   const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
   const streetRef = useRef<HTMLInputElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const autocompleteRef = useRef<any>(null);
   const router = useRouter();
 
   const delivery = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 79;
+  // Derive discount reactively from the applied coupon code so it always tracks the current cart
+  const discount = couponValue(appliedCoupon, subtotal);
   const total = Math.max(0, subtotal + delivery - discount);
 
   useEffect(() => {
@@ -50,20 +77,32 @@ export default function CheckoutPage() {
     script.async = true;
     script.onload = () => setRazorpayReady(true);
     document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
+    // Element.remove() is a no-op on a detached node, so this never throws
+    return () => { script.remove(); };
   }, []);
 
   // Load Google Maps + Places Autocomplete
   useEffect(() => {
     if ((window as any).google) {
       initAutocomplete();
-      return;
+      return () => {
+        if (autocompleteRef.current && (window as any).google) {
+          (window as any).google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        }
+      };
     }
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
     script.async = true;
     script.onload = initAutocomplete;
     document.body.appendChild(script);
+    // Tear down the accumulating place_changed listeners and the appended tag
+    return () => {
+      if (autocompleteRef.current && (window as any).google) {
+        (window as any).google.maps.event.clearInstanceListeners(autocompleteRef.current);
+      }
+      script.remove();
+    };
   }, []);
 
   // Init map when coords change
@@ -108,6 +147,7 @@ export default function CheckoutPage() {
       componentRestrictions: { country: "in" },
       fields: ["address_components", "geometry", "formatted_address"],
     });
+    autocompleteRef.current = autocomplete;
 
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
@@ -124,7 +164,7 @@ export default function CheckoutPage() {
       const state = get("administrative_area_level_1");
       const pincode = get("postal_code");
 
-      if (streetRef.current) streetRef.current.value = street;
+      // street field is controlled now — React renders the value from state
       setAddr((prev) => ({ ...prev, street, city, state, pincode }));
       setMapCoords({
         lat: place.geometry.location.lat(),
@@ -135,17 +175,12 @@ export default function CheckoutPage() {
 
   const applyCoupon = () => {
     const c = coupon.trim().toUpperCase();
-    const map: Record<string, number> = {
-      FIRSTBITE: Math.round(subtotal * 0.10),
-      BDAY150: subtotal >= 999 ? 150 : 0,
-      HAMPER20: Math.round(subtotal * 0.20),
-      BULK10: subtotal >= 3000 ? Math.round(subtotal * 0.10) : 0,
-    };
-    if (map[c] && map[c] > 0) {
-      setDiscount(map[c]);
-      toast.success(`Applied ${c} · saved ₹${map[c]}`);
+    const value = couponValue(c, subtotal);
+    if (value > 0) {
+      setAppliedCoupon(c);
+      toast.success(`Applied ${c} · saved ₹${value}`);
     } else {
-      setDiscount(0);
+      setAppliedCoupon("");
       toast.error("Coupon not valid for this cart");
     }
   };
@@ -153,7 +188,7 @@ export default function CheckoutPage() {
   const validate = () => {
     const required: (keyof Address)[] = ["name", "email", "phone", "street", "city", "state", "pincode"];
     for (const r of required) {
-      if (!addr[r]) { toast.error(`Please fill ${r}`); return false; }
+      if (!addr[r]) { setErrorField(r); toast.error(`Please fill ${LABELS[r]}`); return false; }
     }
     if (!/^[6-9]\d{9}$/.test(addr.phone)) {
       toast.error("Enter a valid 10-digit Indian mobile number");
@@ -172,7 +207,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items: items.map((i) => ({ productId: i.id, name: i.name, price: i.price, qty: i.qty, custom: i.custom })),
           address: addr, subtotal, delivery, discount, total,
-          coupon: coupon || null, paymentMethod: method,
+          coupon: appliedCoupon || null, paymentMethod: method,
         }),
       });
       const order = await orderRes.json();
@@ -240,23 +275,27 @@ export default function CheckoutPage() {
             <div className="card p-6">
               <h3 className="font-display text-xl uppercase">Delivery details</h3>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <div><label className="label">Full name</label><input className="input" value={addr.name} onChange={(e) => setAddr({ ...addr, name: e.target.value })} /></div>
-                <div><label className="label">Email</label><input type="email" className="input" value={addr.email} onChange={(e) => setAddr({ ...addr, email: e.target.value })} /></div>
-                <div><label className="label">Phone</label><input className="input" value={addr.phone} onChange={(e) => setAddr({ ...addr, phone: e.target.value })} /></div>
-                <div><label className="label">Pincode</label><input className="input" value={addr.pincode} onChange={(e) => setAddr({ ...addr, pincode: e.target.value })} /></div>
+                <div><label className="label" htmlFor="checkout-name">Full name</label><input id="checkout-name" required aria-required="true" aria-invalid={errorField === "name"} className={`input ${errorField === "name" ? "ring-2 ring-flame/50" : ""}`} value={addr.name} onChange={(e) => { setErrorField(null); setAddr({ ...addr, name: e.target.value }); }} /></div>
+                <div><label className="label" htmlFor="checkout-email">Email</label><input id="checkout-email" type="email" required aria-required="true" aria-invalid={errorField === "email"} className={`input ${errorField === "email" ? "ring-2 ring-flame/50" : ""}`} value={addr.email} onChange={(e) => { setErrorField(null); setAddr({ ...addr, email: e.target.value }); }} /></div>
+                <div><label className="label" htmlFor="checkout-phone">Phone</label><input id="checkout-phone" required aria-required="true" aria-invalid={errorField === "phone"} className={`input ${errorField === "phone" ? "ring-2 ring-flame/50" : ""}`} value={addr.phone} onChange={(e) => { setErrorField(null); setAddr({ ...addr, phone: e.target.value }); }} /></div>
+                <div><label className="label" htmlFor="checkout-pincode">Pincode</label><input id="checkout-pincode" required aria-required="true" aria-invalid={errorField === "pincode"} className={`input ${errorField === "pincode" ? "ring-2 ring-flame/50" : ""}`} value={addr.pincode} onChange={(e) => { setErrorField(null); setAddr({ ...addr, pincode: e.target.value }); }} /></div>
                 <div className="md:col-span-2">
-                  <label className="label">Street address</label>
+                  <label className="label" htmlFor="checkout-street">Street address</label>
                   <input
+                    id="checkout-street"
                     ref={streetRef}
-                    className="input"
-                    defaultValue={addr.street}
-                    onBlur={(e) => setAddr((prev) => ({ ...prev, street: e.target.value }))}
+                    required
+                    aria-required="true"
+                    aria-invalid={errorField === "street"}
+                    className={`input ${errorField === "street" ? "ring-2 ring-flame/50" : ""}`}
+                    value={addr.street}
+                    onChange={(e) => { setErrorField(null); setAddr((prev) => ({ ...prev, street: e.target.value })); }}
                     placeholder="Start typing your address…"
                   />
                 </div>
-                <div><label className="label">City</label><input className="input" value={addr.city} onChange={(e) => setAddr({ ...addr, city: e.target.value })} /></div>
-                <div><label className="label">State</label><input className="input" value={addr.state} onChange={(e) => setAddr({ ...addr, state: e.target.value })} /></div>
-                <div className="md:col-span-2"><label className="label">Delivery notes</label><textarea rows={3} className="input" value={addr.notes} onChange={(e) => setAddr({ ...addr, notes: e.target.value })} /></div>
+                <div><label className="label" htmlFor="checkout-city">City</label><input id="checkout-city" required aria-required="true" aria-invalid={errorField === "city"} className={`input ${errorField === "city" ? "ring-2 ring-flame/50" : ""}`} value={addr.city} onChange={(e) => { setErrorField(null); setAddr({ ...addr, city: e.target.value }); }} /></div>
+                <div><label className="label" htmlFor="checkout-state">State</label><input id="checkout-state" required aria-required="true" aria-invalid={errorField === "state"} className={`input ${errorField === "state" ? "ring-2 ring-flame/50" : ""}`} value={addr.state} onChange={(e) => { setErrorField(null); setAddr({ ...addr, state: e.target.value }); }} /></div>
+                <div className="md:col-span-2"><label className="label" htmlFor="checkout-notes">Delivery notes</label><textarea id="checkout-notes" rows={3} className="input" value={addr.notes} onChange={(e) => setAddr({ ...addr, notes: e.target.value })} /></div>
               </div>
 
               {/* Map preview */}
@@ -282,8 +321,8 @@ export default function CheckoutPage() {
                   { id: "razorpay", label: "Razorpay (UPI, cards, netbanking)", Icon: CreditCard, desc: "Recommended for India" },
                   { id: "stripe", label: "Stripe (international cards)", Icon: Globe, desc: "For overseas customers" },
                 ].map((m) => (
-                  <button key={m.id} onClick={() => setMethod(m.id as any)}
-                    className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition ${method === m.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-cocoa/10 bg-white"}`}>
+                  <button key={m.id} type="button" onClick={() => setMethod(m.id as any)}
+                    className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 ${method === m.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-cocoa/10 bg-white"}`}>
                     <m.Icon className="h-6 w-6 text-flame" />
                     <div>
                       <div className="font-semibold">{m.label}</div>
@@ -315,8 +354,9 @@ export default function CheckoutPage() {
               </ul>
 
               <div className="mt-4 flex gap-2">
-                <input value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon code" className="input" />
-                <button onClick={applyCoupon} className="btn-ghost shrink-0">Apply</button>
+                <label className="sr-only" htmlFor="checkout-coupon">Coupon code</label>
+                <input id="checkout-coupon" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon code" className="input" />
+                <button onClick={applyCoupon} className="btn-ghost shrink-0 rounded-2xl py-3">Apply</button>
               </div>
 
               <ul className="mt-4 space-y-2 text-sm">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
@@ -31,14 +31,25 @@ export default function AdminProducts() {
   const [list, setList] = useState<P[]>([]);
   const [editing, setEditing] = useState<P>(EMPTY);
   const [busy, setBusy] = useState(false);
+  const formRef = useRef<HTMLElement>(null);
 
   const load = async () => {
-    const res = await fetch("/api/products");
-    const data = await res.json();
-    setList(data);
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setList(Array.isArray(data) ? data : []);
+    } catch {
+      setList([]);
+      toast.error("Failed to load products");
+    }
   };
 
   useEffect(() => { load(); }, []);
+
+  const startEdit = (p: P) => {
+    setEditing(p);
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const save = async () => {
     setBusy(true);
@@ -102,7 +113,7 @@ export default function AdminProducts() {
                     <td className="p-3 text-right">
                       {p._id ? (
                         <>
-                          <button onClick={() => setEditing(p)} className="text-flame hover:underline">Edit</button>
+                          <button onClick={() => startEdit(p)} className="text-flame hover:underline">Edit</button>
                           <button onClick={() => remove(p._id)} className="ml-3 text-rose-500 hover:underline">Remove</button>
                         </>
                       ) : (
@@ -115,18 +126,18 @@ export default function AdminProducts() {
             </table>
           </div>
 
-          <aside className="card p-5 lg:sticky lg:top-24 self-start">
+          <aside ref={formRef} className="card p-5 lg:sticky lg:top-24 self-start">
             <h3 className="font-display text-xl uppercase">{editing._id ? "Edit" : "New"} Product</h3>
             <div className="mt-4 grid gap-3">
-              <input className="input" placeholder="Name" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-") })} />
-              <input className="input" placeholder="slug" value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: e.target.value })} />
+              <input className="input" aria-label="Name" placeholder="Name" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-") })} />
+              <input className="input" aria-label="Slug" placeholder="slug" value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: e.target.value })} />
               <select className="input" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
                 {["cakes", "cupcakes", "muffins", "cookies", "chocolates", "jars", "hampers"].map((c) => <option key={c}>{c}</option>)}
               </select>
-              <input className="input" type="number" placeholder="Price" value={editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} />
-              <input className="input" placeholder="Unit (e.g. 500g, Box of 6)" value={editing.unit || ""} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} />
-              <input className="input" placeholder="Image emoji or URL" value={editing.image || ""} onChange={(e) => setEditing({ ...editing, image: e.target.value })} />
-              <textarea className="input" rows={3} placeholder="Description" value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
+              <input className="input" type="number" min={0} aria-label="Price" placeholder="Price" value={editing.price === 0 && !editing._id ? "" : editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} />
+              <input className="input" aria-label="Unit" placeholder="Unit (e.g. 500g, Box of 6)" value={editing.unit || ""} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} />
+              <input className="input" aria-label="Image" placeholder="Image emoji or URL" value={editing.image || ""} onChange={(e) => setEditing({ ...editing, image: e.target.value })} />
+              <textarea className="input" rows={3} aria-label="Description" placeholder="Description" value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
               <div className="flex flex-wrap gap-3 text-sm">
                 <label className="flex items-center gap-2"><input type="checkbox" checked={!!editing.bestseller} onChange={(e) => setEditing({ ...editing, bestseller: e.target.checked })} className="accent-flame" /> Bestseller</label>
                 <label className="flex items-center gap-2"><input type="checkbox" checked={!!editing.eggless} onChange={(e) => setEditing({ ...editing, eggless: e.target.checked })} className="accent-flame" /> Eggless</label>

@@ -19,10 +19,11 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/orders").then((r) => r.json()).then((d) => {
-      setOrders(Array.isArray(d) ? d : []);
-      setLoading(false);
-    });
+    fetch("/api/orders")
+      .then((r) => r.json())
+      .then((d) => setOrders(Array.isArray(d) ? d : []))
+      .catch(() => setOrders([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -54,7 +55,7 @@ export default function AdminOrders() {
                   <tr key={o._id} className={i % 2 ? "bg-cream-50" : ""}>
                     <td className="p-3 font-mono text-xs">{o._id.slice(-8)}</td>
                     <td className="p-3"><div className="font-semibold">{o.address.name}</div><div className="text-xs text-cocoa/60">{o.address.phone} · {o.address.city}</div></td>
-                    <td className="p-3 text-xs">{o.items.map((i) => `${i.name} ×${i.qty}`).join(", ")}</td>
+                    <td className="p-3 text-xs">{o.items.map((it) => `${it.name} ×${it.qty}`).join(", ")}</td>
                     <td className="p-3 font-display text-lg">₹{o.total}</td>
                     <td className="p-3"><span className={`rounded-pill px-2 py-0.5 text-xs ${o.paymentStatus === "paid" ? "bg-flame/10 text-flame" : "bg-cocoa-50 text-cocoa/60"}`}>{o.paymentStatus} · {o.paymentMethod}</span></td>
                     <td className="p-3 capitalize">{o.status.replaceAll("_", " ")}</td>

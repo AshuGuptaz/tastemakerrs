@@ -8,13 +8,13 @@ import Underlined from "@/components/Underlined";
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [busy, setBusy] = useState(false);
+  const [errorField, setErrorField] = useState<"name" | "email" | "message" | null>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.message) {
-      toast.error("Please fill name, email and message");
-      return;
-    }
+    if (!form.name) { setErrorField("name"); toast.error("Please fill name, email and message"); return; }
+    if (!form.email) { setErrorField("email"); toast.error("Please fill name, email and message"); return; }
+    if (!form.message) { setErrorField("message"); toast.error("Please fill name, email and message"); return; }
     setBusy(true);
     try {
       await fetch("/api/contact", {
@@ -52,10 +52,10 @@ export default function ContactPage() {
 
           <form onSubmit={submit} className="card p-6 md:p-8">
             <div className="grid gap-4">
-              <div><label className="label">Name</label><input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-              <div><label className="label">Email</label><input type="email" className="input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-              <div><label className="label">Phone</label><input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-              <div><label className="label">Message</label><textarea rows={5} className="input" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} /></div>
+              <div><label className="label" htmlFor="contact-name">Name</label><input id="contact-name" required aria-required="true" aria-invalid={errorField === "name"} className={`input ${errorField === "name" ? "ring-2 ring-flame/50" : ""}`} value={form.name} onChange={(e) => { setErrorField(null); setForm({ ...form, name: e.target.value }); }} /></div>
+              <div><label className="label" htmlFor="contact-email">Email</label><input id="contact-email" type="email" required aria-required="true" aria-invalid={errorField === "email"} className={`input ${errorField === "email" ? "ring-2 ring-flame/50" : ""}`} value={form.email} onChange={(e) => { setErrorField(null); setForm({ ...form, email: e.target.value }); }} /></div>
+              <div><label className="label" htmlFor="contact-phone">Phone</label><input id="contact-phone" className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+              <div><label className="label" htmlFor="contact-message">Message</label><textarea id="contact-message" rows={5} required aria-required="true" aria-invalid={errorField === "message"} className={`input ${errorField === "message" ? "ring-2 ring-flame/50" : ""}`} value={form.message} onChange={(e) => { setErrorField(null); setForm({ ...form, message: e.target.value }); }} /></div>
               <button disabled={busy} className="btn-primary justify-center">{busy ? "Sending..." : "Send Message"}</button>
             </div>
           </form>

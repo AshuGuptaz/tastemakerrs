@@ -20,8 +20,8 @@ type CartCtx = {
   subtotal: number;
   hydrated: boolean;
   add: (item: Omit<CartItem, "qty">, qty?: number) => void;
-  remove: (id: string) => void;
-  setQty: (id: string, qty: number) => void;
+  remove: (id: string, variant?: string) => void;
+  setQty: (id: string, variant: string | undefined, qty: number) => void;
   clear: () => void;
 };
 
@@ -58,12 +58,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     toast.success(`Added ${item.name}`);
   };
 
-  const remove: CartCtx["remove"] = (id) =>
-    setItems((prev) => prev.filter((p) => p.id !== id));
+  const remove: CartCtx["remove"] = (id, variant) =>
+    setItems((prev) => prev.filter((p) => !(p.id === id && p.variant === variant)));
 
-  const setQty: CartCtx["setQty"] = (id, qty) =>
+  const setQty: CartCtx["setQty"] = (id, variant, qty) =>
     setItems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, qty: Math.max(1, qty) } : p))
+      prev.map((p) =>
+        p.id === id && p.variant === variant ? { ...p, qty: Math.max(1, qty) } : p
+      )
     );
 
   const clear = () => setItems([]);

@@ -41,16 +41,20 @@ export default function FlyToCart() {
                 scale: 1,
               }}
               animate={{
-                top: to.y - SIZE / 2,
+                // Vertical toss arc: lift above both points, then drop into the cart.
+                top: [
+                  f.from.y - SIZE / 2,
+                  Math.min(f.from.y, to.y) - 80 - SIZE / 2,
+                  to.y - SIZE / 2,
+                ],
                 left: to.x - SIZE / 2,
                 scale: 0.18,
-                opacity: 0.7,
-                // Two-step arc: lift slightly, then drop into the cart.
-                offsetDistance: ["0%", "100%"],
+                opacity: [1, 1, 0],
               }}
               transition={{
                 duration: 0.75,
                 ease: [0.5, 0, 0.2, 1],
+                top: { times: [0, 0.35, 1], ease: [0.34, 1.56, 0.64, 1] },
                 opacity: { duration: 0.75, times: [0, 0.8, 1] },
               }}
               onAnimationComplete={() => removeFlyer(f.id)}

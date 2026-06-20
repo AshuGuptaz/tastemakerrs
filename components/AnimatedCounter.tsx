@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useInView, useMotionValue, useSpring } from "framer-motion";
+import { useInView, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 
 /**
  * Counts up to `value` the first time it scrolls into view.
@@ -23,12 +23,22 @@ export default function AnimatedCounter({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
+  const prefersReduced = useReducedMotion();
   const mv = useMotionValue(0);
   const spring = useSpring(mv, { duration: duration * 1000, bounce: 0 });
 
   useEffect(() => {
-    if (inView) mv.set(value);
-  }, [inView, value, mv]);
+    if (!inView) return;
+    // Reduced motion: skip the count-up spring and show the final value at once.
+    if (prefersReduced) {
+      mv.jump(value);
+      if (ref.current) {
+        ref.current.textContent = `${prefix}${value.toFixed(decimals)}${suffix}`;
+      }
+      return;
+    }
+    mv.set(value);
+  }, [inView, value, mv, prefersReduced, prefix, suffix, decimals]);
 
   useEffect(() => {
     return spring.on("change", (latest) => {

@@ -25,7 +25,7 @@ export default function CartDrawer() {
           {/* Backdrop */}
           <motion.div
             variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.35, ease: EASE }}
             onClick={closeDrawer}
             className="absolute inset-0 bg-wine/40 backdrop-blur-sm"
           />
@@ -35,7 +35,7 @@ export default function CartDrawer() {
             role="dialog"
             aria-label="Shopping cart"
             variants={{ hidden: { x: "100%" }, visible: { x: 0 } }}
-            transition={{ type: "spring", stiffness: 320, damping: 36 }}
+            transition={{ duration: 0.35, ease: EASE }}
             className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-cream-50 shadow-soft"
           >
             <header className="flex items-center justify-between border-b border-cocoa/10 px-6 py-5">
@@ -46,7 +46,7 @@ export default function CartDrawer() {
               <button
                 onClick={closeDrawer}
                 aria-label="Close cart"
-                className="rounded-pill border border-cocoa/15 bg-white p-2 hover:bg-flame hover:text-white transition-colors"
+                className="rounded-pill border border-cocoa/15 bg-white p-2 hover:bg-flame hover:text-white transition-colors focus-ring"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -77,7 +77,7 @@ export default function CartDrawer() {
                         transition={{ duration: 0.35, ease: EASE }}
                         className="flex gap-3 border-b border-cocoa/10 py-4"
                       >
-                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-cream-200">
+                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-cream-200">
                           {it.image && (it.image.startsWith("/") || it.image.startsWith("http")) ? (
                             <Image src={it.image} alt={it.name} fill sizes="80px" className="object-cover" />
                           ) : (
@@ -88,9 +88,9 @@ export default function CartDrawer() {
                           <div className="flex items-start justify-between gap-2">
                             <h3 className="font-display text-base leading-tight text-cocoa">{it.name}</h3>
                             <button
-                              onClick={() => remove(it.id)}
+                              onClick={() => remove(it.id, it.variant)}
                               aria-label={`Remove ${it.name}`}
-                              className="text-cocoa/40 hover:text-flame transition-colors"
+                              className="text-cocoa/40 hover:text-flame transition-colors focus-ring"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -99,17 +99,17 @@ export default function CartDrawer() {
                           <div className="mt-auto flex items-center justify-between pt-2">
                             <div className="flex items-center gap-1 rounded-pill border border-cocoa/15 bg-white">
                               <button
-                                onClick={() => setQty(it.id, it.qty - 1)}
+                                onClick={() => setQty(it.id, it.variant, it.qty - 1)}
                                 aria-label="Decrease quantity"
-                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame"
+                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame focus-ring"
                               >
                                 <Minus className="h-3.5 w-3.5" />
                               </button>
                               <span className="w-6 text-center text-sm font-semibold">{it.qty}</span>
                               <button
-                                onClick={() => setQty(it.id, it.qty + 1)}
+                                onClick={() => setQty(it.id, it.variant, it.qty + 1)}
                                 aria-label="Increase quantity"
-                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame"
+                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame focus-ring"
                               >
                                 <Plus className="h-3.5 w-3.5" />
                               </button>
