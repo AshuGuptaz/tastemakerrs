@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { CreditCard, Globe } from "lucide-react";
+import { CreditCard, Globe, MapPin } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 type Address = {
@@ -29,17 +29,21 @@ export default function CheckoutPage() {
   const [discount, setDiscount] = useState(0);
   const [method, setMethod] = useState<"razorpay" | "stripe">("razorpay");
   const [loading, setLoading] = useState(false);
+  const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const streetRef = useRef<HTMLInputElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
   const router = useRouter();
 
   const delivery = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 79;
   const total = Math.max(0, subtotal + delivery - discount);
 
   useEffect(() => {
-    if (hydrated && items.length === 0) {
-      router.replace("/cart");
-    }
+    if (hydrated && items.length === 0) router.replace("/cart");
   }, [hydrated, items.length, router]);
 
+  // Load Razorpay script
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -48,6 +52,85 @@ export default function CheckoutPage() {
     document.body.appendChild(script);
     return () => { document.body.removeChild(script); };
   }, []);
+
+  // Load Google Maps + Places Autocomplete
+  useEffect(() => {
+    if ((window as any).google) {
+      initAutocomplete();
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+    script.async = true;
+    script.onload = initAutocomplete;
+    document.body.appendChild(script);
+  }, []);
+
+  // Init map when coords change
+  useEffect(() => {
+    if (!mapCoords || !mapRef.current || !(window as any).google) return;
+    if (!mapInstanceRef.current) {
+      mapInstanceRef.current = new (window as any).google.maps.Map(mapRef.current, {
+        center: mapCoords,
+        zoom: 15,
+        disableDefaultUI: true,
+        zoomControl: true,
+        styles: [
+          { featureType: "poi", stylers: [{ visibility: "off" }] },
+          { elementType: "geometry", stylers: [{ color: "#fdf0d5" }] },
+          { elementType: "labels.text.fill", stylers: [{ color: "#890f20" }] },
+          { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+          { featureType: "water", elementType: "geometry", stylers: [{ color: "#f49cbb" }] },
+        ],
+      });
+    } else {
+      mapInstanceRef.current.setCenter(mapCoords);
+    }
+
+    if (markerRef.current) markerRef.current.setMap(null);
+    markerRef.current = new (window as any).google.maps.Marker({
+      position: mapCoords,
+      map: mapInstanceRef.current,
+      icon: {
+        path: (window as any).google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: "#F26A8D",
+        fillOpacity: 1,
+        strokeColor: "#ffffff",
+        strokeWeight: 2,
+      },
+    });
+  }, [mapCoords]);
+
+  function initAutocomplete() {
+    if (!streetRef.current) return;
+    const autocomplete = new (window as any).google.maps.places.Autocomplete(streetRef.current, {
+      componentRestrictions: { country: "in" },
+      fields: ["address_components", "geometry", "formatted_address"],
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) return;
+
+      const components = place.address_components || [];
+      const get = (type: string) =>
+        components.find((c: any) => c.types.includes(type))?.long_name || "";
+      const getShort = (type: string) =>
+        components.find((c: any) => c.types.includes(type))?.short_name || "";
+
+      const street = place.formatted_address || "";
+      const city = get("locality") || get("administrative_area_level_2");
+      const state = get("administrative_area_level_1");
+      const pincode = get("postal_code");
+
+      setAddr((prev) => ({ ...prev, street, city, state, pincode }));
+      setMapCoords({
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      });
+    });
+  }
 
   const applyCoupon = () => {
     const c = coupon.trim().toUpperCase();
@@ -69,10 +152,7 @@ export default function CheckoutPage() {
   const validate = () => {
     const required: (keyof Address)[] = ["name", "email", "phone", "street", "city", "state", "pincode"];
     for (const r of required) {
-      if (!addr[r]) {
-        toast.error(`Please fill ${r}`);
-        return false;
-      }
+      if (!addr[r]) { toast.error(`Please fill ${r}`); return false; }
     }
     if (!/^[6-9]\d{9}$/.test(addr.phone)) {
       toast.error("Enter a valid 10-digit Indian mobile number");
@@ -85,26 +165,20 @@ export default function CheckoutPage() {
     if (!validate()) return;
     setLoading(true);
     try {
-      // 1. Create order in our DB
       const orderRes = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: items.map((i) => ({ productId: i.id, name: i.name, price: i.price, qty: i.qty, custom: i.custom })),
-          address: addr,
-          subtotal, delivery, discount, total,
-          coupon: coupon || null,
-          paymentMethod: method,
+          address: addr, subtotal, delivery, discount, total,
+          coupon: coupon || null, paymentMethod: method,
         }),
       });
       const order = await orderRes.json();
       if (!orderRes.ok) throw new Error(order.error || "Order creation failed");
 
       if (method === "razorpay") {
-        // 2a. Razorpay flow
-        if (!razorpayReady) {
-          throw new Error("Payment is loading, please wait a moment and try again.");
-        }
+        if (!razorpayReady) throw new Error("Payment is loading, please wait and try again.");
 
         const rpRes = await fetch("/api/razorpay/create-order", {
           method: "POST",
@@ -112,13 +186,11 @@ export default function CheckoutPage() {
           body: JSON.stringify({ amount: total, orderId: order.id }),
         });
         const rp = await rpRes.json();
-
         if (!rpRes.ok || !rp.id) throw new Error(rp.error || "Razorpay order failed");
 
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          amount: rp.amount,
-          currency: rp.currency,
+          amount: rp.amount, currency: rp.currency,
           name: "The Taste Makerrs",
           description: `Order ${order.id}`,
           order_id: rp.id,
@@ -131,34 +203,24 @@ export default function CheckoutPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...resp, orderId: order.id }),
               }).then((r) => r.json());
-              if (verify.ok) {
-                clear();
-                router.push(`/order-success?id=${order.id}`);
-              } else {
-                toast.error("Payment verification failed. Contact us if amount was deducted.");
-              }
-            } catch {
-              toast.error("Verification error. Please contact support.");
-            }
+              if (verify.ok) { clear(); router.push(`/order-success?id=${order.id}`); }
+              else toast.error("Payment verification failed. Contact us if amount was deducted.");
+            } catch { toast.error("Verification error. Please contact support."); }
           },
           modal: { ondismiss: () => { toast("Payment cancelled"); setLoading(false); } },
         };
-        // @ts-ignore Razorpay added by external script
+        // @ts-ignore
         const r = new window.Razorpay(options);
         r.open();
         return;
       } else {
-        // 2b. Stripe Checkout flow
         const s = await fetch("/api/stripe/create-checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ amount: total, orderId: order.id, items, address: addr }),
         }).then((r) => r.json());
-        if (s.url) {
-          window.location.href = s.url;
-        } else {
-          throw new Error(s.error || "Stripe checkout failed");
-        }
+        if (s.url) window.location.href = s.url;
+        else throw new Error(s.error || "Stripe checkout failed");
       }
     } catch (e: any) {
       toast.error(e.message || "Something went wrong");
@@ -168,95 +230,112 @@ export default function CheckoutPage() {
   };
 
   return (
-    <>
-      <section className="bg-cream-50 py-16 md:py-24">
-        <div className="container-x">
-          <h1 className="display text-[clamp(2.5rem,7vw,5rem)]">CHECKOUT.</h1>
+    <section className="bg-cream-50 py-16 md:py-24">
+      <div className="container-x">
+        <h1 className="display text-[clamp(2.5rem,7vw,5rem)]">CHECKOUT.</h1>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
-            <div className="space-y-6">
-              <div className="card p-6">
-                <h3 className="font-display text-xl uppercase">Delivery details</h3>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <div><label className="label">Full name</label><input className="input" value={addr.name} onChange={(e) => setAddr({ ...addr, name: e.target.value })} /></div>
-                  <div><label className="label">Email</label><input type="email" className="input" value={addr.email} onChange={(e) => setAddr({ ...addr, email: e.target.value })} /></div>
-                  <div><label className="label">Phone</label><input className="input" value={addr.phone} onChange={(e) => setAddr({ ...addr, phone: e.target.value })} /></div>
-                  <div><label className="label">Pincode</label><input className="input" value={addr.pincode} onChange={(e) => setAddr({ ...addr, pincode: e.target.value })} /></div>
-                  <div className="md:col-span-2"><label className="label">Street address</label><input className="input" value={addr.street} onChange={(e) => setAddr({ ...addr, street: e.target.value })} /></div>
-                  <div><label className="label">City</label><input className="input" value={addr.city} onChange={(e) => setAddr({ ...addr, city: e.target.value })} /></div>
-                  <div><label className="label">State</label><input className="input" value={addr.state} onChange={(e) => setAddr({ ...addr, state: e.target.value })} /></div>
-                  <div className="md:col-span-2"><label className="label">Delivery notes</label><textarea rows={3} className="input" value={addr.notes} onChange={(e) => setAddr({ ...addr, notes: e.target.value })} /></div>
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+          <div className="space-y-6">
+            <div className="card p-6">
+              <h3 className="font-display text-xl uppercase">Delivery details</h3>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div><label className="label">Full name</label><input className="input" value={addr.name} onChange={(e) => setAddr({ ...addr, name: e.target.value })} /></div>
+                <div><label className="label">Email</label><input type="email" className="input" value={addr.email} onChange={(e) => setAddr({ ...addr, email: e.target.value })} /></div>
+                <div><label className="label">Phone</label><input className="input" value={addr.phone} onChange={(e) => setAddr({ ...addr, phone: e.target.value })} /></div>
+                <div><label className="label">Pincode</label><input className="input" value={addr.pincode} onChange={(e) => setAddr({ ...addr, pincode: e.target.value })} /></div>
+                <div className="md:col-span-2">
+                  <label className="label">Street address</label>
+                  <input
+                    ref={streetRef}
+                    className="input"
+                    value={addr.street}
+                    onChange={(e) => setAddr({ ...addr, street: e.target.value })}
+                    placeholder="Start typing your address…"
+                  />
                 </div>
+                <div><label className="label">City</label><input className="input" value={addr.city} onChange={(e) => setAddr({ ...addr, city: e.target.value })} /></div>
+                <div><label className="label">State</label><input className="input" value={addr.state} onChange={(e) => setAddr({ ...addr, state: e.target.value })} /></div>
+                <div className="md:col-span-2"><label className="label">Delivery notes</label><textarea rows={3} className="input" value={addr.notes} onChange={(e) => setAddr({ ...addr, notes: e.target.value })} /></div>
               </div>
 
-              <div className="card p-6">
-                <h3 className="font-display text-xl uppercase">Payment method</h3>
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  {[
-                    { id: "razorpay", label: "Razorpay (UPI, cards, netbanking)", Icon: CreditCard, desc: "Recommended for India" },
-                    { id: "stripe",   label: "Stripe (international cards)",     Icon: Globe, desc: "For overseas customers" },
-                  ].map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => setMethod(m.id as any)}
-                      className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition ${
-                        method === m.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-cocoa/10 bg-white"
-                      }`}
-                    >
-                      <m.Icon className="h-6 w-6 text-flame" />
-                      <div>
-                        <div className="font-semibold">{m.label}</div>
-                        <div className="text-xs text-cocoa/60">{m.desc}</div>
-                      </div>
-                    </button>
-                  ))}
+              {/* Map preview */}
+              {mapCoords ? (
+                <div className="mt-5">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-cocoa">
+                    <MapPin className="h-4 w-4 text-flame" /> Delivery location
+                  </div>
+                  <div ref={mapRef} className="h-56 w-full rounded-2xl overflow-hidden border border-cocoa/10 shadow-card" />
                 </div>
-              </div>
+              ) : (
+                <div className="mt-5 flex items-center gap-3 rounded-2xl border border-dashed border-cocoa/20 bg-peach-100/40 px-4 py-4 text-sm text-cocoa/60">
+                  <MapPin className="h-5 w-5 text-flame shrink-0" />
+                  Start typing your street address above to see your delivery location on the map.
+                </div>
+              )}
             </div>
 
-            <aside className="lg:sticky lg:top-24 self-start">
-              <div className="card p-6">
-                <h3 className="font-display text-xl uppercase">Your order</h3>
-                <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-2">
-                  {items.map((it) => (
-                    <li key={it.id} className="flex items-center gap-3 text-sm">
-                      <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-cream-100 text-xl">
-                        {it.image && (it.image.startsWith("/") || it.image.startsWith("http")) ? (
-                          <Image src={it.image} alt={it.name} fill sizes="40px" className="object-cover" />
-                        ) : (
-                          it.image || "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80"
-                        )}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate">{it.name} <span className="text-cocoa/50">× {it.qty}</span></span>
-                      <span className="font-semibold">₹{it.qty * it.price}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-4 flex gap-2">
-                  <input value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon code" className="input" />
-                  <button onClick={applyCoupon} className="btn-ghost shrink-0">Apply</button>
-                </div>
-
-                <ul className="mt-4 space-y-2 text-sm">
-                  <li className="flex justify-between"><span className="text-cocoa/60">Subtotal</span><span>₹{subtotal}</span></li>
-                  <li className="flex justify-between"><span className="text-cocoa/60">Delivery</span><span>{delivery === 0 ? <span className="text-flame">FREE</span> : `₹${delivery}`}</span></li>
-                  {discount > 0 && <li className="flex justify-between text-flame"><span>Discount</span><span>− ₹{discount}</span></li>}
-                </ul>
-                <div className="mt-3 flex items-baseline justify-between border-t border-cocoa/10 pt-3">
-                  <span className="font-display text-xl uppercase">Total</span>
-                  <span className="font-display text-3xl text-flame">₹{total}</span>
-                </div>
-                <button onClick={placeOrder} disabled={loading} className="btn-primary mt-5 w-full justify-center">
-                  {loading ? "Processing..." : `Pay ₹${total}`}
-                </button>
-                <Link href="/cart" className="mt-2 block text-center text-xs text-cocoa/60 hover:text-flame">← Edit cart</Link>
-                <p className="mt-3 text-xs text-cocoa/50">By placing the order you accept our <Link href="/privacy-policy" className="underline">privacy policy</Link>.</p>
+            <div className="card p-6">
+              <h3 className="font-display text-xl uppercase">Payment method</h3>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {[
+                  { id: "razorpay", label: "Razorpay (UPI, cards, netbanking)", Icon: CreditCard, desc: "Recommended for India" },
+                  { id: "stripe", label: "Stripe (international cards)", Icon: Globe, desc: "For overseas customers" },
+                ].map((m) => (
+                  <button key={m.id} onClick={() => setMethod(m.id as any)}
+                    className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition ${method === m.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-cocoa/10 bg-white"}`}>
+                    <m.Icon className="h-6 w-6 text-flame" />
+                    <div>
+                      <div className="font-semibold">{m.label}</div>
+                      <div className="text-xs text-cocoa/60">{m.desc}</div>
+                    </div>
+                  </button>
+                ))}
               </div>
-            </aside>
+            </div>
           </div>
+
+          <aside className="lg:sticky lg:top-24 self-start">
+            <div className="card p-6">
+              <h3 className="font-display text-xl uppercase">Your order</h3>
+              <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-2">
+                {items.map((it) => (
+                  <li key={it.id} className="flex items-center gap-3 text-sm">
+                    <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-cream-100 text-xl">
+                      {it.image && (it.image.startsWith("/") || it.image.startsWith("http")) ? (
+                        <Image src={it.image} alt={it.name} fill sizes="40px" className="object-cover" />
+                      ) : (
+                        it.image || "🎂"
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate">{it.name} <span className="text-cocoa/50">× {it.qty}</span></span>
+                    <span className="font-semibold">₹{it.qty * it.price}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-4 flex gap-2">
+                <input value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon code" className="input" />
+                <button onClick={applyCoupon} className="btn-ghost shrink-0">Apply</button>
+              </div>
+
+              <ul className="mt-4 space-y-2 text-sm">
+                <li className="flex justify-between"><span className="text-cocoa/60">Subtotal</span><span>₹{subtotal}</span></li>
+                <li className="flex justify-between"><span className="text-cocoa/60">Delivery</span><span>{delivery === 0 ? <span className="text-flame">FREE</span> : `₹${delivery}`}</span></li>
+                {discount > 0 && <li className="flex justify-between text-flame"><span>Discount</span><span>− ₹{discount}</span></li>}
+              </ul>
+              <div className="mt-3 flex items-baseline justify-between border-t border-cocoa/10 pt-3">
+                <span className="font-display text-xl uppercase">Total</span>
+                <span className="font-display text-3xl text-flame">₹{total}</span>
+              </div>
+              <button onClick={placeOrder} disabled={loading} className="btn-primary mt-5 w-full justify-center">
+                {loading ? "Processing..." : `Pay ₹${total}`}
+              </button>
+              <Link href="/cart" className="mt-2 block text-center text-xs text-cocoa/60 hover:text-flame">← Edit cart</Link>
+              <p className="mt-3 text-xs text-cocoa/50">By placing the order you accept our <Link href="/privacy-policy" className="underline">privacy policy</Link>.</p>
+            </div>
+          </aside>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
