@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 import MagneticButton from "./MagneticButton";
 import AnimatedCounter from "./AnimatedCounter";
 import Underlined from "./Underlined";
+import Spline from "@splinetool/react-spline/next";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const fade = (delay = 0) => ({
@@ -96,21 +97,11 @@ export default function Hero() {
           transition={{ duration: 1, ease: EASE }}
           className="relative mx-auto w-full max-w-md"
         >
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-soft ring-1 ring-cocoa/10">
-            <motion.div
-              style={{ y: imageY, scale: imageScale }}
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-soft ring-1 ring-cocoa/10 bg-cream-100">
+            <Spline
+              scene="https://prod.spline.design/Pi10RzgFeK1HWDbW/scene.splinecode"
               className="absolute inset-0 h-full w-full"
-            >
-              <Image
-                src="/images/cakes/strawberry.jpg"
-                alt="Handcrafted strawberry cake"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 28rem"
-                className="animate-ken-burns object-cover"
-              />
-            </motion.div>
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-wine/30 via-transparent to-transparent" />
+            />
           </div>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
