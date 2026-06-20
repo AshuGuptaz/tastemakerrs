@@ -1,66 +1,101 @@
-import { Cake, Sparkles, Heart } from "lucide-react";
+import Image from "next/image";
+import { Sparkles } from "lucide-react";
 
 /**
- * Ambient, pure-CSS "spline-like" decoration for otherwise-empty page header
- * bands. Renders soft glossy floating orbs + drifting blurred blobs + a couple
- * of faint brand icons, filling the dead space on the right of a header.
+ * Ambient decoration for otherwise-empty page header bands: real bakery photos
+ * (cakes / cupcakes / cookies / treats) floating as soft circular "bubbles"
+ * with white rings + drop shadows, over a couple of blurred color blobs.
  *
- * Zero JS / no WebGL — it's just gradients + the existing float/blob-drift CSS
- * keyframes, so it costs nothing and auto-stills under prefers-reduced-motion
- * (the global reduced-motion block zeroes CSS animation durations).
+ * Pure CSS motion (the existing float / blob-drift keyframes) — no WebGL, tiny
+ * JS — so it loads fast and auto-stills under prefers-reduced-motion.
  *
- * tone="light" → for cream/peach/sky header backgrounds.
- * tone="bold"  → for the saturated flame header background.
+ * tone="light" → cream/peach/sky header backgrounds.
+ * tone="bold"  → the saturated flame header background.
+ * set          → which curated photo set to float (varies per page).
  */
 type Tone = "light" | "bold";
+type Treat = { src: string; alt: string };
 
-const ORBS: Record<Tone, string[]> = {
-  light: [
-    "radial-gradient(circle at 30% 26%, rgba(255,255,255,0.72), rgba(242,106,141,0.34) 52%, rgba(199,90,104,0.30))",
-    "radial-gradient(circle at 32% 28%, rgba(255,255,255,0.78), rgba(244,156,187,0.42) 55%, rgba(242,106,141,0.32))",
-    "radial-gradient(circle at 30% 25%, rgba(255,255,255,0.66), rgba(250,229,188,0.55) 55%, rgba(244,214,160,0.42))",
+const SETS: Record<string, Treat[]> = {
+  // big, medium, medium, small (mapped to the 4 fixed slots below)
+  cakes: [
+    { src: "/images/cakes/strawberry.jpg", alt: "Strawberry cream cake" },
+    { src: "/images/cupcakes/red-velvet-cupcake.jpg", alt: "Red velvet cupcake" },
+    { src: "/images/cakes/chocolate-rich.jpg", alt: "Rich chocolate cake" },
+    { src: "/images/chocolates/truffles.jpg", alt: "Chocolate truffles" },
   ],
-  bold: [
-    "radial-gradient(circle at 30% 26%, rgba(255,255,255,0.95), rgba(253,226,235,0.55) 55%, rgba(244,156,187,0.42))",
-    "radial-gradient(circle at 32% 28%, rgba(255,255,255,0.88), rgba(250,229,188,0.50) 55%, rgba(244,156,187,0.38))",
-    "radial-gradient(circle at 30% 25%, rgba(255,255,255,0.82), rgba(253,226,235,0.48) 60%, rgba(244,156,187,0.34))",
+  mixed: [
+    { src: "/images/cakes/red-velvet.jpg", alt: "Red velvet cake" },
+    { src: "/images/cupcakes/vanilla-cupcake.jpg", alt: "Vanilla cupcake" },
+    { src: "/images/cookies/choc-chip.jpg", alt: "Chocolate-chip cookies" },
+    { src: "/images/chocolates/pralines.jpg", alt: "Chocolate pralines" },
+  ],
+  sweets: [
+    { src: "/images/cakes/pistachio.jpg", alt: "Pistachio cake" },
+    { src: "/images/cupcakes/chocolate-cupcake.jpg", alt: "Chocolate cupcake" },
+    { src: "/images/cookies/biscotti.jpg", alt: "Almond biscotti" },
+    { src: "/images/jars/tiramisu.jpg", alt: "Tiramisu jar" },
+  ],
+  bakes: [
+    { src: "/images/cakes/blueberry.jpg", alt: "Blueberry cake" },
+    { src: "/images/muffins/blueberry-muffin.jpg", alt: "Blueberry muffin" },
+    { src: "/images/cookies/oatmeal.jpg", alt: "Oatmeal cookies" },
+    { src: "/images/chocolates/bark.jpg", alt: "Chocolate bark" },
   ],
 };
 
-export default function HeaderDecor({ tone = "light" }: { tone?: Tone }) {
+// Fixed slots: position, size, animation + phase. Photos from the chosen set
+// are dropped into these in order (big → small).
+const SLOTS = [
+  { pos: "right-[6%] top-[24%]",     size: "h-36 w-36 lg:h-48 lg:w-48", anim: "animate-float",      delay: "0s" },
+  { pos: "right-[27%] top-[12%]",    size: "h-24 w-24 lg:h-28 lg:w-28", anim: "animate-float-slow", delay: "1.4s" },
+  { pos: "right-[17%] bottom-[12%]", size: "h-28 w-28 lg:h-32 lg:w-32", anim: "animate-float",      delay: "2.8s" },
+  { pos: "right-[35%] bottom-[34%]", size: "h-16 w-16 lg:h-20 lg:w-20", anim: "animate-float-slow", delay: "0.7s" },
+];
+
+export default function HeaderDecor({
+  tone = "light",
+  set = "mixed",
+}: {
+  tone?: Tone;
+  set?: keyof typeof SETS;
+}) {
   const bold = tone === "bold";
-  const orbs = ORBS[tone];
-  const orbShadow = bold
-    ? "0 24px 50px -14px rgba(92,9,21,0.40)"
-    : "0 24px 50px -14px rgba(137,15,32,0.30)";
+  const treats = SETS[set] ?? SETS.mixed;
+  const shadow = bold
+    ? "0 30px 60px -18px rgba(92,9,21,0.55)"
+    : "0 30px 60px -18px rgba(137,15,32,0.42)";
   const blobA = bold ? "bg-white/15" : "bg-flame/14";
-  const blobB = bold ? "bg-peach-200/25" : "bg-peach-300/30";
-  const icon = bold ? "text-white/30" : "text-wine/15";
+  const blobB = bold ? "bg-peach-200/30" : "bg-peach-300/35";
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Drifting blurred blobs — soft depth behind everything */}
+      {/* Soft color blobs for ambient depth behind the treats */}
       <div className={`absolute -right-16 -top-20 h-80 w-80 rounded-full ${blobA} blur-3xl animate-blob-drift`} />
-      <div className={`absolute right-[18%] -bottom-24 h-96 w-96 rounded-full ${blobB} blur-3xl animate-blob-drift-alt`} />
+      <div className={`absolute right-[16%] -bottom-24 h-96 w-96 rounded-full ${blobB} blur-3xl animate-blob-drift-alt`} />
 
-      {/* Glossy floating orbs — the "spline-like" dimensional bits */}
-      <div
-        className="absolute right-[8%] top-[30%] hidden h-32 w-32 rounded-full ring-1 ring-white/40 animate-float md:block lg:h-40 lg:w-40"
-        style={{ background: orbs[0], boxShadow: orbShadow }}
-      />
-      <div
-        className="absolute right-[28%] top-[16%] hidden h-20 w-20 rounded-full ring-1 ring-white/40 animate-float-slow md:block"
-        style={{ background: orbs[1], boxShadow: orbShadow, animationDelay: "1.4s" }}
-      />
-      <div
-        className="absolute right-[20%] bottom-[16%] hidden h-16 w-16 rounded-full ring-1 ring-white/40 animate-float md:block"
-        style={{ background: orbs[2], boxShadow: orbShadow, animationDelay: "2.8s" }}
-      />
+      {/* Floating bakery photos (desktop only — they'd crowd the heading on mobile) */}
+      {treats.map((t, i) => {
+        const slot = SLOTS[i];
+        return (
+          <div
+            key={t.src}
+            className={`absolute ${slot.pos} ${slot.size} ${slot.anim} hidden overflow-hidden rounded-full ring-4 ring-white/85 md:block`}
+            style={{ boxShadow: shadow, animationDelay: slot.delay }}
+          >
+            <Image src={t.src} alt={t.alt} fill sizes="200px" className="object-cover" />
+            {/* subtle bottom vignette for depth */}
+            <span className="absolute inset-0 rounded-full bg-gradient-to-t from-wine/25 to-transparent" />
+          </div>
+        );
+      })}
 
-      {/* Faint brand icons drifting between the orbs */}
-      <Sparkles className={`absolute right-[37%] top-[42%] hidden h-9 w-9 ${icon} animate-float-slow md:block`} strokeWidth={1.5} style={{ animationDelay: "0.6s" }} />
-      <Cake className={`absolute right-[6%] bottom-[26%] hidden h-12 w-12 ${icon} animate-float md:block`} strokeWidth={1.25} style={{ animationDelay: "3.6s" }} />
-      <Heart className={`absolute right-[33%] bottom-[30%] hidden h-7 w-7 ${icon} animate-float-slow md:block`} strokeWidth={1.5} style={{ animationDelay: "2.1s" }} />
+      {/* One small sparkle accent for a touch of sweetness */}
+      <Sparkles
+        className={`absolute right-[40%] top-[30%] hidden h-7 w-7 md:block ${bold ? "text-white/70" : "text-flame/60"}`}
+        strokeWidth={1.75}
+        style={{ animationDelay: "0.5s" }}
+      />
     </div>
   );
 }

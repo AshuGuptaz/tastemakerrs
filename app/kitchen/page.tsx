@@ -22,7 +22,7 @@ export default function KitchenPage() {
   return (
     <>
       <section className="relative overflow-hidden bg-sky-100 py-16 md:py-24">
-        <HeaderDecor tone="light" />
+        <HeaderDecor tone="light" set="bakes" />
         <div className="container-x relative z-10">
           <p className="pill">Behind the scenes</p>
           <h1 className="display mt-3 text-[clamp(2.5rem,7vw,5.5rem)]">

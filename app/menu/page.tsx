@@ -32,7 +32,7 @@ function MenuContent() {
     <>
       {/* Header */}
       <section className="relative overflow-hidden bg-peach-100 py-16 md:py-24">
-        <HeaderDecor tone="light" />
+        <HeaderDecor tone="light" set="sweets" />
         <div className="container-x relative z-10">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="display text-[clamp(2.5rem,8vw,6rem)]">
             THE <Underlined>MENU</Underlined>.

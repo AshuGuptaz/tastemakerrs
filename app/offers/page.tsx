@@ -33,7 +33,7 @@ export default function OffersPage() {
   return (
     <>
       <section className="relative overflow-hidden bg-flame text-white py-16 md:py-24">
-        <HeaderDecor tone="bold" />
+        <HeaderDecor tone="bold" set="mixed" />
         <div className="container-x relative z-10">
           <p className="pill bg-white text-cocoa">Sweet deals</p>
           <h1 className="display mt-3 text-[clamp(2.5rem,7vw,5.5rem)] text-white">
