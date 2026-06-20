@@ -63,8 +63,10 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
       (viewYear === minDate.getFullYear() && viewMonth > minDate.getMonth());
   };
 
-  const cells = Array.from({ length: firstDay }, () => null)
-    .concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
+  const cells: (number | null)[] = [
+    ...Array.from({ length: firstDay }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
 
   return (
     <div className="rounded-2xl border border-cocoa/10 bg-white shadow-card overflow-hidden">
