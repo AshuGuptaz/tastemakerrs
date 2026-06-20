@@ -2,8 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import Image from "next/image";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import MagneticButton from "./MagneticButton";
 import AnimatedCounter from "./AnimatedCounter";
@@ -18,14 +17,6 @@ const fade = (delay = 0) => ({
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
-
-  // Parallax: image drifts up as user scrolls down
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.06]);
 
   return (
     <section ref={heroRef} className="relative overflow-hidden bg-cream-100">
@@ -92,28 +83,21 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Photo with parallax */}
+        {/* 3D Spline cake */}
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 24 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, ease: EASE }}
           className="relative mx-auto w-full max-w-md"
         >
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-soft ring-1 ring-cocoa/10">
-            <motion.div
-              style={{ y: imageY, scale: imageScale }}
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-soft ring-1 ring-cocoa/10 bg-cream-100">
+            <iframe
+              src="https://my.spline.design/cake-FdgE7LUBQxmdPYVioyz1hBA3/"
+              frameBorder="0"
               className="absolute inset-0 h-full w-full"
-            >
-              <Image
-                src="/images/cakes/strawberry.jpg"
-                alt="Handcrafted strawberry cake"
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 28rem"
-                className="animate-ken-burns object-cover"
-              />
-            </motion.div>
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-wine/30 via-transparent to-transparent" />
+              title="3D Cake"
+              allow="autoplay"
+            />
           </div>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
