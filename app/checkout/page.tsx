@@ -124,6 +124,7 @@ export default function CheckoutPage() {
       const state = get("administrative_area_level_1");
       const pincode = get("postal_code");
 
+      if (streetRef.current) streetRef.current.value = street;
       setAddr((prev) => ({ ...prev, street, city, state, pincode }));
       setMapCoords({
         lat: place.geometry.location.lat(),
@@ -248,8 +249,8 @@ export default function CheckoutPage() {
                   <input
                     ref={streetRef}
                     className="input"
-                    value={addr.street}
-                    onChange={(e) => setAddr({ ...addr, street: e.target.value })}
+                    defaultValue={addr.street}
+                    onBlur={(e) => setAddr((prev) => ({ ...prev, street: e.target.value }))}
                     placeholder="Start typing your address…"
                   />
                 </div>
