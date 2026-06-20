@@ -11,6 +11,8 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.97",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",

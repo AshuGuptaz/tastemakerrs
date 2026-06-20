@@ -1,12 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, Suspense, lazy } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import MagneticButton from "./MagneticButton";
 import AnimatedCounter from "./AnimatedCounter";
 import Underlined from "./Underlined";
+
+const Spline = lazy(() => import("@splinetool/react-spline"));
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const fade = (delay = 0) => ({
@@ -91,13 +93,12 @@ export default function Hero() {
           className="relative mx-auto w-full max-w-md"
         >
           <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-soft ring-1 ring-cocoa/10 bg-cream-100">
-            <iframe
-              src="https://my.spline.design/cake-FdgE7LUBQxmdPYVioyz1hBA3/"
-              frameBorder="0"
-              className="absolute inset-0 h-full w-full"
-              title="3D Cake"
-              allow="autoplay"
-            />
+            <Suspense fallback={<div className="absolute inset-0 animate-pulse bg-peach-100" />}>
+              <Spline
+                scene="https://prod.spline.design/cake-FdgE7LUBQxmdPYVioyz1hBA3/scene.splinecode"
+                className="absolute inset-0 h-full w-full"
+              />
+            </Suspense>
           </div>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
