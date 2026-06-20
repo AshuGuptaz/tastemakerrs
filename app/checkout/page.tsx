@@ -65,6 +65,10 @@ export default function CheckoutPage() {
         return false;
       }
     }
+    if (!/^[6-9]\d{9}$/.test(addr.phone)) {
+      toast.error("Enter a valid 10-digit Indian mobile number");
+      return false;
+    }
     return true;
   };
 
