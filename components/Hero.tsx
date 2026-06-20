@@ -35,8 +35,10 @@ export default function Hero() {
       <div className="container-x relative z-10 grid items-center gap-14 py-20 md:grid-cols-[1.05fr_0.95fr] md:py-28">
         {/* Copy */}
         <div className="text-center md:text-left">
-          <motion.span {...fade(0)} className="pill mb-5 border border-cocoa/10">
-            Small-batch · Eggless &amp; Jain-friendly options
+          <motion.span {...fade(0)} className="mb-5 inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-flame/10 to-peach-200/60 border border-flame/20 px-4 py-2 text-xs font-bold uppercase tracking-widest text-flame shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-flame animate-pulse" />
+            Small-batch · Eggless &amp; Jain-friendly
+            <span className="h-1.5 w-1.5 rounded-full bg-flame animate-pulse" />
           </motion.span>
 
           <motion.p {...fade(0.08)} className="mt-1 text-sm font-semibold uppercase tracking-[0.25em] text-flame md:text-base">
@@ -97,7 +99,7 @@ export default function Hero() {
           transition={{ duration: 1, ease: EASE }}
           className="relative mx-auto w-full max-w-md"
         >
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-soft ring-1 ring-cocoa/10 bg-cream-100">
+          <div className="relative aspect-[4/5] overflow-hidden bg-transparent">
             <Spline
               scene="https://prod.spline.design/Pi10RzgFeK1HWDbW/scene.splinecode"
               className="absolute inset-0 h-full w-full"
