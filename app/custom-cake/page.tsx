@@ -9,6 +9,7 @@ import { useCart } from "@/context/CartContext";
 import { useSearchParams } from "next/navigation";
 import { getBySlug } from "@/lib/products";
 import Underlined from "@/components/Underlined";
+import DatePicker from "@/components/DatePicker";
 
 const FLAVORS = [
   { id: "vanilla", label: "Classic Vanilla", price: 0 },
@@ -206,7 +207,7 @@ function CustomCakeContent() {
                 </div>
                 <div>
                   <label className="label">Delivery date</label>
-                  <input type="date" value={date} min={new Date().toISOString().split("T")[0]} onChange={(e) => setDate(e.target.value)} className="input" />
+                  <DatePicker value={date} onChange={setDate} min={new Date().toISOString().split("T")[0]} />
                 </div>
                 <div className="md:col-span-2">
                   <label className="label">Reference image (optional, +₹150 for edible print)</label>
