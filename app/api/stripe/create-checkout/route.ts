@@ -13,7 +13,18 @@ import { Order } from "@/models/Order";
  */
 export async function POST(req: Request) {
   try {
-    const { amount, orderId, items, address } = await req.json();
+    const { orderId } = await req.json();
+    if (!orderId) {
+      return NextResponse.json({ error: "orderId required" }, { status: 400 });
+    }
+
+    // Server price authority: load OUR order and derive amount/description from it.
+    await connectDB();
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
     const stripe = getStripe();
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
@@ -26,24 +37,26 @@ export async function POST(req: Request) {
             currency: "inr",
             product_data: {
               name: "The Taste Makerrs — Order",
-              description: items?.map((i: any) => `${i.name} × ${i.qty}`).join(", ").slice(0, 500),
+              description: order.items.map((i: any) => `${i.name} × ${i.qty}`).join(", ").slice(0, 500),
             },
-            unit_amount: Math.round(amount * 100),
+            unit_amount: Math.round(order.total * 100),
           },
           quantity: 1,
         },
       ],
-      customer_email: address?.email,
+      customer_email: order.address?.email,
       metadata: { orderId },
+      // Propagate orderId to the PaymentIntent so charge.refunded can resolve it.
+      payment_intent_data: { metadata: { orderId } },
       success_url: `${baseUrl}/order-success?id=${orderId}&session={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout`,
     });
 
-    await connectDB();
-    await Order.findByIdAndUpdate(orderId, { paymentIntentId: session.id });
+    await Order.findByIdAndUpdate(orderId, { stripeSessionId: session.id });
 
     return NextResponse.json({ url: session.url });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error("POST /api/stripe/create-checkout failed:", e);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

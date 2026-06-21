@@ -8,8 +8,8 @@ const ItemSchema = new Schema(
   {
     productId: String,
     name: String,
-    price: Number,
-    qty: Number,
+    price: { type: Number, required: true, min: 0 },
+    qty: { type: Number, required: true, min: 1 },
     custom: Schema.Types.Mixed,
   },
   { _id: false }
@@ -40,6 +40,7 @@ export interface IOrder {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   paymentIntentId?: string;
+  stripeSessionId?: string;
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   status: OrderStatus;
@@ -51,14 +52,15 @@ const OrderSchema = new Schema(
   {
     items: { type: [ItemSchema], required: true },
     address: { type: AddressSchema, required: true },
-    subtotal: Number,
-    delivery: Number,
-    discount: Number,
-    total: { type: Number, required: true },
+    subtotal: { type: Number, required: true, min: 0, default: 0 },
+    delivery: { type: Number, required: true, min: 0, default: 0 },
+    discount: { type: Number, required: true, min: 0, default: 0 },
+    total: { type: Number, required: true, min: 0 },
     coupon: { type: String, default: null },
     paymentMethod: { type: String, enum: ["razorpay", "stripe"], required: true },
     paymentStatus: { type: String, enum: ["unpaid", "paid", "failed", "refunded"], default: "unpaid" },
     paymentIntentId: String,
+    stripeSessionId: String,
     razorpayOrderId: String,
     razorpayPaymentId: String,
     status: {
@@ -69,6 +71,11 @@ const OrderSchema = new Schema(
   },
   { timestamps: true }
 );
+
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
+OrderSchema.index({ razorpayOrderId: 1 }, { sparse: true });
+OrderSchema.index({ paymentIntentId: 1 }, { sparse: true });
 
 export const Order =
   (mongoose.models.Order as Model<IOrder>) ||

@@ -3,11 +3,13 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { z } from "zod";
 import { getAdminFromCookies } from "@/lib/auth-server";
+import { recomputeOrder } from "@/lib/pricing";
 
 const ItemSchema = z.object({
   productId: z.string().optional(),
+  slug: z.string().optional(),
   name: z.string(),
-  price: z.number(),
+  price: z.number().min(0),
   qty: z.number().int().min(1),
   custom: z.any().optional(),
 });
@@ -26,10 +28,10 @@ const AddressSchema = z.object({
 const Body = z.object({
   items: z.array(ItemSchema).min(1),
   address: AddressSchema,
-  subtotal: z.number(),
-  delivery: z.number(),
-  discount: z.number(),
-  total: z.number(),
+  subtotal: z.number().min(0).optional(),
+  delivery: z.number().min(0).optional(),
+  discount: z.number().min(0).optional(),
+  total: z.number().min(0).optional(),
   coupon: z.string().nullable().optional(),
   paymentMethod: z.enum(["razorpay", "stripe"]),
 });
@@ -42,10 +44,31 @@ export async function POST(req: Request) {
   try {
     const body = Body.parse(await req.json());
     await connectDB();
-    const order = await Order.create({ ...body, status: "pending", paymentStatus: "unpaid" });
+
+    // Server price authority: recompute every line price, subtotal, delivery,
+    // discount and total. Client-supplied money fields are ignored entirely.
+    const priced = recomputeOrder(body.items, body.coupon);
+    const normalizedCoupon = (body.coupon || "").trim().toUpperCase() || null;
+
+    const order = await Order.create({
+      items: priced.items,
+      address: body.address,
+      subtotal: priced.subtotal,
+      delivery: priced.delivery,
+      discount: priced.discount,
+      total: priced.total,
+      coupon: normalizedCoupon,
+      paymentMethod: body.paymentMethod,
+      status: "pending",
+      paymentStatus: "unpaid",
+    });
     return NextResponse.json({ id: order._id.toString(), ok: true });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 400 });
+    console.error("POST /api/orders failed:", e);
+    if (e instanceof z.ZodError) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
 

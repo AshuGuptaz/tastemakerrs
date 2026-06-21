@@ -98,6 +98,7 @@ function CustomCakeContent() {
     setSubmitting(true);
     try {
       const payload = {
+        base: baseProduct?.slug ?? null,
         flavor, weight, shape, eggless, jain, message, date, image: imageData,
         contact: { name, phone }, price,
       };

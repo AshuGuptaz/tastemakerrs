@@ -24,7 +24,7 @@ const ProductSchema = new Schema<IProduct>(
     slug: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
     category: { type: String, required: true, index: true },
-    price: { type: Number, required: true },
+    price: { type: Number, required: true, min: 0 },
     unit: String,
     description: { type: String, required: true },
     flavors: { type: [String], default: [] },

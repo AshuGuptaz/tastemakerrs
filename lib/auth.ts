@@ -9,7 +9,20 @@ import { SignJWT, jwtVerify } from "jose";
  */
 
 const ENC = new TextEncoder();
-const SECRET = process.env.ADMIN_JWT_SECRET || "dev-only-secret-change-me";
+
+const RAW = process.env.ADMIN_JWT_SECRET?.trim();
+if (process.env.NODE_ENV === "production") {
+  if (!RAW || RAW.length < 32) {
+    throw new Error(
+      "ADMIN_JWT_SECRET must be set to at least 32 characters in production"
+    );
+  }
+} else if (!RAW || RAW.length < 32) {
+  console.warn(
+    "[auth] ADMIN_JWT_SECRET not set (or too short); using insecure dev-only secret. DO NOT use in production."
+  );
+}
+const SECRET = RAW && RAW.length >= 32 ? RAW : "dev-only-secret-change-me";
 
 export const ADMIN_COOKIE = "ttm_admin_token";
 

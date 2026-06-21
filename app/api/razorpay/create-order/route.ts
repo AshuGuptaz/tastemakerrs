@@ -10,19 +10,27 @@ import { Order } from "@/models/Order";
  */
 export async function POST(req: Request) {
   try {
-    const { amount, orderId } = await req.json();
-    if (!amount || !orderId) {
-      return NextResponse.json({ error: "amount & orderId required" }, { status: 400 });
+    const { orderId } = await req.json();
+    if (!orderId) {
+      return NextResponse.json({ error: "orderId required" }, { status: 400 });
     }
+
+    // Server price authority: derive the charge amount from our own order, never
+    // from the client. Load the order BEFORE creating the Razorpay order.
+    await connectDB();
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
     const rp = getRazorpay();
     const rpOrder = await rp.orders.create({
-      amount: Math.round(amount * 100), // paisa
+      amount: Math.round(order.total * 100), // paisa
       currency: "INR",
       receipt: orderId,
       notes: { internalOrderId: orderId },
     });
 
-    await connectDB();
     await Order.findByIdAndUpdate(orderId, { razorpayOrderId: rpOrder.id });
 
     return NextResponse.json({
@@ -31,6 +39,7 @@ export async function POST(req: Request) {
       currency: rpOrder.currency,
     });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error("POST /api/razorpay/create-order failed:", e);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }

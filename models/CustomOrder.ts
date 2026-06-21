@@ -17,20 +17,20 @@ export interface ICustomOrder {
 
 const CustomOrderSchema = new Schema<ICustomOrder>(
   {
-    flavor: String,
-    weight: String,
+    flavor: { type: String, required: true },
+    weight: { type: String, required: true },
     shape: String,
-    eggless: Boolean,
-    jain: Boolean,
+    eggless: { type: Boolean, default: false },
+    jain: { type: Boolean, default: false },
     message: String,
-    date: String,
-    image: String,
+    date: { type: String, required: true },
+    image: { type: String, maxlength: 6000000 },
     contact: {
-      name: String,
-      phone: String,
+      name: { type: String, required: true },
+      phone: { type: String, required: true },
       email: String,
     },
-    price: Number,
+    price: { type: Number, min: 0, default: 0 },
     status: { type: String, enum: ["new", "quoted", "confirmed", "rejected"], default: "new" },
   },
   { timestamps: true }

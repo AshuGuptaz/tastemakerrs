@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
+import { WebhookEvent } from "@/models/WebhookEvent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,7 +11,8 @@ export const dynamic = "force-dynamic";
 /**
  * POST /api/stripe/webhook
  * Wire this URL in Stripe Dashboard → Developers → Webhooks.
- * Subscribe to: checkout.session.completed, charge.refunded.
+ * Subscribe to: checkout.session.completed, checkout.session.expired,
+ * checkout.session.async_payment_failed, charge.refunded.
  */
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
@@ -30,16 +32,58 @@ export async function POST(req: Request) {
 
   await connectDB();
 
+  // Idempotency: record the event id; a duplicate key means we already handled it.
+  try {
+    await WebhookEvent.create({ eventId: event.id });
+  } catch (e: any) {
+    if (e?.code === 11000) {
+      return NextResponse.json({ received: true });
+    }
+    console.error("Webhook idempotency write failed:", e);
+    return NextResponse.json({ received: true });
+  }
+
   switch (event.type) {
     case "checkout.session.completed": {
       const s = event.data.object as Stripe.Checkout.Session;
       const orderId = s.metadata?.orderId;
       if (orderId) {
-        await Order.findByIdAndUpdate(orderId, {
-          paymentStatus: "paid",
-          status: "paid",
-          paymentIntentId: s.payment_intent as string,
-        });
+        const order = await Order.findById(orderId);
+        if (
+          order &&
+          s.payment_status === "paid" &&
+          (s.currency || "").toLowerCase() === "inr" &&
+          s.amount_total === Math.round(order.total * 100)
+        ) {
+          await Order.updateOne(
+            { _id: orderId, status: { $nin: ["refunded", "cancelled"] } },
+            {
+              $set: {
+                paymentStatus: "paid",
+                status: "paid",
+                paymentIntentId: s.payment_intent as string,
+              },
+            }
+          );
+        } else {
+          console.error("checkout.session.completed verification failed for order", orderId, {
+            payment_status: s.payment_status,
+            currency: s.currency,
+            amount_total: s.amount_total,
+          });
+        }
+      }
+      break;
+    }
+    case "checkout.session.expired":
+    case "checkout.session.async_payment_failed": {
+      const s = event.data.object as Stripe.Checkout.Session;
+      const orderId = s.metadata?.orderId;
+      if (orderId) {
+        await Order.updateOne(
+          { _id: orderId, paymentStatus: "unpaid", status: "pending" },
+          { $set: { paymentStatus: "failed", status: "cancelled" } }
+        );
       }
       break;
     }
