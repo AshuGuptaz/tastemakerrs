@@ -3,6 +3,8 @@ import { z } from "zod";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { CustomOrder } from "@/models/CustomOrder";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { uploadImage } from "@/lib/cloudinary";
 
 const MAX_BYTES = 2_000_000;
 
@@ -24,6 +26,12 @@ const customOrderSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const { ok } = await rateLimit(`custom:${ip}`, 10, 60_000);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   // Size guard before parsing.
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > MAX_BYTES) {
@@ -61,6 +69,13 @@ export async function POST(req: Request) {
     },
     status: "new" as const,
   };
+
+  // If a base64 data URL was sent and Cloudinary is configured, replace it with
+  // the hosted URL. On any failure (or when not configured) keep the base64.
+  if (typeof parsed.image === "string" && parsed.image.startsWith("data:")) {
+    const url = await uploadImage(parsed.image);
+    if (url) payload.image = url;
+  }
 
   try {
     await connectDB();

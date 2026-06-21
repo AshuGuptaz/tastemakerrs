@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { signAdmin, ADMIN_COOKIE } from "@/lib/auth";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 // A real, valid bcrypt hash (cost 10) used to equalize timing when the
 // submitted email does not match the admin email, preventing user enumeration.
 const DUMMY_HASH = "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy";
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const { ok: allowed } = await rateLimit(`login:${ip}`, 5, 60_000);
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();

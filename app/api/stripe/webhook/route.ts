@@ -4,6 +4,9 @@ import { getStripe } from "@/lib/stripe";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { WebhookEvent } from "@/models/WebhookEvent";
+import { sendOrderConfirmation, sendAdminOrderAlert } from "@/lib/email";
+import { decrementStock } from "@/lib/inventory";
+import { incrementCouponUsage } from "@/lib/coupons";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -65,6 +68,22 @@ export async function POST(req: Request) {
               },
             }
           );
+
+          // Fire-and-forget side effects. The WebhookEvent idempotency guard
+          // above prevents duplicate processing, so this won't double-fire.
+          try {
+            order.paymentStatus = "paid";
+            order.status = "paid";
+            order.paymentIntentId = s.payment_intent as string;
+            await Promise.allSettled([
+              sendOrderConfirmation(order),
+              sendAdminOrderAlert(order),
+              decrementStock(order.items),
+              incrementCouponUsage(order.coupon),
+            ]);
+          } catch (sideEffectErr) {
+            console.error("stripe webhook side effects failed:", sideEffectErr);
+          }
         } else {
           console.error("checkout.session.completed verification failed for order", orderId, {
             payment_status: s.payment_status,

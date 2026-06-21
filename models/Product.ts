@@ -15,6 +15,8 @@ export interface IProduct {
   image: string;
   bg: string;
   active: boolean;
+  stock?: number;
+  trackInventory?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,6 +37,8 @@ const ProductSchema = new Schema<IProduct>(
     image: { type: String, default: "🎂" },
     bg: { type: String, default: "bg-cream-100" },
     active: { type: Boolean, default: true },
+    stock: { type: Number, default: null },
+    trackInventory: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

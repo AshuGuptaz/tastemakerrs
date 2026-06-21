@@ -3,6 +3,9 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { getRazorpay } from "@/lib/razorpay";
+import { sendOrderConfirmation, sendAdminOrderAlert } from "@/lib/email";
+import { decrementStock } from "@/lib/inventory";
+import { incrementCouponUsage } from "@/lib/coupons";
 
 /**
  * POST /api/razorpay/verify
@@ -49,6 +52,21 @@ export async function POST(req: Request) {
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ ok: false, error: "Order already processed" }, { status: 409 });
+    }
+
+    // Genuine transition: fire-and-forget side effects that must NEVER affect the response.
+    try {
+      order.paymentStatus = "paid";
+      order.status = "paid";
+      order.razorpayPaymentId = razorpay_payment_id;
+      await Promise.allSettled([
+        sendOrderConfirmation(order),
+        sendAdminOrderAlert(order),
+        decrementStock(order.items),
+        incrementCouponUsage(order.coupon),
+      ]);
+    } catch (sideEffectErr) {
+      console.error("razorpay/verify side effects failed:", sideEffectErr);
     }
 
     return NextResponse.json({ ok: true });

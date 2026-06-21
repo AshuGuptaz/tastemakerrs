@@ -4,6 +4,7 @@ import { Order } from "@/models/Order";
 import { z } from "zod";
 import { getAdminFromCookies } from "@/lib/auth-server";
 import { recomputeOrder } from "@/lib/pricing";
+import { nextSeq } from "@/models/Counter";
 
 const ItemSchema = z.object({
   productId: z.string().optional(),
@@ -47,8 +48,13 @@ export async function POST(req: Request) {
 
     // Server price authority: recompute every line price, subtotal, delivery,
     // discount and total. Client-supplied money fields are ignored entirely.
-    const priced = recomputeOrder(body.items, body.coupon);
+    const priced = await recomputeOrder(body.items, body.coupon);
     const normalizedCoupon = (body.coupon || "").trim().toUpperCase() || null;
+
+    const seq = await nextSeq("order");
+    const d = new Date();
+    const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
+    const orderNumber = `TM-${ymd}-${String(seq).padStart(4, "0")}`;
 
     const order = await Order.create({
       items: priced.items,
@@ -58,6 +64,7 @@ export async function POST(req: Request) {
       discount: priced.discount,
       total: priced.total,
       coupon: normalizedCoupon,
+      orderNumber,
       paymentMethod: body.paymentMethod,
       status: "pending",
       paymentStatus: "unpaid",

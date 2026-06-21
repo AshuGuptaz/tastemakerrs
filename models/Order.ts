@@ -37,6 +37,7 @@ export interface IOrder {
   discount: number;
   total: number;
   coupon?: string | null;
+  orderNumber?: string;
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   paymentIntentId?: string;
@@ -57,6 +58,7 @@ const OrderSchema = new Schema(
     discount: { type: Number, required: true, min: 0, default: 0 },
     total: { type: Number, required: true, min: 0 },
     coupon: { type: String, default: null },
+    orderNumber: { type: String },
     paymentMethod: { type: String, enum: ["razorpay", "stripe"], required: true },
     paymentStatus: { type: String, enum: ["unpaid", "paid", "failed", "refunded"], default: "unpaid" },
     paymentIntentId: String,
@@ -76,6 +78,7 @@ OrderSchema.index({ createdAt: -1 });
 OrderSchema.index({ status: 1, createdAt: -1 });
 OrderSchema.index({ razorpayOrderId: 1 }, { sparse: true });
 OrderSchema.index({ paymentIntentId: 1 }, { sparse: true });
+OrderSchema.index({ orderNumber: 1 }, { unique: true, sparse: true });
 
 export const Order =
   (mongoose.models.Order as Model<IOrder>) ||

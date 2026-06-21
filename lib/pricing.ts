@@ -1,5 +1,5 @@
 import { getBySlug } from "@/lib/products";
-import { couponValue } from "@/lib/coupons";
+import { resolveCoupon } from "@/lib/coupons";
 
 /**
  * Server-side price authority for orders. The custom-cake and catalog pricing
@@ -85,10 +85,10 @@ export type RecomputedOrder = {
  * item that cannot be resolved to a custom spec or a catalog product, or whose
  * quantity is not a positive integer.
  */
-export function recomputeOrder(
+export async function recomputeOrder(
   items: IncomingItem[],
   coupon: string | null | undefined
-): RecomputedOrder {
+): Promise<RecomputedOrder> {
   if (!Array.isArray(items) || items.length === 0) {
     throw new Error("Order must contain at least one item");
   }
@@ -124,7 +124,7 @@ export function recomputeOrder(
 
   const subtotal = normalized.reduce((sum, it) => sum + it.price * it.qty, 0);
   const delivery = DELIVERY(subtotal);
-  const discount = Math.min(couponValue(coupon, subtotal), subtotal);
+  const discount = Math.min(await resolveCoupon(coupon, subtotal), subtotal);
   const total = Math.max(0, subtotal + delivery - discount);
 
   return { items: normalized, subtotal, delivery, discount, total };

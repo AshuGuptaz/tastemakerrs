@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
 
@@ -14,6 +14,23 @@ function OrderSuccessInner() {
   const { clear } = useCart();
   const cleared = useRef(false);
   const reduce = useReducedMotion();
+  const [details, setDetails] = useState<{ orderNumber?: string; status?: string } | null>(null);
+
+  // Fetch the confirmed order to show a friendly order number + status.
+  // Degrade gracefully: if the fetch fails we just keep showing the raw id.
+  useEffect(() => {
+    if (!id) return;
+    let active = true;
+    fetch(`/api/orders/${id}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (active && d) setDetails({ orderNumber: d.orderNumber, status: d.status });
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   // Clear the cart once an order is confirmed. The Razorpay flow clears in its
   // success handler; the Stripe redirect does not, so this covers that path too.
@@ -34,7 +51,14 @@ function OrderSuccessInner() {
         <p className="mt-4 max-w-xl mx-auto text-cocoa/70">
           Thank you for ordering from The Taste Makerrs. Our kitchen has started baking. We'll send you delivery updates on WhatsApp & email.
         </p>
-        {id && <p className="mt-3 inline-block rounded-pill bg-white px-4 py-2 text-sm font-mono">Order ID: <b>{id}</b></p>}
+        {id && (
+          <p className="mt-3 inline-block rounded-pill bg-white px-4 py-2 text-sm font-mono">
+            Order {details?.orderNumber ? "No" : "ID"}: <b>{details?.orderNumber || id}</b>
+            {details?.status && (
+              <span className="ml-2 capitalize text-cocoa/60">· {details.status.replaceAll("_", " ")}</span>
+            )}
+          </p>
+        )}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link href="/menu" className="btn-primary">Order more</Link>
           <Link href="/" className="btn-ghost">Back to home</Link>

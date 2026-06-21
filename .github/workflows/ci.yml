@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, backend-hardening]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Dummy secret (>=32 chars) so the build never trips on missing config.
+      ADMIN_JWT_SECRET: ci-dummy-admin-jwt-secret-0123456789
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx tsc --noEmit
+
+      - run: npx next lint
+
+      - run: npm run build

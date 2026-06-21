@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { sendContactMessage } from "@/lib/email";
 
 const MAX_BYTES = 2_000_000;
 
@@ -10,6 +12,12 @@ const contactSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const { ok } = await rateLimit(`contact:${ip}`, 5, 60_000);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   // Size guard before parsing.
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > MAX_BYTES) {
@@ -25,7 +33,11 @@ export async function POST(req: Request) {
     const body = JSON.parse(raw);
     const parsed = contactSchema.parse(body);
 
-    // In production: send email via Resend / SendGrid, or push to Slack.
+    await sendContactMessage({
+      name: parsed.name,
+      email: parsed.email,
+      message: parsed.message,
+    });
     console.log("[contact] message received");
     return NextResponse.json({ ok: true });
   } catch {

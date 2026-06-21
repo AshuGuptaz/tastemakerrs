@@ -27,6 +27,23 @@ const nextConfig = {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
           },
+          {
+            // Report-Only (NOT enforcing) so we can observe violations before
+            // turning on a strict CSP. Allowlists exactly what the app loads.
+            key: "Content-Security-Policy-Report-Only",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.razorpay.com https://*.spline.design",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://cdn.pixabay.com https://*.spline.design",
+              "connect-src 'self' https://api.stripe.com https://*.razorpay.com https://prod.spline.design https://*.spline.design https://api.cloudinary.com",
+              "frame-src https://js.stripe.com https://*.razorpay.com https://checkout.razorpay.com",
+              "font-src 'self' data:",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join("; "),
+          },
         ],
       },
     ];

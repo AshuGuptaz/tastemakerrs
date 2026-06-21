@@ -30,7 +30,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   }
   try {
     await connectDB();
-    const order = await Order.findById(params.id, "status paymentStatus total createdAt").lean();
+    const order = await Order.findById(params.id, "status paymentStatus total createdAt orderNumber").lean();
     if (!order) return NextResponse.json({ error: "not found" }, { status: 404 });
     return NextResponse.json(order);
   } catch (e) {
