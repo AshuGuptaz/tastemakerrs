@@ -115,7 +115,7 @@ html { scrollbar-gutter: stable; }
   }
 
   /* ─────────────────────────  Legacy (un-migrated pages)  ───────────────────────── */
-  .display { @apply font-display uppercase leading-[0.98] tracking-tight; }
+  .display { @apply font-display font-semibold uppercase leading-[0.98] tracking-tight; }
   .editorial { @apply font-serif italic; }
   .script { @apply font-script; }
   .btn-primary {
