@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { Instagram, Facebook, Send, Mail, MapPin, Phone } from "lucide-react";
 
-const ring = "rounded-md transition-colors hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15";
+const linkCls =
+  "text-sm text-ink-soft transition-colors hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 rounded-md";
+const headingCls = "text-xs font-semibold uppercase tracking-[0.16em] text-ink-mut";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line bg-surface">
-      <div className="container-x py-16">
-        <div className="grid gap-10 md:grid-cols-4">
+    <footer className="container-x pb-10">
+      <div className="rounded-[2rem] bg-sky-100 p-8 md:p-12">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="group inline-flex items-center gap-2">
               <span className="grid h-8 w-8 place-items-center rounded-xl bg-ink text-sm font-bold text-white">tm</span>
@@ -15,8 +17,8 @@ export default function Footer() {
                 Taste <span className="text-flame">Makerrs</span>
               </span>
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-mut">
-              Small-batch bakery handcrafting cakes, cupcakes, muffins and hampers with premium ingredients. Eggless &amp; Jain-friendly options always available.
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-soft">
+              Small-batch bakery. Baked fresh, delivered with love.
             </p>
             <div className="mt-5 flex gap-2">
               {[
@@ -30,7 +32,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="rounded-pill border border-line bg-canvas p-2.5 text-ink-soft transition-all hover:-translate-y-0.5 hover:border-flame/30 hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
+                  className="rounded-pill border border-line p-2.5 text-ink-soft transition-colors hover:border-flame hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -39,34 +41,43 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-mut">Shop</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-ink-soft">
-              <li><Link href="/menu?cat=cakes" className={ring}>Cakes</Link></li>
-              <li><Link href="/menu?cat=cupcakes" className={ring}>Cupcakes</Link></li>
-              <li><Link href="/menu?cat=muffins" className={ring}>Muffins</Link></li>
-              <li><Link href="/menu?cat=cookies" className={ring}>Cookies</Link></li>
-              <li><Link href="/menu?cat=hampers" className={ring}>Hampers</Link></li>
-              <li><Link href="/custom-cake" className={ring}>Customize</Link></li>
+            <h4 className={headingCls}>Shop</h4>
+            <ul className="mt-4 space-y-2.5">
+              <li><Link href="/menu?cat=cakes" className={linkCls}>Cakes</Link></li>
+              <li><Link href="/menu?cat=cupcakes" className={linkCls}>Cupcakes</Link></li>
+              <li><Link href="/menu?cat=muffins" className={linkCls}>Muffins</Link></li>
+              <li><Link href="/menu?cat=cookies" className={linkCls}>Cookies</Link></li>
+              <li><Link href="/menu?cat=hampers" className={linkCls}>Hampers</Link></li>
+              <li><Link href="/custom-cake" className={linkCls}>Customize</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-mut">Company</h4>
-            <ul className="mt-4 space-y-2.5 text-sm text-ink-soft">
-              <li><Link href="/about" className={ring}>About</Link></li>
-              <li><Link href="/kitchen" className={ring}>Our Kitchen</Link></li>
-              <li><Link href="/offers" className={ring}>Offers</Link></li>
-              <li><Link href="/contact" className={ring}>Contact</Link></li>
-              <li><Link href="/privacy-policy" className={ring}>Privacy Policy</Link></li>
+            <h4 className={headingCls}>Company</h4>
+            <ul className="mt-4 space-y-2.5">
+              <li><Link href="/about" className={linkCls}>About</Link></li>
+              <li><Link href="/kitchen" className={linkCls}>Our Kitchen</Link></li>
+              <li><Link href="/offers" className={linkCls}>Offers</Link></li>
+              <li><Link href="/contact" className={linkCls}>Contact</Link></li>
+              <li><Link href="/privacy-policy" className={linkCls}>Privacy Policy</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-mut">Reach Us</h4>
+            <h4 className={headingCls}>Reach Us</h4>
             <ul className="mt-4 space-y-3 text-sm text-ink-soft">
-              <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-flame" /> Shop 14, Linking Road, Bandra West, Mumbai 400050</li>
-              <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-flame" /> <a href="tel:+919876543210" className={ring}>+91 98765 43210</a></li>
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-flame" /> <a href="mailto:hello@thetastemakerrs.com" className={ring}>hello@thetastemakerrs.com</a></li>
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-flame" />
+                Shop 14, Linking Road, Bandra West, Mumbai 400050
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-flame" />
+                <a href="tel:+919876543210" className={linkCls}>+91 98765 43210</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-flame" />
+                <a href="mailto:hello@thetastemakerrs.com" className={linkCls}>hello@thetastemakerrs.com</a>
+              </li>
             </ul>
           </div>
         </div>

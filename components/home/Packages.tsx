@@ -69,12 +69,15 @@ export default function Packages() {
           {PACKAGES.map((p, i) => (
             <Reveal key={p.name} delay={i * 0.08}>
               <div
-                className={`relative flex h-full flex-col rounded-[1.5rem] bg-surface p-8 transition-all duration-300 ${
+                className={`relative flex h-full flex-col bg-surface transition-all duration-300 ${
                   p.popular
-                    ? "border-2 border-flame shadow-glow md:-mt-4"
-                    : "border border-line shadow-e1 hover:-translate-y-1 hover:shadow-e3"
+                    ? "rounded-[2.5rem] border-[3px] border-flame px-8 py-12 shadow-e3 md:-mt-6 md:-mb-6 md:scale-[1.02]"
+                    : "rounded-[1.5rem] border border-line p-8 shadow-e1 hover:-translate-y-1 hover:shadow-e3"
                 }`}
               >
+                {p.popular && (
+                  <span className="absolute left-1/2 top-5 h-1.5 w-12 -translate-x-1/2 rounded-full bg-ink/15" />
+                )}
                 {p.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-pill bg-flame px-4 py-1 text-xs font-semibold text-white shadow-glow">
                     Most popular

@@ -10,8 +10,7 @@ import {
   useMotionValue,
   useMotionTemplate,
 } from "framer-motion";
-import { ArrowRight, Star, Sparkles, Signal, Wifi, BatteryFull, ChevronDown, Check } from "lucide-react";
-import LetterFx from "@/components/ui/LetterFx";
+import { ArrowRight, Star, Signal, Wifi, BatteryFull, ChevronDown, Check } from "lucide-react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -103,9 +102,12 @@ export default function Hero() {
 
       <div className="container-tight relative z-10 pt-24 text-center md:pt-32">
         <motion.div {...fade(0)} className="flex justify-center">
-          <span className="chip">
-            <Sparkles className="h-3.5 w-3.5 text-flame" />
-            <LetterFx text="Small-batch · Eggless & Jain-friendly" />
+          <span className="chip gap-2.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flame opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-flame" />
+            </span>
+            Small-batch · Eggless &amp; Jain-friendly
           </span>
         </motion.div>
 

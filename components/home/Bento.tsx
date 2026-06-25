@@ -1,79 +1,138 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Leaf, Truck, Camera, ShieldCheck, ArrowRight } from "lucide-react";
+import { MapPin, Star, Sparkles, CheckCircle2, Truck } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
-/** Apple-style bento grid of value props. Subtle hover lift + accent glow. */
+/** "Features so good you'll love us" — 2×2 bento of mini-UI illustrations. */
 export default function Bento() {
   return (
     <section className="section">
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">Why The Taste Makerrs</span>
-          <h2 className="t-h2 mt-4">Everything a celebration deserves.</h2>
+          <h2 className="t-h2 mt-4">
+            Everything a celebration <span className="text-gradient">deserves</span>.
+          </h2>
           <p className="t-lead mx-auto mt-4 max-w-xl">
-            Premium ingredients, dietary care, and same-day delivery — engineered into every order.
+            Same-day delivery, every flavour and diet, top-rated by thousands — engineered into every order.
           </p>
         </Reveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-6 md:grid-rows-2">
-          {/* Feature — large, with image */}
-          <Reveal delay={0.02} className="md:col-span-4 md:row-span-2">
-            <article className="surface surface-hover gradient-ring group relative h-full overflow-hidden bg-gradient-to-br from-peach-100/50 to-transparent p-8">
-              <div className="relative z-10 max-w-sm">
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-flame/10 text-flame">
-                  <Camera className="h-5 w-5" />
+        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2">
+          {/* 1 — Same-day across the city */}
+          <Reveal delay={0.02}>
+            <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
+              <div className="bg-dots relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50">
+                {/* route hairline */}
+                <svg aria-hidden className="absolute inset-0 h-full w-full" viewBox="0 0 320 176" fill="none" preserveAspectRatio="none">
+                  <path d="M40 132 C 100 120, 120 60, 196 56 S 280 72, 286 44" stroke="#F97316" strokeWidth="2" strokeDasharray="5 6" strokeLinecap="round" opacity="0.6" />
+                </svg>
+                {/* pins */}
+                <span className="absolute left-[12%] top-[68%] h-3 w-3 rounded-full bg-flame shadow-e1 ring-4 ring-flame/15" />
+                <span className="absolute left-[58%] top-[28%] h-3 w-3 rounded-full bg-flame shadow-e1 ring-4 ring-flame/15" />
+                <span className="absolute left-[34%] top-[46%] h-2.5 w-2.5 rounded-full bg-ink/80" />
+                <span className="absolute left-[78%] top-[60%] h-2.5 w-2.5 rounded-full bg-ink/80" />
+                <span className="absolute left-[86%] top-[20%] h-2.5 w-2.5 rounded-full bg-ink/80" />
+                {/* name tags */}
+                <span className="absolute left-[20%] top-[18%] inline-flex items-center gap-1 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-semibold text-ink shadow-e1">
+                  <MapPin className="h-3 w-3 text-flame" /> Bandra
                 </span>
-                <h3 className="t-h3 mt-5">Custom photo &amp; bento cakes</h3>
-                <p className="mt-2 text-ink-mut">
-                  Your photo, your message, your colours — printed edible and finished by hand. Design it in minutes.
-                </p>
-                <Link href="/custom-cake" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-flame transition-all hover:gap-2.5">
-                  Start designing <ArrowRight className="h-4 w-4" />
-                </Link>
+                <span className="absolute bottom-3 right-3 inline-flex items-center rounded-full bg-ink px-2.5 py-1 text-[11px] font-semibold text-white shadow-e1">
+                  Today 5pm
+                </span>
               </div>
-              <div className="pointer-events-none absolute -bottom-10 -right-8 h-56 w-56 overflow-hidden rounded-[2rem] opacity-90 shadow-e3 transition-transform duration-500 ease-out group-hover:-translate-y-1 group-hover:rotate-[-2deg] md:h-64 md:w-64">
-                <Image src="/images/cakes/pinata.jpg" alt="" fill sizes="256px" className="object-cover" />
-              </div>
-              <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(242,106,141,0.18),transparent_70%)] blur-xl" />
+              <h3 className="t-h3 mt-5">Same-day across the city</h3>
+              <p className="mt-2 text-sm text-ink-mut">
+                Sealed, temperature-controlled, and at your door the same day — anywhere in the city.
+              </p>
             </article>
           </Reveal>
 
-          <Reveal delay={0.06} className="md:col-span-2">
-            <article className="surface surface-hover gradient-ring flex h-full flex-col bg-gradient-to-br from-peach-100/45 to-transparent p-7">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-flame/10 text-flame">
-                <Leaf className="h-5 w-5" />
-              </span>
-              <h3 className="t-h3 mt-5">Eggless &amp; Jain-friendly</h3>
-              <p className="mt-2 text-sm text-ink-mut">100% pure veg. Eggless on any cake, Jain options always available.</p>
+          {/* 2 — Loved & top-rated */}
+          <Reveal delay={0.06}>
+            <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
+              <div className="relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50 p-5">
+                {/* bars */}
+                <div className="flex h-full items-end justify-between gap-2.5">
+                  {[36, 52, 44, 68, 84, 100].map((h, i) => (
+                    <div
+                      key={i}
+                      className={`w-full rounded-md transition-all duration-500 ${i === 5 ? "bg-flame" : "bg-ink/10"}`}
+                      style={{ height: `${h}%` }}
+                    />
+                  ))}
+                </div>
+                {/* floating rating tag */}
+                <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-ink shadow-e2">
+                  <Star className="h-3 w-3 fill-flame text-flame" /> 4.9
+                </span>
+              </div>
+              <h3 className="t-h3 mt-5">Loved &amp; top-rated</h3>
+              <p className="mt-2 text-sm text-ink-mut">
+                Thousands of celebrations, an average 4.9★ — and the same care on every single cake.
+              </p>
             </article>
           </Reveal>
 
-          <Reveal delay={0.1} className="md:col-span-2">
-            <article className="surface surface-hover gradient-ring flex h-full flex-col bg-gradient-to-br from-cream-200/45 to-transparent p-7">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-flame/10 text-flame">
-                <Truck className="h-5 w-5" />
-              </span>
-              <h3 className="t-h3 mt-5">Same-day delivery</h3>
-              <p className="mt-2 text-sm text-ink-mut">Sealed, temperature-controlled, and at your door the same morning.</p>
+          {/* 3 — Every flavour & diet */}
+          <Reveal delay={0.1}>
+            <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
+              <div className="relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50">
+                {/* concentric rings */}
+                <span className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/70" />
+                <span className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/70" />
+                <span className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/70" />
+                {/* center dot */}
+                <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-flame shadow-e1 ring-4 ring-flame/15" />
+                {/* flavour chips placed on the rings */}
+                <span className="absolute left-1/2 top-[6%] -translate-x-1/2 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-semibold text-ink shadow-e1">
+                  Vanilla
+                </span>
+                <span className="absolute right-[6%] top-1/2 -translate-y-1/2 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-semibold text-ink shadow-e1">
+                  Chocolate
+                </span>
+                <span className="absolute bottom-[6%] left-1/2 -translate-x-1/2 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-semibold text-ink shadow-e1">
+                  Rasmalai
+                </span>
+                <span className="absolute left-[5%] top-1/2 -translate-y-1/2 rounded-full bg-flame px-2.5 py-1 text-[11px] font-semibold text-white shadow-e1">
+                  Eggless
+                </span>
+              </div>
+              <h3 className="t-h3 mt-5">Every flavour &amp; diet</h3>
+              <p className="mt-2 text-sm text-ink-mut">
+                Classic to Rasmalai, eggless to Jain-friendly — there&apos;s a perfect cake for everyone.
+              </p>
+            </article>
+          </Reveal>
+
+          {/* 4 — Order in seconds */}
+          <Reveal delay={0.14}>
+            <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
+              <div className="relative flex h-44 flex-col justify-center gap-3 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50 p-5">
+                {/* incoming bubble */}
+                <div className="max-w-[78%] self-start rounded-2xl rounded-bl-md bg-ink px-3.5 py-2 text-[12px] font-medium text-white shadow-e1">
+                  <span className="inline-flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Order confirmed
+                  </span>
+                </div>
+                {/* outgoing bubble */}
+                <div className="max-w-[78%] self-end rounded-2xl rounded-br-md bg-flame px-3.5 py-2 text-[12px] font-medium text-white shadow-e1">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Truck className="h-3.5 w-3.5" /> Out for delivery
+                  </span>
+                </div>
+                {/* typing dots */}
+                <div className="mt-1 inline-flex items-center gap-1 self-start rounded-full border border-line bg-white px-3 py-1.5 shadow-e1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-ink/30" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-ink/30" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-ink/30" />
+                </div>
+              </div>
+              <h3 className="t-h3 mt-5">Order in seconds</h3>
+              <p className="mt-2 text-sm text-ink-mut">
+                Pick, pay, and track — a checkout so quick you&apos;ll be done before the kettle boils.
+              </p>
             </article>
           </Reveal>
         </div>
-
-        {/* trust strip */}
-        <Reveal delay={0.04} className="mt-4">
-          <div className="surface flex flex-col items-center justify-between gap-4 p-6 sm:flex-row">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-flame/10 text-flame">
-                <ShieldCheck className="h-5 w-5" />
-              </span>
-              <p className="text-sm text-ink-soft">
-                <span className="font-semibold text-ink">FSSAI-certified kitchen</span> · audited annually · no preservatives, ever.
-              </p>
-            </div>
-            <Link href="/kitchen" className="btn-line text-sm">Tour our kitchen</Link>
-          </div>
-        </Reveal>
       </div>
     </section>
   );
