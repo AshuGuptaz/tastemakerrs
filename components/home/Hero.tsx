@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
   motion,
-  AnimatePresence,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -18,34 +17,6 @@ import Spotlight from "@/components/ui/Spotlight";
 import LetterFx from "@/components/ui/LetterFx";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const WORDS = ["remembering", "celebrating", "sharing", "indulging in"];
-
-function RotatingWord() {
-  const reduce = useReducedMotion();
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    if (reduce) return;
-    const id = setInterval(() => setI((p) => (p + 1) % WORDS.length), 2600);
-    return () => clearInterval(id);
-  }, [reduce]);
-  return (
-    // Overlapping transition (no mode="wait") so a word is always on screen.
-    <span className="relative block h-[1.15em] overflow-hidden">
-      <AnimatePresence initial={false}>
-        <motion.span
-          key={WORDS[i]}
-          className="text-gradient absolute inset-x-0"
-          initial={reduce ? false : { y: "0.6em", opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={reduce ? undefined : { y: "-0.6em", opacity: 0 }}
-          transition={{ duration: 0.55, ease: EASE }}
-        >
-          {WORDS[i]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-}
 
 function GradientMesh() {
   // Bold Stripe-style warm gradient mesh over a subtle grid.
@@ -115,9 +86,8 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        <motion.h1 {...fade(0.08)} className="t-display mx-auto mt-6 max-w-4xl">
-          Cakes worth
-          <RotatingWord />
+        <motion.h1 {...fade(0.08)} className="t-display mx-auto mt-6 max-w-4xl text-balance">
+          Cakes worth <span className="text-gradient">remembering</span>.
         </motion.h1>
 
         <motion.p {...fade(0.16)} className="t-lead mx-auto mt-6 max-w-2xl">
