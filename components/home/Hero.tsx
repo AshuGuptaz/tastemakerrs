@@ -15,6 +15,7 @@ import {
 import { ArrowRight, Star, Sparkles, ChevronDown } from "lucide-react";
 import MagneticButton from "@/components/MagneticButton";
 import Spotlight from "@/components/ui/Spotlight";
+import LetterFx from "@/components/ui/LetterFx";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const WORDS = ["remembering", "celebrating", "sharing", "indulging in"];
@@ -51,7 +52,8 @@ function GradientMesh() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-[60rem] bg-[radial-gradient(60%_50%_at_50%_0%,rgba(244,156,187,0.40),transparent_70%)]" />
-      <div className="absolute inset-0 bg-grid mask-fade opacity-60" />
+      {/* Once UI-style dotted backdrop */}
+      <div className="absolute inset-0 bg-dots mask-fade opacity-70" />
       <div className="absolute left-1/2 top-[-14%] h-[44rem] w-[44rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle_at_center,rgba(242,106,141,0.45),transparent_60%)] blur-3xl" />
       <div className="absolute right-[2%] top-[8%] h-[30rem] w-[30rem] animate-float-slow rounded-full bg-[radial-gradient(circle_at_center,rgba(244,156,187,0.45),transparent_62%)] blur-3xl" />
       <div className="absolute left-[2%] top-[24%] h-[28rem] w-[28rem] animate-float rounded-full bg-[radial-gradient(circle_at_center,rgba(199,90,104,0.30),transparent_64%)] blur-3xl" />
@@ -109,7 +111,7 @@ export default function Hero() {
         <motion.div {...fade(0)} className="flex justify-center">
           <span className="chip">
             <Sparkles className="h-3.5 w-3.5 text-flame" />
-            Small-batch · Eggless &amp; Jain-friendly
+            <LetterFx text="Small-batch · Eggless & Jain-friendly" />
           </span>
         </motion.div>
 

@@ -10,3 +10,6 @@ out
 .vercel
 .turbo
 coverage
+
+# Local MCP server config (contains/relies on local API keys)
+.mcp.json
