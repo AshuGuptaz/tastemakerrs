@@ -8,8 +8,7 @@ import type { Category } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import Filters from "@/components/Filters";
-import Underlined from "@/components/Underlined";
-import HeaderDecor from "@/components/HeaderDecor";
+import PageHeader from "@/components/ui/PageHeader";
 
 function MenuContent() {
   const sp = useSearchParams();
@@ -31,22 +30,18 @@ function MenuContent() {
   return (
     <>
       {/* Header */}
-      <section className="relative overflow-hidden bg-peach-100 py-16 md:py-24">
-        <HeaderDecor tone="light" set="sweets" />
-        <div className="container-x relative z-10">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="display text-[clamp(2.5rem,8vw,6rem)]">
-            THE <Underlined>MENU</Underlined>.
-          </motion.h1>
-          <p className="mt-4 max-w-xl text-cocoa/70">
-            Filter by category, flavor or price. Eggless options for every cake — just ask.
-          </p>
-          {cat !== "all" && (
-            <p className="mt-2 inline-block rounded-pill bg-white px-3 py-1 text-sm font-semibold">
-              Showing: {CATEGORY_META[cat as Category].label} · {filtered.length} items
-            </p>
-          )}
+      <PageHeader
+        eyebrow="The menu"
+        title={<>Cakes &amp; treats for <span className="text-gradient">every craving</span>.</>}
+        subtitle="Filter by category, flavour or price. Eggless options for every cake — just ask."
+      />
+      {cat !== "all" && (
+        <div className="container-x -mt-6 mb-2">
+          <span className="inline-flex rounded-pill border border-line bg-surface px-3 py-1 text-sm font-semibold text-ink shadow-e1">
+            Showing: {CATEGORY_META[cat as Category].label} · {filtered.length} items
+          </span>
         </div>
-      </section>
+      )}
 
       <section className="section bg-cream-50">
         <div className="container-x grid gap-8 md:grid-cols-[280px_1fr]">

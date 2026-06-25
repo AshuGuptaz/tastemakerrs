@@ -3,14 +3,13 @@
 import { useState, useMemo, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { Sparkles, UploadCloud, X } from "lucide-react";
+import { UploadCloud, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
 import { useSearchParams } from "next/navigation";
 import { getBySlug } from "@/lib/products";
-import Underlined from "@/components/Underlined";
 import DatePicker from "@/components/DatePicker";
-import HeaderDecor from "@/components/HeaderDecor";
+import PageHeader from "@/components/ui/PageHeader";
 
 const FLAVORS = [
   { id: "vanilla", label: "Classic Vanilla", price: 0 },
@@ -128,18 +127,11 @@ function CustomCakeContent() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-peach-100 py-16 md:py-24">
-        <HeaderDecor tone="light" set="cakes" />
-        <div className="container-x relative z-10">
-          <p className="pill"><Sparkles className="h-3 w-3" /> Customize</p>
-          <h1 className="display mt-3 text-[clamp(2.5rem,7vw,5.5rem)]">
-            DESIGN YOUR <Underlined>DREAM</Underlined> CAKE
-          </h1>
-          <p className="mt-4 max-w-xl text-cocoa/70">
-            Pick a flavor, weight and shape. Add a message, upload a photo for an edible print, and choose your delivery date. We'll call to confirm details.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow="Customize"
+        title={<>Design your <span className="text-gradient">dream</span> cake.</>}
+        subtitle="Pick a flavour, weight and shape. Add a message, upload a photo for an edible print, and choose your delivery date — we'll call to confirm."
+      />
 
       <section className="section bg-cream-50">
         <div className="container-x grid gap-8 lg:grid-cols-[1fr_380px]">
