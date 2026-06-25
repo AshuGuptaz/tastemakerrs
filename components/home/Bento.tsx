@@ -19,7 +19,7 @@ export default function Bento() {
         <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-6 md:grid-rows-2">
           {/* Feature — large, with image */}
           <Reveal delay={0.02} className="md:col-span-4 md:row-span-2">
-            <article className="surface surface-hover group relative h-full overflow-hidden p-8">
+            <article className="surface surface-hover gradient-ring group relative h-full overflow-hidden bg-gradient-to-br from-peach-100/50 to-transparent p-8">
               <div className="relative z-10 max-w-sm">
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-flame/10 text-flame">
                   <Camera className="h-5 w-5" />
@@ -40,7 +40,7 @@ export default function Bento() {
           </Reveal>
 
           <Reveal delay={0.06} className="md:col-span-2">
-            <article className="surface surface-hover flex h-full flex-col p-7">
+            <article className="surface surface-hover gradient-ring flex h-full flex-col bg-gradient-to-br from-peach-100/45 to-transparent p-7">
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-flame/10 text-flame">
                 <Leaf className="h-5 w-5" />
               </span>
@@ -50,7 +50,7 @@ export default function Bento() {
           </Reveal>
 
           <Reveal delay={0.1} className="md:col-span-2">
-            <article className="surface surface-hover flex h-full flex-col p-7">
+            <article className="surface surface-hover gradient-ring flex h-full flex-col bg-gradient-to-br from-cream-200/45 to-transparent p-7">
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-flame/10 text-flame">
                 <Truck className="h-5 w-5" />
               </span>

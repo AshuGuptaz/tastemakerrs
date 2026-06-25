@@ -11,9 +11,10 @@ export default function CTA() {
           <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-24">
             {/* accent mesh */}
             <div aria-hidden className="pointer-events-none absolute inset-0">
-              <div className="absolute left-1/2 top-[-30%] h-[28rem] w-[28rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(242,106,141,0.45),transparent_60%)] blur-2xl" />
-              <div className="absolute bottom-[-40%] right-[8%] h-80 w-80 animate-float-slow rounded-full bg-[radial-gradient(circle,rgba(244,156,187,0.35),transparent_62%)] blur-2xl" />
-              <div className="absolute inset-0 bg-grid opacity-[0.06]" />
+              <div className="absolute left-1/2 top-[-35%] h-[30rem] w-[34rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(242,106,141,0.60),transparent_60%)] blur-2xl" />
+              <div className="absolute bottom-[-45%] right-[4%] h-80 w-80 animate-float-slow rounded-full bg-[radial-gradient(circle,rgba(244,156,187,0.45),transparent_62%)] blur-2xl" />
+              <div className="absolute bottom-[-30%] left-[6%] h-72 w-72 animate-float rounded-full bg-[radial-gradient(circle,rgba(199,90,104,0.40),transparent_64%)] blur-2xl" />
+              <div className="absolute inset-0 bg-grid opacity-[0.07]" />
             </div>
 
             <div className="relative z-10">

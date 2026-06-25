@@ -7,7 +7,7 @@ import Reveal from "@/components/ui/Reveal";
 export default function Showcase() {
   const items = getBestsellers(8);
   return (
-    <section className="section bg-surface/50">
+    <section className="section">
       <div className="container-x">
         <Reveal className="flex flex-wrap items-end justify-between gap-5">
           <div className="max-w-xl">

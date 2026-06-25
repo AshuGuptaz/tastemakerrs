@@ -14,6 +14,7 @@ import {
 } from "framer-motion";
 import { ArrowRight, Star, Sparkles, ChevronDown } from "lucide-react";
 import MagneticButton from "@/components/MagneticButton";
+import Spotlight from "@/components/ui/Spotlight";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const WORDS = ["remembering", "celebrating", "sharing", "indulging in"];
@@ -46,12 +47,15 @@ function RotatingWord() {
 }
 
 function GradientMesh() {
+  // Bold Stripe-style warm gradient mesh over a subtle grid.
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-grid mask-fade opacity-70" />
-      <div className="absolute left-1/2 top-[-12%] h-[42rem] w-[42rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle_at_center,rgba(242,106,141,0.28),transparent_60%)] blur-2xl" />
-      <div className="absolute right-[6%] top-[12%] h-[26rem] w-[26rem] animate-float-slow rounded-full bg-[radial-gradient(circle_at_center,rgba(244,156,187,0.30),transparent_62%)] blur-2xl" />
-      <div className="absolute left-[4%] top-[28%] h-[24rem] w-[24rem] animate-float rounded-full bg-[radial-gradient(circle_at_center,rgba(137,15,32,0.14),transparent_64%)] blur-2xl" />
+      <div className="absolute inset-x-0 top-0 h-[60rem] bg-[radial-gradient(60%_50%_at_50%_0%,rgba(244,156,187,0.40),transparent_70%)]" />
+      <div className="absolute inset-0 bg-grid mask-fade opacity-60" />
+      <div className="absolute left-1/2 top-[-14%] h-[44rem] w-[44rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle_at_center,rgba(242,106,141,0.45),transparent_60%)] blur-3xl" />
+      <div className="absolute right-[2%] top-[8%] h-[30rem] w-[30rem] animate-float-slow rounded-full bg-[radial-gradient(circle_at_center,rgba(244,156,187,0.45),transparent_62%)] blur-3xl" />
+      <div className="absolute left-[2%] top-[24%] h-[28rem] w-[28rem] animate-float rounded-full bg-[radial-gradient(circle_at_center,rgba(199,90,104,0.30),transparent_64%)] blur-3xl" />
+      <div className="absolute bottom-[6%] right-[20%] h-[26rem] w-[26rem] animate-aurora rounded-full bg-[radial-gradient(circle_at_center,rgba(137,15,32,0.16),transparent_66%)] blur-3xl" />
     </div>
   );
 }
@@ -98,6 +102,7 @@ export default function Hero() {
   return (
     <section ref={ref} onMouseMove={onMove} className="relative overflow-hidden">
       <GradientMesh />
+      <Spotlight className="-top-40 left-0 md:-top-20 md:left-10" fill="rgba(242,106,141,0.20)" />
       <motion.div aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: spotlight }} />
 
       <div className="container-tight relative z-10 pt-20 text-center md:pt-28">

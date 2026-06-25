@@ -19,7 +19,7 @@ const config: Config = {
     extend: {
       colors: {
         /* ── New neutral system ── */
-        canvas: "#FBFAF8",          // warm near-white page background
+        canvas: "#FBF5EE",          // warm ivory page background (not stark white)
         surface: "#FFFFFF",         // cards / raised surfaces
         line: "#ECE9E4",            // hairline borders
         ink: {
