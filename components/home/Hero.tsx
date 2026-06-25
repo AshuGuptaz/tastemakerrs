@@ -1,15 +1,51 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Star, Sparkles } from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  useMotionValue,
+  useMotionTemplate,
+} from "framer-motion";
+import { ArrowRight, Star, Sparkles, ChevronDown } from "lucide-react";
+import MagneticButton from "@/components/MagneticButton";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+const WORDS = ["remembering", "celebrating", "sharing", "indulging in"];
+
+function RotatingWord() {
+  const reduce = useReducedMotion();
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (reduce) return;
+    const id = setInterval(() => setI((p) => (p + 1) % WORDS.length), 2600);
+    return () => clearInterval(id);
+  }, [reduce]);
+  return (
+    // Overlapping transition (no mode="wait") so a word is always on screen.
+    <span className="relative block h-[1.15em] overflow-hidden">
+      <AnimatePresence initial={false}>
+        <motion.span
+          key={WORDS[i]}
+          className="text-gradient absolute inset-x-0"
+          initial={reduce ? false : { y: "0.6em", opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={reduce ? undefined : { y: "-0.6em", opacity: 0 }}
+          transition={{ duration: 0.55, ease: EASE }}
+        >
+          {WORDS[i]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
 
 function GradientMesh() {
-  // Stripe-style slow-drifting aurora, built only from brand-accent hues.
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-0 bg-grid mask-fade opacity-70" />
@@ -36,10 +72,22 @@ function StatChip({ className, label, value, delay }: { className: string; label
 
 export default function Hero() {
   const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const imgY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["0%", "12%"]);
   const imgScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1, 1.05]);
+
+  // Cursor-follow spotlight (fine pointers only).
+  const mx = useMotionValue(-1000);
+  const my = useMotionValue(-1000);
+  const spotlight = useMotionTemplate`radial-gradient(420px circle at ${mx}px ${my}px, rgba(242,106,141,0.10), transparent 72%)`;
+  function onMove(e: React.MouseEvent<HTMLElement>) {
+    if (reduce) return;
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    mx.set(e.clientX - r.left);
+    my.set(e.clientY - r.top);
+  }
 
   const fade = (delay: number) => ({
     initial: reduce ? false : { opacity: 0, y: 22 },
@@ -48,8 +96,9 @@ export default function Hero() {
   });
 
   return (
-    <section ref={ref} className="relative overflow-hidden">
+    <section ref={ref} onMouseMove={onMove} className="relative overflow-hidden">
       <GradientMesh />
+      <motion.div aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: spotlight }} />
 
       <div className="container-tight relative z-10 pt-20 text-center md:pt-28">
         <motion.div {...fade(0)} className="flex justify-center">
@@ -59,8 +108,9 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        <motion.h1 {...fade(0.08)} className="t-display mx-auto mt-6 max-w-4xl text-balance">
-          Cakes worth <span className="text-gradient">remembering</span>.
+        <motion.h1 {...fade(0.08)} className="t-display mx-auto mt-6 max-w-4xl">
+          Cakes worth
+          <RotatingWord />
         </motion.h1>
 
         <motion.p {...fade(0.16)} className="t-lead mx-auto mt-6 max-w-2xl">
@@ -69,13 +119,17 @@ export default function Hero() {
         </motion.p>
 
         <motion.div {...fade(0.24)} className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <Link href="/menu" className="btn-accent group text-[0.95rem]">
-            Order your cake
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-          <Link href="/custom-cake" className="btn-line text-[0.95rem]">
-            Design your own
-          </Link>
+          <MagneticButton>
+            <Link href="/menu" className="btn-accent group text-[0.95rem]">
+              Order your cake
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </MagneticButton>
+          <MagneticButton strength={0.18}>
+            <Link href="/custom-cake" className="btn-line text-[0.95rem]">
+              Design your own
+            </Link>
+          </MagneticButton>
         </motion.div>
 
         <motion.div {...fade(0.32)} className="mt-7 flex items-center justify-center gap-2.5 text-sm text-ink-mut">
@@ -98,7 +152,6 @@ export default function Hero() {
         className="container-x relative z-10 mt-14 md:mt-20"
       >
         <div className="relative mx-auto max-w-5xl">
-          {/* soft glow base */}
           <div aria-hidden className="absolute -inset-x-10 -bottom-10 top-10 -z-10 rounded-[3rem] bg-[radial-gradient(60%_60%_at_50%_40%,rgba(242,106,141,0.22),transparent_70%)] blur-2xl" />
           <motion.div
             style={{ y: imgY, scale: imgScale }}
@@ -119,6 +172,24 @@ export default function Hero() {
           <StatChip className="-right-3 top-1/3 md:right-6" value="Same-day" label="Delivery" delay={0.85} />
           <StatChip className="bottom-6 left-1/2 -translate-x-1/2 md:bottom-10" value="Baked fresh" label="Every morning" delay={1} />
         </div>
+      </motion.div>
+
+      {/* Scroll cue */}
+      <motion.div
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.8 }}
+        className="mt-12 flex justify-center"
+      >
+        <span className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-ink-mut">
+          Scroll to explore
+          <motion.span
+            animate={reduce ? undefined : { y: [0, 4, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronDown className="h-4 w-4" />
+          </motion.span>
+        </span>
       </motion.div>
     </section>
   );
