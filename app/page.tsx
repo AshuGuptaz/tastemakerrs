@@ -1,25 +1,19 @@
-import Hero from "@/components/Hero";
-import MarqueeStrip from "@/components/MarqueeStrip";
-import OccasionsStrip from "@/components/OccasionsStrip";
-import FeaturedProducts from "@/components/FeaturedProducts";
-import FlavorsSection from "@/components/FlavorsSection";
-import StickyStory from "@/components/StickyStory";
-import Testimonials from "@/components/Testimonials";
-import BentoBanner from "@/components/BentoBanner";
-import CTABanner from "@/components/CTABanner";
+import Hero from "@/components/home/Hero";
+import TrustBar from "@/components/home/TrustBar";
+import Bento from "@/components/home/Bento";
+import Showcase from "@/components/home/Showcase";
+import Testimonials from "@/components/home/Testimonials";
+import CTA from "@/components/home/CTA";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <MarqueeStrip />
-      <OccasionsStrip />
-      <FeaturedProducts />
-      <FlavorsSection />
-      <StickyStory />
+      <TrustBar />
+      <Bento />
+      <Showcase />
       <Testimonials />
-      <BentoBanner />
-      <CTABanner />
+      <CTA />
     </>
   );
 }

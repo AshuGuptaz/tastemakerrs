@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anton, Archivo } from "next/font/google";
+import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -11,17 +11,11 @@ import ScrollProgress from "@/components/ScrollProgress";
 import CartDrawer from "@/components/CartDrawer";
 import FlyToCart from "@/components/FlyToCart";
 
-const anton = Anton({
+// Inter — the premium geometric-grotesque sans used by Linear, Vercel & co.
+// One variable family drives the whole type system (display + body).
+const inter = Inter({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-anton",
-  display: "swap",
-});
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-archivo",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -48,8 +42,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${anton.variable} ${archivo.variable}`}>
-      <body className="min-h-screen bg-cream-50 font-sans text-cocoa">
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen bg-canvas font-sans text-ink antialiased">
         <CartProvider>
           <CartUIProvider>
             <SmoothScroll>
