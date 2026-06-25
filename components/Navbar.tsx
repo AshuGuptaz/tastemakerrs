@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Menu as MenuIcon, X, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
 
@@ -22,19 +22,44 @@ export default function Navbar() {
   const { count } = useCart();
   const { openDrawer } = useCartUI();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Shrink the floating pill once the page is scrolled.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 pt-3 md:pt-4">
       <div className="container-x">
-        {/* Floating pill */}
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-pill border border-line bg-surface/80 px-3 py-2 shadow-e2 backdrop-blur-xl">
+        {/* Floating pill — condenses on scroll */}
+        <div
+          className={`mx-auto flex items-center justify-between rounded-pill border border-line backdrop-blur-xl transition-all duration-300 ease-out ${
+            scrolled
+              ? "max-w-4xl gap-1.5 bg-surface/90 px-2.5 py-1.5 shadow-e3"
+              : "max-w-5xl gap-3 bg-surface/70 px-3.5 py-3 shadow-e2"
+          }`}
+        >
           {/* Brand */}
           <Link
             href="/"
             className="group flex items-center gap-2 rounded-pill pl-1.5 pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
           >
-            <span className="grid h-8 w-8 place-items-center rounded-xl bg-ink text-sm font-bold text-white">tm</span>
-            <span className="text-[1.05rem] font-semibold tracking-tighter2 text-ink">
+            <span
+              className={`grid place-items-center rounded-xl bg-ink font-bold text-white transition-all duration-300 ${
+                scrolled ? "h-7 w-7 text-xs" : "h-9 w-9 text-sm"
+              }`}
+            >
+              tm
+            </span>
+            <span
+              className={`whitespace-nowrap font-semibold tracking-tighter2 text-ink transition-all duration-300 ${
+                scrolled ? "text-[0.92rem]" : "text-[1.12rem]"
+              }`}
+            >
               Taste <span className="text-flame">Makerrs</span>
             </span>
           </Link>
@@ -86,7 +111,12 @@ export default function Navbar() {
               )}
             </button>
 
-            <Link href="/menu" className="hidden md:inline-flex btn-ink group px-4 py-2 text-sm">
+            <Link
+              href="/menu"
+              className={`hidden md:inline-flex btn-ink group whitespace-nowrap text-sm transition-all duration-300 ${
+                scrolled ? "px-3.5 py-1.5" : "px-4 py-2"
+              }`}
+            >
               Order now
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
             </Link>
