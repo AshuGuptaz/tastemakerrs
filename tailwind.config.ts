@@ -18,24 +18,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* ── New neutral system ── */
-        canvas: "#FBF5EE",          // warm ivory page background (not stark white)
+        /* ── White / black / orange system (shape.ai-style clone) ── */
+        canvas: "#FFFFFF",          // pure white page background
         surface: "#FFFFFF",         // cards / raised surfaces
-        line: "#ECE9E4",            // hairline borders
+        line: "#ECECEC",            // hairline borders
         ink: {
-          DEFAULT: "#121113",       // near-black headings/text
-          soft: "#37343A",          // secondary text
-          mut: "#76727B",           // muted/captions
+          DEFAULT: "#0B0B0C",       // near-black headings/text & dark buttons
+          soft: "#2A2A2E",          // secondary text
+          mut: "#6B6B73",           // muted/captions
         },
 
-        /* ── Retained brand accent + legacy tokens ── */
-        cream: { 50: "#FFFAF1", 100: "#FDF0D5", 200: "#FAE5BC", 300: "#F4D6A0", DEFAULT: "#FDF0D5" },
-        peach: { 100: "#FDE2EB", 200: "#F9C8D6", 300: "#F49CBB", DEFAULT: "#F49CBB" },
-        sky:   { 50: "#F4F0E5", 100: "#EAE2D0", 200: "#DDD0B5", DEFAULT: "#EAE2D0" },
-        cocoa: { 50: "#F5DDDF", DEFAULT: "#890F20", 900: "#5C0915" },
-        flame: { 400: "#F49CBB", 500: "#F26A8D", 600: "#C75A68", DEFAULT: "#F26A8D" },
-        rose:  { 500: "#C75A68", 600: "#890F20" },
-        wine:  { DEFAULT: "#890F20", dark: "#5C0915" },
+        /* ── Accent = orange (was flame/pink). Token names kept so components
+              inherit the new accent without per-file edits. ── */
+        cream: { 50: "#FFFBF5", 100: "#FFF4E6", 200: "#FFE7CC", 300: "#FFD9AD", DEFAULT: "#FFF4E6" },
+        peach: { 100: "#FFEDD5", 200: "#FED7AA", 300: "#FDBA74", DEFAULT: "#FDBA74" },
+        sky:   { 50: "#F6F6F6", 100: "#EFEFEF", 200: "#E4E4E4", DEFAULT: "#EFEFEF" },
+        cocoa: { 50: "#FFF1E6", DEFAULT: "#0B0B0C", 900: "#000000" },
+        flame: { 400: "#FB923C", 500: "#F97316", 600: "#EA580C", DEFAULT: "#F97316" },
+        rose:  { 500: "#EA580C", 600: "#C2410C" },
+        wine:  { DEFAULT: "#0B0B0C", dark: "#000000" },
       },
       fontFamily: {
         sans:    ["var(--font-inter)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],

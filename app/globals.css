@@ -10,18 +10,18 @@
 }
 
 html, body {
-  /* Warm ivory base with a faint top wash — never stark white. */
+  /* White base with a faint orange top wash (shape.ai-style). */
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(244,156,187,0.16), transparent 60%),
-    linear-gradient(180deg, #FDF6EE 0%, #FBF5EE 100%);
+    radial-gradient(1100px 600px at 50% -12%, rgba(249,115,22,0.12), transparent 62%),
+    #FFFFFF;
   background-attachment: fixed;
-  color: #121113;
+  color: #0B0B0C;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 /* Premium selection */
-::selection { background: #F26A8D; color: #fff; }
+::selection { background: #F97316; color: #fff; }
 
 @layer components {
   /* ─────────────────────────  Layout  ───────────────────────── */
@@ -42,7 +42,7 @@ html, body {
   .t-h3 { @apply text-xl font-semibold tracking-tight text-ink md:text-2xl; }
   .t-lead { @apply text-[1.075rem] leading-relaxed text-ink-mut md:text-lg; }
   .text-gradient {
-    @apply bg-gradient-to-r from-flame via-rose-500 to-wine bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-flame-400 via-flame to-flame-600 bg-clip-text text-transparent;
   }
 
   /* ─────────────────────────  Buttons (new system)  ───────────────────────── */
@@ -78,7 +78,7 @@ html, body {
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(140deg, rgba(242,106,141,0.65), rgba(244,156,187,0.25) 45%, transparent 70%);
+    background: linear-gradient(140deg, rgba(249,115,22,0.65), rgba(253,186,116,0.30) 45%, transparent 70%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude;
