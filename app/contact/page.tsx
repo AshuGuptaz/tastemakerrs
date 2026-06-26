@@ -47,9 +47,9 @@ export default function ContactPage() {
 
             {/* TODO: replace with your real shop address, phone and email before launch */}
             <ul className="mt-8 space-y-4 text-sm text-ink-soft">
-              <li className="flex items-start gap-3"><MapPin className="mt-0.5 h-5 w-5 text-flame" /> Shop 14, Linking Road, Bandra West, Mumbai 400050</li>
-              <li className="flex items-center gap-3"><Phone className="h-5 w-5 text-flame" /> <a href="tel:+919876543210" className="hover:text-flame">+91 98765 43210</a> (WhatsApp preferred)</li>
-              <li className="flex items-center gap-3"><Mail className="h-5 w-5 text-flame" /> <a href="mailto:hello@thetastemakerrs.com" className="hover:text-flame">hello@thetastemakerrs.com</a></li>
+              <li className="flex items-start gap-3"><MapPin className="mt-0.5 h-5 w-5 text-flame" /> 20B Water Works Road, Aishbagh, Lucknow, Uttar Pradesh</li>
+              <li className="flex items-center gap-3"><Phone className="h-5 w-5 text-flame" /> <a href="tel:+918881661177" className="hover:text-flame">+91 88816 61177</a> (WhatsApp preferred)</li>
+              <li className="flex items-center gap-3"><Mail className="h-5 w-5 text-flame" /> <a href="mailto:tastemakerrs@gmail.com" className="hover:text-flame">tastemakerrs@gmail.com</a></li>
             </ul>
           </div>
 

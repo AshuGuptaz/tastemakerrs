@@ -33,7 +33,7 @@ export default function Bento() {
                 <span className="absolute left-[86%] top-[20%] h-2.5 w-2.5 rounded-full bg-ink/80" />
                 {/* name tags */}
                 <span className="absolute left-[20%] top-[18%] inline-flex items-center gap-1 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-semibold text-ink shadow-e1">
-                  <MapPin className="h-3 w-3 text-flame" /> Bandra
+                  <MapPin className="h-3 w-3 text-flame" /> Lucknow
                 </span>
                 <span className="absolute bottom-3 right-3 inline-flex items-center rounded-full bg-ink px-2.5 py-1 text-[11px] font-semibold text-white shadow-e1">
                   Today 5pm

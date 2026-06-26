@@ -34,13 +34,13 @@ export default function PrivacyPage() {
         <p>We share data only with delivery partners, payment processors and analytics providers — strictly to fulfill your order. We do not sell your data.</p>
 
         <h2 className="mt-6 font-display text-2xl uppercase">5. Your rights</h2>
-        <p>You can ask for a copy, correction or deletion of your data anytime by writing to <a href="mailto:hello@thetastemakerrs.com" className="text-flame underline">hello@thetastemakerrs.com</a>.</p>
+        <p>You can ask for a copy, correction or deletion of your data anytime by writing to <a href="mailto:tastemakerrs@gmail.com" className="text-flame underline">tastemakerrs@gmail.com</a>.</p>
 
         <h2 className="mt-6 font-display text-2xl uppercase">6. Cookies</h2>
         <p>We use a small set of essential and analytics cookies. You can disable cookies in your browser without affecting checkout.</p>
 
         <h2 className="mt-6 font-display text-2xl uppercase">7. Contact</h2>
-        <p>Questions? <a href="mailto:hello@thetastemakerrs.com" className="text-flame underline">hello@thetastemakerrs.com</a> · +91 90000 00000.</p>
+        <p>Questions? <a href="mailto:tastemakerrs@gmail.com" className="text-flame underline">tastemakerrs@gmail.com</a> · +91 88816 61177.</p>
       </article>
     </section>
   );

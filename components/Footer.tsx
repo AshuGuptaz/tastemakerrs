@@ -24,7 +24,7 @@ export default function Footer() {
               {[
                 { href: "https://instagram.com/thetastemakerrs", label: "Instagram", Icon: Instagram },
                 { href: "https://facebook.com/thetastemakerrs", label: "Facebook", Icon: Facebook },
-                { href: "https://wa.me/919876543210", label: "WhatsApp", Icon: Send },
+                { href: "https://wa.me/918881661177", label: "WhatsApp", Icon: Send },
               ].map(({ href, label, Icon }) => (
                 <a
                   key={label}
@@ -68,15 +68,15 @@ export default function Footer() {
             <ul className="mt-4 space-y-3 text-sm text-ink-soft">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-flame" />
-                Shop 14, Linking Road, Bandra West, Mumbai 400050
+                20B Water Works Road, Aishbagh, Lucknow, Uttar Pradesh
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-flame" />
-                <a href="tel:+919876543210" className={linkCls}>+91 98765 43210</a>
+                <a href="tel:+918881661177" className={linkCls}>+91 88816 61177</a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-flame" />
-                <a href="mailto:hello@thetastemakerrs.com" className={linkCls}>hello@thetastemakerrs.com</a>
+                <a href="mailto:tastemakerrs@gmail.com" className={linkCls}>tastemakerrs@gmail.com</a>
               </li>
             </ul>
           </div>
