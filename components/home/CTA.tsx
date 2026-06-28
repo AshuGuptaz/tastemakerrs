@@ -18,8 +18,12 @@ export default function CTA() {
             </div>
 
             <div className="relative z-10">
-              <span className="gradient-ring inline-flex items-center gap-2.5 rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm">
-                <span className="h-[5px] w-[5px] rounded-full bg-flame-400 shadow-[0_0_6px_2px_rgba(249,115,22,0.7)]" />
+              <span className="gradient-ring relative inline-flex items-center gap-2.5 overflow-hidden rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm">
+                <span aria-hidden className="animate-shine pointer-events-none absolute inset-0" style={{ background: "linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.11) 50%, transparent 75%)", backgroundSize: "200% 100%" }} />
+                <span className="relative flex h-[5px] w-[5px] shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flame-400 opacity-60" />
+                  <span className="relative h-[5px] w-[5px] rounded-full bg-flame-400 shadow-[0_0_5px_2px_rgba(249,115,22,0.65)]" />
+                </span>
                 Let&apos;s make plans
               </span>
               <h2 className="font-display mx-auto mt-6 max-w-3xl text-[clamp(2.1rem,4.5vw,3.6rem)] font-semibold leading-[1.05] tracking-tighter2 text-white text-balance">
