@@ -18,7 +18,10 @@ export default function CTA() {
             </div>
 
             <div className="relative z-10">
-              <span className="chip border-white/15 bg-white/10 text-white/90">Let&apos;s make plans</span>
+              <span className="gradient-ring inline-flex items-center gap-2.5 rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm">
+                <span className="h-[5px] w-[5px] rounded-full bg-flame-400 shadow-[0_0_6px_2px_rgba(249,115,22,0.7)]" />
+                Let&apos;s make plans
+              </span>
               <h2 className="font-display mx-auto mt-6 max-w-3xl text-[clamp(2.1rem,4.5vw,3.6rem)] font-semibold leading-[1.05] tracking-tighter2 text-white text-balance">
                 Your next celebration deserves a cake worth remembering.
               </h2>
