@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
+import { sendOrderConfirmation } from "@/lib/order-confirmation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
           status: "paid",
           paymentIntentId: s.payment_intent as string,
         });
+        await sendOrderConfirmation(orderId);
       }
       break;
     }

@@ -43,6 +43,7 @@ export interface IOrder {
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   status: OrderStatus;
+  confirmationSentAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,6 +67,7 @@ const OrderSchema = new Schema(
       enum: ["pending", "paid", "in_kitchen", "out_for_delivery", "delivered", "cancelled", "refunded"],
       default: "pending",
     },
+    confirmationSentAt: Date,
   },
   { timestamps: true }
 );

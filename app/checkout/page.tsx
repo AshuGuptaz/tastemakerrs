@@ -7,6 +7,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { CreditCard, Globe, MapPin } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import OtpDialog from "@/components/checkout/OtpDialog";
 
 type Address = {
   name: string;
@@ -52,6 +53,7 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [method, setMethod] = useState<"razorpay" | "stripe">("razorpay");
   const [loading, setLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
   const [errorField, setErrorField] = useState<keyof Address | null>(null);
   const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
   const streetRef = useRef<HTMLInputElement>(null);
@@ -197,8 +199,14 @@ export default function CheckoutPage() {
     return true;
   };
 
-  const placeOrder = async () => {
+  // Step 1: validate, then require OTP verification before payment.
+  const placeOrder = () => {
     if (!validate()) return;
+    setShowOtp(true);
+  };
+
+  // Step 2 (after verification or when OTP is disabled): create order + pay.
+  const createOrderAndPay = async () => {
     setLoading(true);
     try {
       const orderRes = await fetch("/api/orders", {
@@ -377,6 +385,17 @@ export default function CheckoutPage() {
           </aside>
         </div>
       </div>
+
+      {showOtp && (
+        <OtpDialog
+          email={addr.email}
+          phone={addr.phone}
+          name={addr.name}
+          onVerified={() => { setShowOtp(false); createOrderAndPay(); }}
+          onSkip={() => { setShowOtp(false); createOrderAndPay(); }}
+          onClose={() => setShowOtp(false)}
+        />
+      )}
     </section>
   );
 }

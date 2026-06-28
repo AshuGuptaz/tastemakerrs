@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { z } from "zod";
 import { getAdminFromCookies } from "@/lib/auth-server";
+import { otpEnabled } from "@/lib/notify";
+import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+
+export const runtime = "nodejs";
 
 const ItemSchema = z.object({
   productId: z.string().optional(),
@@ -41,6 +46,16 @@ const Body = z.object({
 export async function POST(req: Request) {
   try {
     const body = Body.parse(await req.json());
+
+    // Require a verified-contact token (from the checkout OTP step) whose
+    // email + phone match this order. Only enforced when OTP delivery is configured.
+    if (otpEnabled()) {
+      const token = await verifyCheckout(cookies().get(CHECKOUT_COOKIE)?.value);
+      if (!contactMatches(token, body.address)) {
+        return NextResponse.json({ error: "Please verify your contact with the OTP before ordering." }, { status: 401 });
+      }
+    }
+
     await connectDB();
     const order = await Order.create({ ...body, status: "pending", paymentStatus: "unpaid" });
     return NextResponse.json({ id: order._id.toString(), ok: true });

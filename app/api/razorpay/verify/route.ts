@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
+import { sendOrderConfirmation } from "@/lib/order-confirmation";
 
 /**
  * POST /api/razorpay/verify
@@ -29,6 +30,9 @@ export async function POST(req: Request) {
       status: "paid",
       razorpayPaymentId: razorpay_payment_id,
     });
+
+    // fire the cute confirmation email + SMS (idempotent, best-effort)
+    await sendOrderConfirmation(orderId);
 
     return NextResponse.json({ ok: true });
   } catch (e: any) {
