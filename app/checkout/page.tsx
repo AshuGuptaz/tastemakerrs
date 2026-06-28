@@ -255,6 +255,10 @@ export default function CheckoutPage() {
         };
         // @ts-ignore
         const r = new window.Razorpay(options);
+        r.on("payment.failed", (resp: any) => {
+          toast.error(resp?.error?.description || "Payment failed. Please try again.");
+          setLoading(false);
+        });
         r.open();
         return;
       } else {

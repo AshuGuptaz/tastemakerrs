@@ -12,6 +12,9 @@ import { sendOrderConfirmation } from "@/lib/order-confirmation";
 export async function POST(req: Request) {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = await req.json();
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !orderId) {
+      return NextResponse.json({ ok: false, error: "Missing payment fields" }, { status: 400 });
+    }
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret) return NextResponse.json({ ok: false, error: "RZP secret missing" }, { status: 500 });
 

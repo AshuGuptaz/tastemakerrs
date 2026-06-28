@@ -14,9 +14,13 @@ export async function POST(req: Request) {
     if (!amount || !orderId) {
       return NextResponse.json({ error: "amount & orderId required" }, { status: 400 });
     }
+    const paise = Math.round(amount * 100);
+    if (!Number.isFinite(paise) || paise < 100) {
+      return NextResponse.json({ error: "Minimum order amount is ₹1 (100 paise)" }, { status: 400 });
+    }
     const rp = getRazorpay();
     const rpOrder = await rp.orders.create({
-      amount: Math.round(amount * 100), // paisa
+      amount: paise,
       currency: "INR",
       receipt: orderId,
       notes: { internalOrderId: orderId },
@@ -31,6 +35,8 @@ export async function POST(req: Request) {
       currency: rpOrder.currency,
     });
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    // Map Razorpay auth failures to 401; everything else is a 500.
+    const status = e?.statusCode === 401 ? 401 : 500;
+    return NextResponse.json({ error: e?.error?.description || e?.message || "Razorpay order failed" }, { status });
   }
 }
