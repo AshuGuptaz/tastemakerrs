@@ -13,3 +13,8 @@ coverage
 
 # Local MCP server config (contains/relies on local API keys)
 .mcp.json
+
+# Agent tooling (installed skills, local agent config) — dev-only, not app code
+.agents/
+.claude/
+skills-lock.json

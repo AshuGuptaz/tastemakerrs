@@ -14,23 +14,22 @@ export default function KitchenPage() {
       <PageHeader
         eyebrow="Behind the scenes"
         title={<>From our <span className="text-gradient">kitchen</span> to your door.</>}
-        subtitle="Six steps. Done by hand. Every single day."
+        subtitle="Watch your cake come to life — mixed, baked, frosted and delivered, all by hand."
       />
 
-      <section className="section bg-cream-50">
+      <section className="section bg-cream-50 pb-12 md:pb-16">
         <div className="container-x">
           <div className="mx-auto max-w-2xl text-center">
             <span className="t-eyebrow">The process</span>
             <h2 className="t-h2 mt-3">The journey of your <span className="text-gradient">cake</span></h2>
             <p className="t-lead mx-auto mt-4 max-w-xl">
-              Scroll through the six careful steps every order takes — from raw ingredients to your doorstep.
+              Scroll to watch every order come together — from raw ingredients to your doorstep.
             </p>
-          </div>
-          <div className="mt-16">
-            <ProcessStory />
           </div>
         </div>
       </section>
+
+      <ProcessStory />
 
       <section className="section bg-peach-100">
         <div className="container-x grid gap-8 md:grid-cols-3">
