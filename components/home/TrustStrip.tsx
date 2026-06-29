@@ -13,7 +13,7 @@ export default function TrustStrip() {
     <section className="pb-4 pt-10">
       <div className="container-x">
         <Reveal className="text-center">
-          <p className="t-eyebrow justify-center">Trusted by 2,000+ celebrations across the city</p>
+          <p className="t-eyebrow justify-center">Trusted by 2,000+ celebrations across Lucknow</p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 md:gap-x-12">
             {ITEMS.map(({ Icon, label }) => (
               <span key={label} className="inline-flex items-center gap-2 text-sm font-medium text-ink-soft">

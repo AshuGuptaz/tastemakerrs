@@ -17,7 +17,7 @@ export default function Bento() {
         </Reveal>
 
         <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2">
-          {/* 1 — Same-day across the city */}
+          {/* 1 — Same-day across Lucknow */}
           <Reveal delay={0.02}>
             <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
               <div className="bg-dots relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50">
@@ -39,7 +39,7 @@ export default function Bento() {
                   Today 5pm
                 </span>
               </div>
-              <h3 className="t-h3 mt-5">Same-day across the city</h3>
+              <h3 className="t-h3 mt-5">Same-day across Lucknow</h3>
               <p className="mt-2 text-sm text-ink-mut">
                 Sealed, temperature-controlled, and at your door the same day — anywhere in the city.
               </p>
