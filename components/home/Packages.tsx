@@ -71,7 +71,7 @@ export default function Packages() {
               <div
                 className={`relative flex h-full flex-col bg-surface transition-all duration-300 ${
                   p.popular
-                    ? "rounded-[2.5rem] border-[3px] border-flame px-8 py-12 shadow-e3 md:-mt-6 md:-mb-6 md:scale-[1.02]"
+                    ? "rounded-[2rem] border-2 border-flame p-8 shadow-e3 ring-4 ring-flame/10 hover:-translate-y-1"
                     : "rounded-[1.5rem] border border-line p-8 shadow-e1 hover:-translate-y-1 hover:shadow-e3"
                 }`}
               >

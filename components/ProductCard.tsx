@@ -52,12 +52,13 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       ref={cardRef}
       initial={reduce ? false : { y: 24 }}
       whileInView={{ y: 0 }}
+      whileHover={reduce ? undefined : { y: -6 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.08 }}
       style={{ rotateX, rotateY, transformPerspective: "1000px" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="card group flex flex-col overflow-hidden will-change-transform"
+      className="group flex flex-col overflow-hidden rounded-[1.5rem] border border-line bg-surface shadow-e1 transition-shadow duration-300 ease-out hover:shadow-e3 will-change-transform"
     >
       <Link href={`/product/${product.slug}`} className={`relative grid aspect-[4/3] place-items-center ${product.bg} overflow-hidden`}>
         {product.image.startsWith("/") || product.image.startsWith("http") ? (

@@ -39,7 +39,7 @@ function CustomCakeContent() {
   const [flavor, setFlavor] = useState(FLAVORS[0].id);
   const [weight, setWeight] = useState(WEIGHTS[0].id);
   const [shape, setShape] = useState(SHAPES[0].id);
-  const [eggless, setEggless] = useState(true);
+  const [eggless, setEggless] = useState(false);
   const [jain, setJain] = useState(false);
   const [message, setMessage] = useState("");
   const [date, setDate] = useState("");
@@ -50,9 +50,10 @@ function CustomCakeContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reduce = useReducedMotion();
 
-  // Earliest selectable date from the local calendar day (TZ-safe, computed once)
+  // Earliest selectable date = today + 48h lead time (TZ-safe, computed once)
   const minDate = useMemo(() => {
     const d = new Date();
+    d.setDate(d.getDate() + 2);
     const pad = (n: number) => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   }, []);
@@ -134,7 +135,7 @@ function CustomCakeContent() {
       />
 
       <section className="section bg-transparent">
-        <div className="container-x grid gap-8 lg:grid-cols-[1fr_380px]">
+        <div className="container-x grid gap-8 pb-28 lg:grid-cols-[1fr_380px] lg:pb-0">
           <motion.div initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="space-y-8">
             {/* Flavor */}
             <div className="card p-6">
@@ -250,8 +251,11 @@ function CustomCakeContent() {
           {/* Summary */}
           <aside className="lg:sticky lg:top-24 self-start">
             <div className="card p-6">
-              <h3 className="font-display text-xl">Your cake</h3>
-              <div className="relative mt-4 aspect-square overflow-hidden rounded-2xl"><Image src="https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=900&q=80" alt="Custom cake preview" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" /></div>
+              <h3 className="t-h3">Your cake</h3>
+              <div className="relative mt-4 aspect-square overflow-hidden rounded-2xl">
+                <Image src="https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=900&q=80" alt="Illustrative custom cake preview" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+                <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-pill bg-ink/70 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-wide text-white backdrop-blur">Illustrative — hand-finished to your design</span>
+              </div>
               <ul className="mt-5 space-y-2 text-sm">
                 <li className="flex justify-between"><span className="text-ink-mut">Flavor</span><span className="font-semibold">{FLAVORS.find((f) => f.id === flavor)?.label}</span></li>
                 <li className="flex justify-between"><span className="text-ink-mut">Weight</span><span className="font-semibold">{WEIGHTS.find((w) => w.id === weight)?.label}</span></li>
@@ -259,13 +263,13 @@ function CustomCakeContent() {
                 <li className="flex justify-between"><span className="text-ink-mut">Eggless</span><span className="font-semibold">{eggless ? "Yes" : "No"}</span></li>
                 <li className="flex justify-between"><span className="text-ink-mut">Jain</span><span className="font-semibold">{jain ? "Yes" : "No"}</span></li>
                 {message && <li className="flex justify-between"><span className="text-ink-mut">Message</span><span className="font-semibold truncate max-w-[60%]">"{message}"</span></li>}
-                {date && <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span className="font-semibold">{date}</span></li>}
+                {date && <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span className="font-semibold">{new Date(date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span></li>}
               </ul>
               <div className="mt-5 flex items-baseline justify-between border-t border-line pt-4">
                 <span className="t-h3">Total</span>
-                <span className="font-display text-3xl text-flame">₹{price}</span>
+                <span className="font-display text-3xl text-flame-700">₹{price}</span>
               </div>
-              <button onClick={() => submit(true)} disabled={submitting} className="btn-accent mt-5 w-full justify-center">
+              <button onClick={() => submit(true)} disabled={submitting} className="btn-accent mt-5 hidden w-full justify-center lg:flex">
                 {submitting ? "Submitting..." : "Add to Cart"}
               </button>
               <button onClick={() => submit(false)} disabled={submitting} className="btn-line mt-2 w-full justify-center">
@@ -276,6 +280,19 @@ function CustomCakeContent() {
           </aside>
         </div>
       </section>
+
+      {/* mobile sticky add bar */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 px-4 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] pt-3 backdrop-blur lg:hidden">
+        <div className="container-x flex items-center justify-between gap-4">
+          <div className="leading-tight">
+            <div className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-mut">Total</div>
+            <div className="font-display text-xl font-semibold text-flame-700">₹{price}</div>
+          </div>
+          <button onClick={() => submit(true)} disabled={submitting} className="btn-accent flex-1 justify-center" style={{ maxWidth: "62%" }}>
+            {submitting ? "Submitting…" : "Add to Cart"}
+          </button>
+        </div>
+      </div>
     </>
   );
 }

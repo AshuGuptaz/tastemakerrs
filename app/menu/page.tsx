@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { PRODUCTS, CATEGORY_META } from "@/lib/products";
 import type { Category } from "@/types/product";
@@ -12,10 +13,19 @@ import PageHeader from "@/components/ui/PageHeader";
 
 function MenuContent() {
   const sp = useSearchParams();
+  const router = useRouter();
   const cat = (sp.get("cat") || "all") as Category | "all";
   const flavor = sp.get("flavor") || "";
   const bestseller = sp.get("bs") === "1";
   const max = Number(sp.get("max") || 2500);
+  const sort = sp.get("sort") || "featured";
+
+  const update = (key: string, val: string | null) => {
+    const next = new URLSearchParams(sp.toString());
+    if (!val || val === "featured") next.delete(key);
+    else next.set(key, val);
+    router.replace(`/menu?${next.toString()}`, { scroll: false });
+  };
 
   const filtered = useMemo(() => {
     return PRODUCTS.filter((p) => {
@@ -27,6 +37,14 @@ function MenuContent() {
     });
   }, [cat, flavor, bestseller, max]);
 
+  const sorted = useMemo(() => {
+    const list = [...filtered];
+    if (sort === "price-asc") list.sort((a, b) => a.price - b.price);
+    else if (sort === "price-desc") list.sort((a, b) => b.price - a.price);
+    else if (sort === "name") list.sort((a, b) => a.name.localeCompare(b.name));
+    return list;
+  }, [filtered, sort]);
+
   return (
     <>
       {/* Header */}
@@ -35,27 +53,38 @@ function MenuContent() {
         title={<>Cakes &amp; treats for <span className="text-gradient">every craving</span>.</>}
         subtitle="Filter by category, flavour or price. Eggless options for every cake — just ask."
       />
-      {cat !== "all" && (
-        <div className="container-x -mt-6 mb-2">
-          <span className="inline-flex rounded-pill border border-line bg-surface px-3 py-1 text-sm font-semibold text-ink shadow-e1">
-            Showing: {CATEGORY_META[cat as Category].label} · {filtered.length} items
-          </span>
-        </div>
-      )}
-
       <section className="section bg-transparent">
         <div className="container-x grid gap-8 md:grid-cols-[280px_1fr]">
           <Filters cat={cat} flavor={flavor} bestseller={bestseller} max={max} />
 
           <div>
-            {filtered.length === 0 ? (
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <p className="text-sm text-ink-mut">
+                <span className="font-semibold text-ink">{filtered.length}</span> {filtered.length === 1 ? "treat" : "treats"}
+                {cat !== "all" && <> in {CATEGORY_META[cat as Category].label}</>}
+              </p>
+              <label className="sr-only" htmlFor="menu-sort">Sort treats</label>
+              <select
+                id="menu-sort"
+                value={sort}
+                onChange={(e) => update("sort", e.target.value)}
+                className="rounded-pill border border-line bg-surface px-3.5 py-2 text-sm font-medium text-ink shadow-e1 focus:outline-none focus:ring-2 focus:ring-flame/30"
+              >
+                <option value="featured">Featured</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+                <option value="name">Name A–Z</option>
+              </select>
+            </div>
+            {sorted.length === 0 ? (
               <div className="card p-10 text-center">
                 <p className="t-h3">No treats found</p>
-                <p className="mt-2 text-ink-mut">Try clearing some filters.</p>
+                <p className="mt-2 text-ink-mut">Nothing matches those filters yet.</p>
+                <Link href="/menu" className="btn-line mt-5">Clear all filters</Link>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-                {filtered.map((p, i) => (
+                {sorted.map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} />
                 ))}
               </div>
