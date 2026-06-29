@@ -57,7 +57,7 @@ export default function FAQ() {
         <div className="grid gap-10 md:grid-cols-[0.8fr_1.2fr] md:gap-16">
           <Reveal>
             <span className="t-eyebrow">Good to know</span>
-            <h2 className="t-h2 mt-4">Questions, answered.</h2>
+            <h2 className="t-h2 mt-4">Questions, <span className="text-gradient">answered</span>.</h2>
             <p className="t-lead mt-4">Everything you need before you order. Still curious? We&apos;re a message away.</p>
           </Reveal>
           <Reveal delay={0.06}>

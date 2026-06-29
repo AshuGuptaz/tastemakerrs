@@ -15,7 +15,7 @@ export default function Occasions() {
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">For every occasion</span>
-          <h2 className="t-h2 mt-4">A cake for every reason to gather.</h2>
+          <h2 className="t-h2 mt-4">A cake for <span className="text-gradient">every reason</span> to gather.</h2>
         </Reveal>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">

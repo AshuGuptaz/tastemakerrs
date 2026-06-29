@@ -32,7 +32,7 @@ html { scrollbar-gutter: stable; }
 
   /* ─────────────────────────  Typography  ───────────────────────── */
   .t-eyebrow {
-    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-ink-mut;
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-flame-700;
   }
   .t-display {
     @apply font-display text-[clamp(2.6rem,6.2vw,5.25rem)] font-semibold leading-[1.02] tracking-tighter2 text-ink;

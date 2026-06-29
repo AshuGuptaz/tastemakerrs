@@ -67,7 +67,7 @@ export default function Testimonials() {
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">In their words</span>
-          <h2 className="t-h2 mt-4">A little sweetness, a lot of love.</h2>
+          <h2 className="t-h2 mt-4">A little sweetness, a lot of <span className="text-gradient">love</span>.</h2>
         </Reveal>
       </div>
 

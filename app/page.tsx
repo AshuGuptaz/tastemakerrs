@@ -1,3 +1,4 @@
+import AuroraBg from "@/components/home/AuroraBg";
 import Hero from "@/components/home/Hero";
 import TrustStrip from "@/components/home/TrustStrip";
 import Stats from "@/components/home/Stats";
@@ -13,6 +14,7 @@ import CTA from "@/components/home/CTA";
 export default function HomePage() {
   return (
     <>
+      <AuroraBg />
       <Hero />
       <TrustStrip />
       <Stats />

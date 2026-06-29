@@ -59,7 +59,7 @@ export default function Packages() {
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">Celebration packages</span>
-          <h2 className="t-h2 mt-4">Pick a package, leave the rest to us.</h2>
+          <h2 className="t-h2 mt-4">Pick a <span className="text-gradient">package</span>, leave the rest to us.</h2>
           <p className="t-lead mx-auto mt-4 max-w-xl">
             Curated bundles for every occasion — or fully customise your own. Every package is baked fresh and delivered same-day.
           </p>

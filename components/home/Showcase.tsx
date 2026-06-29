@@ -12,7 +12,7 @@ export default function Showcase() {
         <Reveal className="flex flex-wrap items-end justify-between gap-5">
           <div className="max-w-xl">
             <span className="t-eyebrow">Bestsellers</span>
-            <h2 className="t-h2 mt-4">Baked fresh — most-loved this week.</h2>
+            <h2 className="t-h2 mt-4">Baked fresh — <span className="text-gradient">most-loved</span> this week.</h2>
           </div>
           <Link href="/menu" className="btn-line group">
             Browse the full menu
