@@ -72,39 +72,37 @@ export default function CheckoutPage() {
     if (hydrated && items.length === 0) router.replace("/cart");
   }, [hydrated, items.length, router]);
 
-  // Load Razorpay script
+  // Load Razorpay script once (dedup: StrictMode double-runs + remounts must not re-inject)
   useEffect(() => {
+    if ((window as any).Razorpay) { setRazorpayReady(true); return; }
+    const existing = document.querySelector<HTMLScriptElement>("script[data-razorpay]");
+    if (existing) { existing.addEventListener("load", () => setRazorpayReady(true)); return; }
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
+    script.dataset.razorpay = "1";
     script.onload = () => setRazorpayReady(true);
     document.body.appendChild(script);
-    // Element.remove() is a no-op on a detached node, so this never throws
-    return () => { script.remove(); };
+    // Keep the single tag mounted for the app's lifetime — no remove() race.
   }, []);
 
-  // Load Google Maps + Places Autocomplete
+  // Load Google Maps + Places Autocomplete once (deduped, never removed)
   useEffect(() => {
-    if ((window as any).google) {
-      initAutocomplete();
-      return () => {
-        if (autocompleteRef.current && (window as any).google) {
-          (window as any).google.maps.event.clearInstanceListeners(autocompleteRef.current);
-        }
-      };
-    }
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-    script.async = true;
-    script.onload = initAutocomplete;
-    document.body.appendChild(script);
-    // Tear down the accumulating place_changed listeners and the appended tag
-    return () => {
+    const clearListeners = () => {
       if (autocompleteRef.current && (window as any).google) {
         (window as any).google.maps.event.clearInstanceListeners(autocompleteRef.current);
       }
-      script.remove();
     };
+    if ((window as any).google?.maps?.places) { initAutocomplete(); return clearListeners; }
+    const existing = document.querySelector<HTMLScriptElement>("script[data-gmaps]");
+    if (existing) { existing.addEventListener("load", initAutocomplete); return clearListeners; }
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+    script.async = true;
+    script.dataset.gmaps = "1";
+    script.onload = initAutocomplete;
+    document.body.appendChild(script);
+    return clearListeners; // only detach listeners; never remove the shared tag
   }, []);
 
   // Init map when coords change
@@ -118,10 +116,10 @@ export default function CheckoutPage() {
         zoomControl: true,
         styles: [
           { featureType: "poi", stylers: [{ visibility: "off" }] },
-          { elementType: "geometry", stylers: [{ color: "#fdf0d5" }] },
-          { elementType: "labels.text.fill", stylers: [{ color: "#890f20" }] },
+          { elementType: "geometry", stylers: [{ color: "#FBF1E4" }] },
+          { elementType: "labels.text.fill", stylers: [{ color: "#0B0B0C" }] },
           { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
-          { featureType: "water", elementType: "geometry", stylers: [{ color: "#f49cbb" }] },
+          { featureType: "water", elementType: "geometry", stylers: [{ color: "#FDE3C8" }] },
         ],
       });
     } else {
@@ -135,7 +133,7 @@ export default function CheckoutPage() {
       icon: {
         path: (window as any).google.maps.SymbolPath.CIRCLE,
         scale: 10,
-        fillColor: "#F26A8D",
+        fillColor: "#F97316",
         fillOpacity: 1,
         strokeColor: "#ffffff",
         strokeWeight: 2,
@@ -239,7 +237,7 @@ export default function CheckoutPage() {
           description: `Order ${order.id}`,
           order_id: rp.id,
           prefill: { name: addr.name, email: addr.email, contact: addr.phone },
-          theme: { color: "#F26A8D" },
+          theme: { color: "#F97316" },
           handler: async (resp: any) => {
             try {
               const verify = await fetch("/api/razorpay/verify", {

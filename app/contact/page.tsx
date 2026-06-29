@@ -17,15 +17,19 @@ export default function ContactPage() {
     if (!form.message) { setErrorField("message"); toast.error("Please fill name, email and message"); return; }
     setBusy(true);
     try {
-      await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Could not send your message.");
+      }
       toast.success("Message sent — we'll be in touch!");
       setForm({ name: "", email: "", phone: "", message: "" });
-    } catch {
-      toast.error("Could not send — try WhatsApp.");
+    } catch (err: any) {
+      toast.error(err?.message || "Could not send — try WhatsApp.");
     } finally {
       setBusy(false);
     }

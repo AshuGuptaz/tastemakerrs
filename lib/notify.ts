@@ -34,7 +34,7 @@ export function otpEnabled() {
 
 /* ───────────────────────────── Email (Resend) ───────────────────────────── */
 
-export async function sendEmail(opts: { to: string; subject: string; html: string; text?: string }) {
+export async function sendEmail(opts: { to: string; subject: string; html: string; text?: string; replyTo?: string }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn(`[notify] email skipped (no RESEND_API_KEY): "${opts.subject}" → ${opts.to}`);
@@ -45,7 +45,7 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from, to: [opts.to], subject: opts.subject, html: opts.html, text: opts.text }),
+      body: JSON.stringify({ from, to: [opts.to], subject: opts.subject, html: opts.html, text: opts.text, ...(opts.replyTo ? { reply_to: opts.replyTo } : {}) }),
     });
     if (!res.ok) {
       const body = await res.text();

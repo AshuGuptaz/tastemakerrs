@@ -48,5 +48,7 @@ export default function AnimatedCounter({
     });
   }, [spring, prefix, suffix, decimals]);
 
-  return <span ref={ref}>{`${prefix}${(0).toFixed(decimals)}${suffix}`}</span>;
+  // Default to the FINAL value so SSR / not-yet-scrolled / no-JS never show a
+  // broken "0K+ / 0.0★ / 0%"; the count-up overwrites this once it scrolls in.
+  return <span ref={ref}>{`${prefix}${value.toFixed(decimals)}${suffix}`}</span>;
 }

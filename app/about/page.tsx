@@ -59,7 +59,7 @@ export default function AboutPage() {
               { t: "Premium ingredients", d: "Belgian chocolate, French butter, Madagascar vanilla, real fruit." },
               { t: "Inclusive choices", d: "Eggless on every cake. Jain-friendly options. Sugar-conscious recipes." },
               { t: "Hand-finished", d: "Every flower, drip and pipe is done by hand — no two cakes are identical." },
-              { t: "Fresh delivery", d: "Same-day delivery in Mumbai/Pune. Pan-India for hampers and cookies." },
+              { t: "Fresh delivery", d: "Same-day delivery across Lucknow — as fresh as it left the kitchen." },
               { t: "Made with love", d: "It sounds clichéd, but you can taste it. Promise." },
             ].map((v) => (
               <div key={v.t} className="card p-6">

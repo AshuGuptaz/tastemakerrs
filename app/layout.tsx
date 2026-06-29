@@ -54,7 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CartDrawer />
               <FlyToCart />
               <Toaster position="bottom-right" toastOptions={{
-                style: { background: "#890F20", color: "#FFFAF1", borderRadius: "9999px" },
+                style: { background: "#0B0B0C", color: "#fff", borderRadius: "14px" },
+                iconTheme: { primary: "#F97316", secondary: "#fff" },
               }} />
             </SmoothScroll>
           </CartUIProvider>

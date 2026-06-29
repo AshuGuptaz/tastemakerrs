@@ -34,7 +34,7 @@ const config: Config = {
         peach: { 100: "#FFEDD5", 200: "#FED7AA", 300: "#FDBA74", DEFAULT: "#FDBA74" },
         sky:   { 50: "#F6F6F6", 100: "#EFEFEF", 200: "#E4E4E4", DEFAULT: "#EFEFEF" },
         cocoa: { 50: "#FFF1E6", DEFAULT: "#0B0B0C", 900: "#000000" },
-        flame: { 400: "#FB923C", 500: "#F97316", 600: "#EA580C", DEFAULT: "#F97316" },
+        flame: { 400: "#FB923C", 500: "#F97316", 600: "#EA580C", 700: "#C2410C", 800: "#9A3412", DEFAULT: "#F97316" },
         rose:  { 500: "#EA580C", 600: "#C2410C" },
         wine:  { DEFAULT: "#0B0B0C", dark: "#000000" },
       },
@@ -53,11 +53,11 @@ const config: Config = {
         e1: "0 1px 2px rgba(18,17,19,0.04), 0 1px 1px rgba(18,17,19,0.03)",
         e2: "0 6px 20px -6px rgba(18,17,19,0.10), 0 2px 6px -2px rgba(18,17,19,0.06)",
         e3: "0 24px 60px -20px rgba(18,17,19,0.22), 0 8px 24px -12px rgba(18,17,19,0.12)",
-        glow: "0 14px 40px -12px rgba(242,106,141,0.45)",
+        glow: "0 14px 40px -12px rgba(249,115,22,0.45)",
         ring: "inset 0 0 0 1px rgba(18,17,19,0.06)",
         // legacy
-        soft: "0 10px 30px -10px rgba(137,15,32,0.18)",
-        card: "0 8px 24px -8px rgba(137,15,32,0.12)",
+        soft: "0 10px 30px -10px rgba(18,17,19,0.14)",
+        card: "0 8px 24px -8px rgba(18,17,19,0.10)",
       },
       borderRadius: {
         xl2: "1.25rem",

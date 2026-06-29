@@ -6,8 +6,13 @@ import type { ReactNode } from "react";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * Scroll-reveal wrapper. Fades + lifts content into view once, with a premium
+ * Scroll-reveal wrapper. Lifts content into view once, with a premium
  * easeOutExpo curve. Reduced-motion safe (renders instantly, no transform).
+ *
+ * IMPORTANT: the resting state is fully opaque (we animate translate only, never
+ * opacity). Gating first-paint on opacity:0 would leave all below-the-fold
+ * content blank for crawlers, OG/link-preview screenshots, print, and no-JS /
+ * slow-hydration — so reveal is treated strictly as progressive enhancement.
  */
 export default function Reveal({
   children,
@@ -28,8 +33,8 @@ export default function Reveal({
   return (
     <Comp
       className={className}
-      initial={reduce ? false : { opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduce ? false : { y }}
+      whileInView={{ y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, ease: EASE, delay }}
       {...rest}

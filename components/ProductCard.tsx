@@ -50,8 +50,8 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduce ? false : { y: 24 }}
+      whileInView={{ y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.08 }}
       style={{ rotateX, rotateY, transformPerspective: "1000px" }}

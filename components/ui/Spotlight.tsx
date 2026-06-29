@@ -8,7 +8,7 @@ import { motion, useReducedMotion } from "framer-motion";
  */
 export default function Spotlight({
   className = "",
-  fill = "rgba(242,106,141,0.22)",
+  fill = "rgba(249,115,22,0.20)",
 }: {
   className?: string;
   fill?: string;

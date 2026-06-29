@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --bg: #FBFAF8;
-  --ink: #121113;
-  --pink: #F26A8D;
-  --wine: #890F20;
-}
-
 html, body {
   /* White base with a soft multi-point orange gradient field (Stripe-style). */
   background:
@@ -50,7 +43,7 @@ html { scrollbar-gutter: stable; }
   .t-h3 { @apply text-xl font-semibold tracking-tight text-ink md:text-2xl; }
   .t-lead { @apply text-[1.075rem] leading-relaxed text-ink-mut md:text-lg; }
   .text-gradient {
-    @apply bg-gradient-to-r from-flame-400 via-flame to-flame-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-flame-500 via-flame-600 to-flame-700 bg-clip-text text-transparent;
   }
 
   /* ─────────────────────────  Buttons (new system)  ───────────────────────── */
@@ -142,9 +135,16 @@ html { scrollbar-gutter: stable; }
   .h-section { @apply display text-[clamp(2rem,5vw,4rem)]; }
   .accent { @apply text-flame; }
   .input {
-    @apply w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-mut/60 focus:border-flame focus:outline-none focus:ring-2 focus:ring-flame/25;
+    @apply w-full rounded-2xl border border-line bg-surface px-4 py-3 text-ink placeholder:text-ink-mut focus:border-flame focus:outline-none focus:ring-2 focus:ring-flame/25;
   }
   .label { @apply mb-1.5 block text-sm font-semibold text-ink-soft; }
+
+  /* Disabled state for every button utility — dimmed, no hover-lift, not clickable */
+  .btn-ink:disabled, .btn-accent:disabled, .btn-line:disabled,
+  .btn-primary:disabled, .btn-dark:disabled, .btn-ghost:disabled {
+    @apply cursor-not-allowed opacity-60 shadow-none;
+    transform: none !important;
+  }
 }
 
 /* Marquee */
