@@ -8,9 +8,24 @@ import { useCart } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
 
 export default function CartPage() {
-  const { items, setQty, remove, subtotal } = useCart();
+  const { items, setQty, remove, subtotal, hydrated } = useCart();
   const delivery = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 79;
   const total = subtotal + delivery;
+
+  // Avoid flashing the empty-cart state before localStorage rehydrates.
+  if (!hydrated) {
+    return (
+      <section className="bg-transparent py-16 md:py-24 min-h-[60vh]">
+        <div className="container-x">
+          <div className="skeleton h-14 w-60 rounded-xl" />
+          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_380px]">
+            <div className="space-y-4">{[0, 1].map((i) => <div key={i} className="skeleton h-28 rounded-[1.5rem]" />)}</div>
+            <div className="skeleton h-72 rounded-[1.5rem]" />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-transparent py-16 md:py-24 min-h-[60vh]">

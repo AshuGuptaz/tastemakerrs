@@ -26,12 +26,12 @@ export default function ProductDetail({
     <>
       <section className="bg-surface py-10 md:py-16">
         <div className="container-x">
-          <nav className="mb-6 text-sm text-ink-mut">
+          <nav aria-label="Breadcrumb" className="mb-6 text-sm text-ink-mut">
             <Link href="/menu" className="hover:text-flame">Menu</Link>
-            <span className="mx-2">/</span>
+            <span className="mx-2" aria-hidden>/</span>
             <Link href={`/menu?cat=${product.category}`} className="hover:text-flame">{categoryLabel}</Link>
-            <span className="mx-2">/</span>
-            <span className="text-ink">{product.name}</span>
+            <span className="mx-2" aria-hidden>/</span>
+            <span className="text-ink" aria-current="page">{product.name}</span>
           </nav>
 
           <div className="grid gap-10 md:grid-cols-2">

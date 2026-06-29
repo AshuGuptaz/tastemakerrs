@@ -77,6 +77,7 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
           type="button"
           onClick={prevMonth}
           disabled={!canGoPrev()}
+          aria-label="Previous month"
           className="rounded-full p-1.5 text-white transition hover:bg-white/20 disabled:opacity-30"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -87,6 +88,7 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
         <button
           type="button"
           onClick={nextMonth}
+          aria-label="Next month"
           className="rounded-full p-1.5 text-white transition hover:bg-white/20"
         >
           <ChevronRight className="h-4 w-4" />

@@ -275,6 +275,20 @@ export default function CheckoutPage() {
     }
   };
 
+  if (!hydrated) {
+    return (
+      <section className="bg-transparent py-16 md:py-24">
+        <div className="container-x">
+          <div className="skeleton h-14 w-56 rounded-xl" />
+          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+            <div className="skeleton h-[28rem] rounded-[1.5rem]" />
+            <div className="skeleton h-80 rounded-[1.5rem]" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-transparent py-16 md:py-24">
       <div className="container-x">

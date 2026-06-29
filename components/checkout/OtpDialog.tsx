@@ -36,6 +36,7 @@ export default function OtpDialog({
   const [verifying, setVerifying] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const sentOnce = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const send = async () => {
     setSending(true);
@@ -77,6 +78,21 @@ export default function OtpDialog({
     const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
     return () => clearTimeout(t);
   }, [cooldown]);
+
+  // dialog a11y: Escape closes, scroll is locked, focus is restored on close
+  useEffect(() => {
+    const prev = document.activeElement as HTMLElement | null;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+      prev?.focus?.();
+    };
+  }, [onClose]);
+  // move focus into the code field once the send resolves
+  useEffect(() => { if (!sending && otpId) inputRef.current?.focus(); }, [sending, otpId]);
 
   const verify = async () => {
     if (code.length !== 6 || !otpId) return;
@@ -130,6 +146,7 @@ export default function OtpDialog({
           </p>
 
           <input
+            ref={inputRef}
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={6}

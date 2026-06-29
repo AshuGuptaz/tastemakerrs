@@ -47,9 +47,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <CartProvider>
           <CartUIProvider>
             <SmoothScroll>
+              <a
+                href="#main"
+                className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-pill focus:bg-ink focus:px-5 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white focus:shadow-e3"
+              >
+                Skip to content
+              </a>
               <ScrollProgress />
               <Navbar />
-              <main className="min-h-[60vh]">{children}</main>
+              <main id="main" className="min-h-[60vh]">{children}</main>
               <Footer />
               <CartDrawer />
               <FlyToCart />

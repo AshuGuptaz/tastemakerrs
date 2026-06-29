@@ -43,15 +43,15 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
       <h3 className="t-h3">Filters</h3>
 
       <div className="mt-4">
-        <p className="label">Category</p>
-        <div className="flex flex-wrap gap-2">
-          <button onClick={() => update("cat", null)}
-            className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition ${cat === "all" ? "bg-flame text-white" : "bg-surface hover:bg-surface"}`}>
+        <p id="filter-cat-label" className="label">Category</p>
+        <div role="group" aria-labelledby="filter-cat-label" className="flex flex-wrap gap-2">
+          <button onClick={() => update("cat", null)} aria-pressed={cat === "all"}
+            className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition focus-ring ${cat === "all" ? "bg-flame text-white" : "border border-line bg-surface hover:border-ink/20"}`}>
             All
           </button>
           {CATEGORIES.map((c) => (
-            <button key={c} onClick={() => update("cat", c)}
-              className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition ${cat === c ? "bg-flame text-white" : "bg-surface hover:bg-surface"}`}>
+            <button key={c} onClick={() => update("cat", c)} aria-pressed={cat === c}
+              className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition focus-ring ${cat === c ? "bg-flame text-white" : "border border-line bg-surface hover:border-ink/20"}`}>
               {CATEGORY_META[c].label}
             </button>
           ))}
@@ -59,17 +59,19 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
       </div>
 
       <div className="mt-5">
-        <p className="label">Max Price · ₹{localMax}</p>
+        <label htmlFor="filter-max" className="label">Max Price · ₹{localMax}</label>
         <input
-          type="range" min={50} max={2500} step={50} value={localMax}
+          id="filter-max" type="range" min={50} max={2500} step={50} value={localMax}
           onChange={onMaxChange}
+          aria-label={`Maximum price, ₹${localMax}`}
           className="w-full accent-flame"
         />
       </div>
 
       <div className="mt-5">
-        <p className="label">Flavor</p>
+        <label htmlFor="filter-flavor" className="label">Flavor</label>
         <select
+          id="filter-flavor"
           value={flavor}
           onChange={(e) => update("flavor", e.target.value || null)}
           className="input"
