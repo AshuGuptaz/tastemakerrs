@@ -8,9 +8,9 @@ import Reveal from "@/components/ui/Reveal";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const CHECKLIST = [
-  "2,000+ cakes delivered",
-  "4.9★ average rating",
-  "Same-day, every day",
+  "FSSAI-registered pure-veg kitchen",
+  "Hand-finished — never pre-iced",
+  "Same-day delivery across Lucknow",
 ];
 
 /**
@@ -89,7 +89,7 @@ export default function LovedBy() {
           {/* LEFT — copy + checklist */}
           <Reveal>
             <div>
-              <p className="t-eyebrow">Loved by thousands</p>
+              <p className="t-eyebrow">The community</p>
               <h2 className="t-h2 mt-3">
                 Real people. Real{" "}
                 <span className="text-gradient">celebrations</span>.

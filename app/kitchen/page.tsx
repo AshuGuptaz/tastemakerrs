@@ -34,7 +34,7 @@ export default function KitchenPage() {
       <section className="section bg-peach-100">
         <div className="container-x grid gap-8 md:grid-cols-3">
           {[
-            { t: "FSSAI Certified", d: "License #20012345000789. Audited annually." },
+            { t: "FSSAI-registered kitchen", d: "Licensed, pure-veg and audited — hygiene logged daily." },
             { t: "Hygiene SOP", d: "ISO-22000 inspired protocols. Daily kitchen logs." },
             { t: "100% Pure Veg", d: "No eggs in our Jain line. Eggless on request for everything else." },
           ].map((b) => (

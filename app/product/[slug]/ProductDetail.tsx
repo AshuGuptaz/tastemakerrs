@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { Minus, Plus, Heart, Truck, Shield, Sparkles, Leaf } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Minus, Plus, Heart, Truck, Shield, Sparkles, Leaf, Check } from "lucide-react";
+import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Underlined from "@/components/Underlined";
@@ -21,6 +22,29 @@ export default function ProductDetail({
 }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    try { setSaved(JSON.parse(localStorage.getItem("ttm_wishlist") || "[]").includes(product.id)); } catch {}
+  }, [product.id]);
+
+  function handleAdd() {
+    add({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image }, qty);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1100);
+  }
+
+  function toggleWishlist() {
+    try {
+      const list: string[] = JSON.parse(localStorage.getItem("ttm_wishlist") || "[]");
+      const next = list.includes(product.id) ? list.filter((x) => x !== product.id) : [...list, product.id];
+      localStorage.setItem("ttm_wishlist", JSON.stringify(next));
+      const on = next.includes(product.id);
+      setSaved(on);
+      toast.success(on ? "Saved to your wishlist ♥" : "Removed from wishlist");
+    } catch {}
+  }
 
   return (
     <>
@@ -89,14 +113,13 @@ export default function ProductDetail({
                   </button>
                 </div>
 
-                <button
-                  onClick={() =>
-                    add({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image }, qty)
-                  }
-                  className="btn-accent"
+                <motion.button
+                  onClick={handleAdd}
+                  whileTap={{ scale: 0.96 }}
+                  className="btn-accent min-w-[12rem] justify-center"
                 >
-                  Add to Cart · ₹{product.price * qty}
-                </button>
+                  {added ? <><Check className="h-4 w-4" /> Added to cart</> : `Add to Cart · ₹${product.price * qty}`}
+                </motion.button>
 
                 {product.customizable && (
                   <Link href={`/custom-cake?base=${product.slug}`} className="btn-line">
@@ -104,8 +127,13 @@ export default function ProductDetail({
                   </Link>
                 )}
 
-                <button className="focus-ring grid h-11 w-11 place-items-center rounded-pill border border-line bg-white hover:text-flame" aria-label="Wishlist">
-                  <Heart className="h-5 w-5" />
+                <button
+                  onClick={toggleWishlist}
+                  aria-pressed={saved}
+                  aria-label={saved ? "Remove from wishlist" : "Save to wishlist"}
+                  className={`focus-ring grid h-11 w-11 place-items-center rounded-pill border border-line bg-white transition-colors ${saved ? "border-flame/40 text-flame" : "text-ink-mut hover:text-flame"}`}
+                >
+                  <Heart className={`h-5 w-5 ${saved ? "fill-flame" : ""}`} />
                 </button>
               </div>
 

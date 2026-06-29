@@ -14,6 +14,7 @@ const ItemSchema = z.object({
   name: z.string(),
   price: z.number(),
   qty: z.number().int().min(1),
+  variant: z.string().optional(),
   custom: z.any().optional(),
 });
 

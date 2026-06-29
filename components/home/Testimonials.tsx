@@ -66,7 +66,7 @@ export default function Testimonials() {
     <section className="section">
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="t-eyebrow justify-center">Loved by thousands</span>
+          <span className="t-eyebrow justify-center">In their words</span>
           <h2 className="t-h2 mt-4">A little sweetness, a lot of love.</h2>
         </Reveal>
       </div>

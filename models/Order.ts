@@ -10,6 +10,7 @@ const ItemSchema = new Schema(
     name: String,
     price: Number,
     qty: Number,
+    variant: String,
     custom: Schema.Types.Mixed,
   },
   { _id: false }

@@ -2,23 +2,29 @@ import Link from "next/link";
 import { Instagram, Facebook, Send, Mail, MapPin, Phone } from "lucide-react";
 
 const linkCls =
-  "text-sm text-ink-soft transition-colors hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 rounded-md";
-const headingCls = "text-xs font-semibold uppercase tracking-[0.16em] text-ink-mut";
+  "text-sm text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-md";
+const headingCls = "text-xs font-semibold uppercase tracking-[0.16em] text-white/45";
 
 export default function Footer() {
   return (
     <footer className="container-x pb-10">
-      <div className="rounded-[2rem] bg-sky-100 p-8 md:p-12">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="relative overflow-hidden rounded-[2rem] bg-ink p-8 text-white md:p-12">
+        {/* warm ambient so the dark bookend feels on-brand, not cold */}
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute right-[-6%] top-[-30%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.28),transparent_62%)] blur-2xl" />
+          <div className="absolute inset-0 bg-grid opacity-[0.05]" />
+        </div>
+
+        <div className="relative z-10 grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="group inline-flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-xl bg-ink text-sm font-bold text-white">tm</span>
-              <span className="text-[1.15rem] font-semibold tracking-tighter2 text-ink">
-                Taste <span className="text-flame">Makerrs</span>
+              <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-flame-400 to-flame-600 text-sm font-bold text-white shadow-glow">tm</span>
+              <span className="text-[1.15rem] font-semibold tracking-tighter2 text-white">
+                Taste <span className="text-flame-400">Makerrs</span>
               </span>
             </Link>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-soft">
-              Small-batch bakery. Baked fresh, delivered with love.
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
+              Small-batch bakery in Lucknow. Baked fresh, delivered with love.
             </p>
             <div className="mt-5 flex gap-2">
               {[
@@ -32,7 +38,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="rounded-pill border border-line p-2.5 text-ink-soft transition-colors hover:border-flame hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
+                  className="rounded-pill border border-white/15 p-2.5 text-white/70 transition-colors hover:border-flame hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -65,24 +71,24 @@ export default function Footer() {
 
           <div>
             <h4 className={headingCls}>Reach Us</h4>
-            <ul className="mt-4 space-y-3 text-sm text-ink-soft">
+            <ul className="mt-4 space-y-3 text-sm text-white/70">
               <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-flame" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-flame-400" />
                 20B Water Works Road, Aishbagh, Lucknow, Uttar Pradesh
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-flame" />
+                <Phone className="h-4 w-4 text-flame-400" />
                 <a href="tel:+918881661177" className={linkCls}>+91 88816 61177</a>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-flame" />
+                <Mail className="h-4 w-4 text-flame-400" />
                 <a href="mailto:tastemakerrs@gmail.com" className={linkCls}>tastemakerrs@gmail.com</a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-line pt-6 text-xs text-ink-mut md:flex-row">
+        <div className="relative z-10 mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/45 md:flex-row">
           <p>© {new Date().getFullYear()} The Taste Makerrs. All rights reserved.</p>
           <p>Baked fresh, delivered with love.</p>
         </div>

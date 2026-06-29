@@ -24,6 +24,15 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // Lock body scroll while the mobile menu is open.
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  // Close the mobile menu on route change.
+  useEffect(() => { setOpen(false); }, [pathname]);
+
   // Shrink the floating pill once the page is scrolled.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -72,15 +81,16 @@ export default function Navbar() {
                 <Link
                   key={n.href}
                   href={n.href}
-                  className={`relative rounded-pill px-3.5 py-2 text-sm font-medium tracking-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
-                    active ? "text-ink" : "text-ink-mut hover:text-ink"
+                  aria-current={active ? "page" : undefined}
+                  className={`relative rounded-pill px-3.5 py-2 text-sm tracking-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
+                    active ? "font-semibold text-flame-700" : "font-medium text-ink-mut hover:text-ink"
                   }`}
                 >
                   {n.label}
                   {active && (
                     <motion.span
                       layoutId="nav-pill"
-                      className="absolute inset-0 -z-10 rounded-pill bg-ink/[0.06]"
+                      className="absolute inset-0 -z-10 rounded-pill bg-flame/10 ring-1 ring-flame/20"
                       transition={{ type: "spring", stiffness: 380, damping: 32 }}
                     />
                   )}
@@ -131,10 +141,21 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu + scrim */}
         <AnimatePresence>
           {open && (
             <motion.div
+              key="scrim"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 -z-10 bg-ink/40 backdrop-blur-sm md:hidden"
+            />
+          )}
+          {open && (
+            <motion.div
+              key="menu"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -145,7 +166,10 @@ export default function Navbar() {
                   key={n.href}
                   href={n.href}
                   onClick={() => setOpen(false)}
-                  className="block rounded-xl px-4 py-3 text-base font-medium tracking-tight text-ink transition-colors hover:bg-ink/[0.04]"
+                  aria-current={pathname === n.href ? "page" : undefined}
+                  className={`block rounded-xl px-4 py-3 text-base tracking-tight transition-colors ${
+                    pathname === n.href ? "bg-flame/10 font-semibold text-flame-700" : "font-medium text-ink hover:bg-ink/[0.04]"
+                  }`}
                 >
                   {n.label}
                 </Link>

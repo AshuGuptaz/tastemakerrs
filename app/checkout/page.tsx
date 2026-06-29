@@ -211,7 +211,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((i) => ({ productId: i.id, name: i.name, price: i.price, qty: i.qty, custom: i.custom })),
+          items: items.map((i) => ({ productId: i.id, name: i.name, price: i.price, qty: i.qty, variant: i.variant, custom: i.custom })),
           address: addr, subtotal, delivery, discount, total,
           coupon: appliedCoupon || null, paymentMethod: method,
         }),
@@ -363,7 +363,7 @@ export default function CheckoutPage() {
               <h3 className="t-h3">Your order</h3>
               <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-2">
                 {items.map((it) => (
-                  <li key={it.id} className="flex items-center gap-3 text-sm">
+                  <li key={it.id + (it.variant ?? "")} className="flex items-center gap-3 text-sm">
                     <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-surface text-xl">
                       {it.image && (it.image.startsWith("/") || it.image.startsWith("http")) ? (
                         <Image src={it.image} alt={it.name} fill sizes="40px" className="object-cover" />
