@@ -43,15 +43,15 @@ function MenuContent() {
         </div>
       )}
 
-      <section className="section bg-cream-50">
+      <section className="section bg-transparent">
         <div className="container-x grid gap-8 md:grid-cols-[280px_1fr]">
           <Filters cat={cat} flavor={flavor} bestseller={bestseller} max={max} />
 
           <div>
             {filtered.length === 0 ? (
               <div className="card p-10 text-center">
-                <p className="font-display text-2xl">NO TREATS FOUND</p>
-                <p className="mt-2 text-cocoa/60">Try clearing some filters.</p>
+                <p className="t-h3">No treats found</p>
+                <p className="mt-2 text-ink-mut">Try clearing some filters.</p>
               </div>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -72,13 +72,13 @@ export default function MenuPage() {
     <Suspense
       fallback={
         <>
-          <section className="bg-peach-100 py-16 md:py-24">
+          <section className="bg-surface py-16 md:py-24">
             <div className="container-x">
               <div className="skeleton h-16 w-2/3 max-w-md rounded-xl" />
               <div className="skeleton mt-5 h-4 w-1/2 max-w-sm rounded-md" />
             </div>
           </section>
-          <section className="section bg-cream-50">
+          <section className="section bg-transparent">
             <div className="container-x grid gap-8 md:grid-cols-[280px_1fr]">
               <div className="skeleton hidden h-96 rounded-xl2 md:block" />
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

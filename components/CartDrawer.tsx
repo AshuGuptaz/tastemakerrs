@@ -36,17 +36,17 @@ export default function CartDrawer() {
             aria-label="Shopping cart"
             variants={{ hidden: { x: "100%" }, visible: { x: 0 } }}
             transition={{ duration: 0.35, ease: EASE }}
-            className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-cream-50 shadow-soft"
+            className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-transparent shadow-soft"
           >
-            <header className="flex items-center justify-between border-b border-cocoa/10 px-6 py-5">
-              <h2 className="flex items-center gap-2 font-display text-2xl text-cocoa">
+            <header className="flex items-center justify-between border-b border-line px-6 py-5">
+              <h2 className="flex items-center gap-2 font-display text-2xl text-ink">
                 <ShoppingBag className="h-5 w-5 text-flame" /> Your Cart
-                <span className="text-base text-cocoa/50">({count})</span>
+                <span className="text-base text-ink-mut">({count})</span>
               </h2>
               <button
                 onClick={closeDrawer}
                 aria-label="Close cart"
-                className="rounded-pill border border-cocoa/15 bg-white p-2 hover:bg-flame hover:text-white transition-colors focus-ring"
+                className="rounded-pill border border-line bg-white p-2 hover:bg-flame hover:text-white transition-colors focus-ring"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -54,12 +54,12 @@ export default function CartDrawer() {
 
             {items.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-                <div className="grid h-20 w-20 place-items-center rounded-full bg-peach-100">
+                <div className="grid h-20 w-20 place-items-center rounded-full bg-surface">
                   <ShoppingBag className="h-8 w-8 text-flame" />
                 </div>
-                <p className="font-display text-xl text-cocoa">Your cart is empty</p>
-                <p className="text-sm text-cocoa/60">Time to treat yourself to something sweet.</p>
-                <Link href="/menu" onClick={closeDrawer} className="btn-primary mt-2">
+                <p className="font-display text-xl text-ink">Your cart is empty</p>
+                <p className="text-sm text-ink-mut">Time to treat yourself to something sweet.</p>
+                <Link href="/menu" onClick={closeDrawer} className="btn-accent mt-2">
                   Browse the menu
                 </Link>
               </div>
@@ -75,9 +75,9 @@ export default function CartDrawer() {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, x: 40 }}
                         transition={{ duration: 0.35, ease: EASE }}
-                        className="flex gap-3 border-b border-cocoa/10 py-4"
+                        className="flex gap-3 border-b border-line py-4"
                       >
-                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-cream-200">
+                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-surface">
                           {it.image && (it.image.startsWith("/") || it.image.startsWith("http")) ? (
                             <Image src={it.image} alt={it.name} fill sizes="80px" className="object-cover" />
                           ) : (
@@ -86,18 +86,18 @@ export default function CartDrawer() {
                         </div>
                         <div className="flex flex-1 flex-col">
                           <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-display text-base leading-tight text-cocoa">{it.name}</h3>
+                            <h3 className="font-display text-base leading-tight text-ink">{it.name}</h3>
                             <button
                               onClick={() => remove(it.id, it.variant)}
                               aria-label={`Remove ${it.name}`}
-                              className="text-cocoa/40 hover:text-flame transition-colors focus-ring"
+                              className="text-ink-mut hover:text-flame transition-colors focus-ring"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
-                          {it.variant && <p className="text-xs text-cocoa/50">{it.variant}</p>}
+                          {it.variant && <p className="text-xs text-ink-mut">{it.variant}</p>}
                           <div className="mt-auto flex items-center justify-between pt-2">
-                            <div className="flex items-center gap-1 rounded-pill border border-cocoa/15 bg-white">
+                            <div className="flex items-center gap-1 rounded-pill border border-line bg-white">
                               <button
                                 onClick={() => setQty(it.id, it.variant, it.qty - 1)}
                                 aria-label="Decrease quantity"
@@ -122,16 +122,16 @@ export default function CartDrawer() {
                   </AnimatePresence>
                 </div>
 
-                <footer className="border-t border-cocoa/10 px-6 py-5">
+                <footer className="border-t border-line px-6 py-5">
                   <div className="mb-4 flex items-center justify-between">
-                    <span className="text-sm uppercase tracking-wider text-cocoa/60">Subtotal</span>
-                    <span className="font-display text-2xl text-cocoa">₹{subtotal}</span>
+                    <span className="text-sm uppercase tracking-wider text-ink-mut">Subtotal</span>
+                    <span className="font-display text-2xl text-ink">₹{subtotal}</span>
                   </div>
                   <div className="flex gap-2">
-                    <Link href="/cart" onClick={closeDrawer} className="btn-ghost flex-1 justify-center">
+                    <Link href="/cart" onClick={closeDrawer} className="btn-line flex-1 justify-center">
                       View cart
                     </Link>
-                    <Link href="/checkout" onClick={closeDrawer} className="btn-primary flex-1 justify-center">
+                    <Link href="/checkout" onClick={closeDrawer} className="btn-accent flex-1 justify-center">
                       Checkout
                     </Link>
                   </div>

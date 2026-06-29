@@ -276,14 +276,14 @@ export default function CheckoutPage() {
   };
 
   return (
-    <section className="bg-cream-50 py-16 md:py-24">
+    <section className="bg-transparent py-16 md:py-24">
       <div className="container-x">
-        <h1 className="display text-[clamp(2.5rem,7vw,5rem)]">CHECKOUT.</h1>
+        <h1 className="t-display">Checkout</h1>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
           <div className="space-y-6">
             <div className="card p-6">
-              <h3 className="font-display text-xl uppercase">Delivery details</h3>
+              <h3 className="t-h3">Delivery details</h3>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <div><label className="label" htmlFor="checkout-name">Full name</label><input id="checkout-name" required aria-required="true" aria-invalid={errorField === "name"} className={`input ${errorField === "name" ? "ring-2 ring-flame/50" : ""}`} value={addr.name} onChange={(e) => { setErrorField(null); setAddr({ ...addr, name: e.target.value }); }} /></div>
                 <div><label className="label" htmlFor="checkout-email">Email</label><input id="checkout-email" type="email" required aria-required="true" aria-invalid={errorField === "email"} className={`input ${errorField === "email" ? "ring-2 ring-flame/50" : ""}`} value={addr.email} onChange={(e) => { setErrorField(null); setAddr({ ...addr, email: e.target.value }); }} /></div>
@@ -311,13 +311,13 @@ export default function CheckoutPage() {
               {/* Map preview */}
               {mapCoords ? (
                 <div className="mt-5">
-                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-cocoa">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink">
                     <MapPin className="h-4 w-4 text-flame" /> Delivery location
                   </div>
-                  <div ref={mapRef} className="h-56 w-full rounded-2xl overflow-hidden border border-cocoa/10 shadow-card" />
+                  <div ref={mapRef} className="h-56 w-full rounded-2xl overflow-hidden border border-line shadow-card" />
                 </div>
               ) : (
-                <div className="mt-5 flex items-center gap-3 rounded-2xl border border-dashed border-cocoa/20 bg-peach-100/40 px-4 py-4 text-sm text-cocoa/60">
+                <div className="mt-5 flex items-center gap-3 rounded-2xl border border-dashed border-line bg-surface/40 px-4 py-4 text-sm text-ink-mut">
                   <MapPin className="h-5 w-5 text-flame shrink-0" />
                   Start typing your street address above to see your delivery location on the map.
                 </div>
@@ -325,18 +325,18 @@ export default function CheckoutPage() {
             </div>
 
             <div className="card p-6">
-              <h3 className="font-display text-xl uppercase">Payment method</h3>
+              <h3 className="t-h3">Payment method</h3>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 {[
                   { id: "razorpay", label: "Razorpay (UPI, cards, netbanking)", Icon: CreditCard, desc: "Recommended for India" },
                   { id: "stripe", label: "Stripe (international cards)", Icon: Globe, desc: "For overseas customers" },
                 ].map((m) => (
                   <button key={m.id} type="button" onClick={() => setMethod(m.id as any)}
-                    className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 ${method === m.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-cocoa/10 bg-white"}`}>
+                    className={`flex items-start gap-3 rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas ${method === m.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-line bg-white"}`}>
                     <m.Icon className="h-6 w-6 text-flame" />
                     <div>
                       <div className="font-semibold">{m.label}</div>
-                      <div className="text-xs text-cocoa/60">{m.desc}</div>
+                      <div className="text-xs text-ink-mut">{m.desc}</div>
                     </div>
                   </button>
                 ))}
@@ -346,18 +346,18 @@ export default function CheckoutPage() {
 
           <aside className="lg:sticky lg:top-24 self-start">
             <div className="card p-6">
-              <h3 className="font-display text-xl uppercase">Your order</h3>
+              <h3 className="t-h3">Your order</h3>
               <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-2">
                 {items.map((it) => (
                   <li key={it.id} className="flex items-center gap-3 text-sm">
-                    <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-cream-100 text-xl">
+                    <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-surface text-xl">
                       {it.image && (it.image.startsWith("/") || it.image.startsWith("http")) ? (
                         <Image src={it.image} alt={it.name} fill sizes="40px" className="object-cover" />
                       ) : (
                         it.image || "🎂"
                       )}
                     </span>
-                    <span className="min-w-0 flex-1 truncate">{it.name} <span className="text-cocoa/50">× {it.qty}</span></span>
+                    <span className="min-w-0 flex-1 truncate">{it.name} <span className="text-ink-mut">× {it.qty}</span></span>
                     <span className="font-semibold">₹{it.qty * it.price}</span>
                   </li>
                 ))}
@@ -366,23 +366,23 @@ export default function CheckoutPage() {
               <div className="mt-4 flex gap-2">
                 <label className="sr-only" htmlFor="checkout-coupon">Coupon code</label>
                 <input id="checkout-coupon" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon code" className="input" />
-                <button onClick={applyCoupon} className="btn-ghost shrink-0 rounded-2xl py-3">Apply</button>
+                <button onClick={applyCoupon} className="btn-line shrink-0 rounded-2xl py-3">Apply</button>
               </div>
 
               <ul className="mt-4 space-y-2 text-sm">
-                <li className="flex justify-between"><span className="text-cocoa/60">Subtotal</span><span>₹{subtotal}</span></li>
-                <li className="flex justify-between"><span className="text-cocoa/60">Delivery</span><span>{delivery === 0 ? <span className="text-flame">FREE</span> : `₹${delivery}`}</span></li>
+                <li className="flex justify-between"><span className="text-ink-mut">Subtotal</span><span>₹{subtotal}</span></li>
+                <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span>{delivery === 0 ? <span className="text-flame">FREE</span> : `₹${delivery}`}</span></li>
                 {discount > 0 && <li className="flex justify-between text-flame"><span>Discount</span><span>− ₹{discount}</span></li>}
               </ul>
-              <div className="mt-3 flex items-baseline justify-between border-t border-cocoa/10 pt-3">
-                <span className="font-display text-xl uppercase">Total</span>
+              <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
+                <span className="t-h3">Total</span>
                 <span className="font-display text-3xl text-flame">₹{total}</span>
               </div>
-              <button onClick={placeOrder} disabled={loading} className="btn-primary mt-5 w-full justify-center">
+              <button onClick={placeOrder} disabled={loading} className="btn-accent mt-5 w-full justify-center">
                 {loading ? "Processing..." : `Pay ₹${total}`}
               </button>
-              <Link href="/cart" className="mt-2 block text-center text-xs text-cocoa/60 hover:text-flame">← Edit cart</Link>
-              <p className="mt-3 text-xs text-cocoa/50">By placing the order you accept our <Link href="/privacy-policy" className="underline">privacy policy</Link>.</p>
+              <Link href="/cart" className="mt-2 block text-center text-xs text-ink-mut hover:text-flame">← Edit cart</Link>
+              <p className="mt-3 text-xs text-ink-mut">By placing the order you accept our <Link href="/privacy-policy" className="underline">privacy policy</Link>.</p>
             </div>
           </aside>
         </div>

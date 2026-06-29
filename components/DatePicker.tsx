@@ -70,7 +70,7 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
   ];
 
   return (
-    <div className="rounded-2xl border border-cocoa/10 bg-white shadow-card overflow-hidden">
+    <div className="rounded-2xl border border-line bg-white shadow-card overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between bg-flame px-4 py-3">
         <button
@@ -94,9 +94,9 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
       </div>
 
       {/* Day names */}
-      <div className="grid grid-cols-7 bg-peach-100 px-2 py-1.5">
+      <div className="grid grid-cols-7 bg-surface px-2 py-1.5">
         {DAYS.map((d) => (
-          <div key={d} className="text-center text-[10px] font-bold uppercase tracking-wider text-cocoa/50">
+          <div key={d} className="text-center text-[10px] font-bold uppercase tracking-wider text-ink-mut">
             {d}
           </div>
         ))}
@@ -124,10 +124,10 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
                 ${selected
                   ? "bg-flame text-white shadow-glow"
                   : todayMark
-                  ? "bg-peach-100 text-cocoa font-bold"
+                  ? "bg-surface text-ink font-bold"
                   : disabled
                   ? "text-cocoa/20 cursor-not-allowed"
-                  : "text-cocoa hover:bg-peach-100"
+                  : "text-ink hover:bg-surface"
                 }
               `}
             >
@@ -137,9 +137,9 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
         })}
       </div>
 
-      {/* Selected date display */}
+      {/* Selected date t-h2 */}
       {value && (
-        <div className="border-t border-cocoa/10 px-4 py-2 text-center text-xs text-cocoa/60">
+        <div className="border-t border-line px-4 py-2 text-center text-xs text-ink-mut">
           Selected:{" "}
           <span className="font-semibold text-flame">
             {selected?.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}

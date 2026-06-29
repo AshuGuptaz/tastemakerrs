@@ -24,14 +24,14 @@ export default function ProductDetail({
 
   return (
     <>
-      <section className="bg-cream-100 py-10 md:py-16">
+      <section className="bg-surface py-10 md:py-16">
         <div className="container-x">
-          <nav className="mb-6 text-sm text-cocoa/60">
+          <nav className="mb-6 text-sm text-ink-mut">
             <Link href="/menu" className="hover:text-flame">Menu</Link>
             <span className="mx-2">/</span>
             <Link href={`/menu?cat=${product.category}`} className="hover:text-flame">{categoryLabel}</Link>
             <span className="mx-2">/</span>
-            <span className="text-cocoa">{product.name}</span>
+            <span className="text-ink">{product.name}</span>
           </nav>
 
           <div className="grid gap-10 md:grid-cols-2">
@@ -62,8 +62,8 @@ export default function ProductDetail({
             </motion.div>
 
             <div>
-              <p className="text-sm uppercase tracking-wider text-cocoa/60">{categoryLabel}{product.unit && ` · ${product.unit}`}</p>
-              <h1 className="display mt-2 text-[clamp(2.2rem,5vw,4rem)]">{product.name}</h1>
+              <p className="text-sm uppercase tracking-wider text-ink-mut">{categoryLabel}{product.unit && ` · ${product.unit}`}</p>
+              <h1 className="t-h2 mt-2 text-[clamp(2.2rem,5vw,4rem)]">{product.name}</h1>
               <p className="mt-3 font-display text-3xl text-flame">₹{product.price}</p>
 
               <div className="mt-3 flex flex-wrap gap-2">
@@ -75,11 +75,11 @@ export default function ProductDetail({
                 ))}
               </div>
 
-              <p className="mt-6 leading-relaxed text-cocoa/80">{product.description}</p>
+              <p className="mt-6 leading-relaxed text-ink-soft">{product.description}</p>
 
               {/* Qty + add */}
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-1 rounded-pill border border-cocoa/15 bg-white">
+                <div className="flex items-center gap-1 rounded-pill border border-line bg-white">
                   <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="focus-ring grid h-11 w-11 place-items-center hover:text-flame">
                     <Minus className="h-4 w-4" />
                   </button>
@@ -93,27 +93,27 @@ export default function ProductDetail({
                   onClick={() =>
                     add({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image }, qty)
                   }
-                  className="btn-primary"
+                  className="btn-accent"
                 >
                   Add to Cart · ₹{product.price * qty}
                 </button>
 
                 {product.customizable && (
-                  <Link href={`/custom-cake?base=${product.slug}`} className="btn-ghost">
+                  <Link href={`/custom-cake?base=${product.slug}`} className="btn-line">
                     <Sparkles className="h-4 w-4" /> Customize this cake
                   </Link>
                 )}
 
-                <button className="focus-ring grid h-11 w-11 place-items-center rounded-pill border border-cocoa/15 bg-white hover:text-flame" aria-label="Wishlist">
+                <button className="focus-ring grid h-11 w-11 place-items-center rounded-pill border border-line bg-white hover:text-flame" aria-label="Wishlist">
                   <Heart className="h-5 w-5" />
                 </button>
               </div>
 
               {/* Trust */}
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
-                <div className="flex items-center gap-2 text-sm text-cocoa/70"><Truck className="h-4 w-4 text-flame" /> Same-day delivery</div>
-                <div className="flex items-center gap-2 text-sm text-cocoa/70"><Shield className="h-4 w-4 text-flame" /> FSSAI-certified kitchen</div>
-                <div className="flex items-center gap-2 text-sm text-cocoa/70"><Sparkles className="h-4 w-4 text-flame" /> Baked fresh, never frozen</div>
+                <div className="flex items-center gap-2 text-sm text-ink-soft"><Truck className="h-4 w-4 text-flame" /> Same-day delivery</div>
+                <div className="flex items-center gap-2 text-sm text-ink-soft"><Shield className="h-4 w-4 text-flame" /> FSSAI-certified kitchen</div>
+                <div className="flex items-center gap-2 text-sm text-ink-soft"><Sparkles className="h-4 w-4 text-flame" /> Baked fresh, never frozen</div>
               </div>
             </div>
           </div>
@@ -121,9 +121,9 @@ export default function ProductDetail({
       </section>
 
       {related.length > 0 && (
-        <section className="section bg-cream-50">
+        <section className="section bg-transparent">
           <div className="container-x">
-            <h2 className="h-section">YOU MAY ALSO <Underlined>LOVE</Underlined></h2>
+            <h2 className="t-h2">You may also <Underlined>love</Underlined></h2>
             <div className="mt-8 grid gap-5 sm:grid-cols-2 md:grid-cols-4">
               {related.map((p, i) => (
                 <ProductCard key={p.id} product={p} index={i} />

@@ -90,7 +90,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           </span>
         )}
         {product.eggless && (
-          <span className="absolute right-3 top-3 rounded-pill bg-white px-2.5 py-1 text-[10px] font-bold uppercase text-cocoa shadow">
+          <span className="absolute right-3 top-3 rounded-pill bg-white px-2.5 py-1 text-[10px] font-bold uppercase text-ink shadow">
             Eggless
           </span>
         )}
@@ -101,11 +101,11 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           <h3 className="font-display text-xl leading-tight tracking-tight">{product.name}</h3>
           <span className="font-display text-lg text-flame">₹{product.price}</span>
         </div>
-        {product.unit && <p className="mb-2 text-xs uppercase tracking-wider text-cocoa/50">{product.unit}</p>}
-        <p className="mb-4 line-clamp-2 text-sm text-cocoa/70">{product.description}</p>
+        {product.unit && <p className="mb-2 text-xs uppercase tracking-wider text-ink-mut">{product.unit}</p>}
+        <p className="mb-4 line-clamp-2 text-sm text-ink-soft">{product.description}</p>
 
         <div className="mt-auto flex items-center gap-2">
-          <Link href={`/product/${product.slug}`} className="btn-ghost flex-1 justify-center">
+          <Link href={`/product/${product.slug}`} className="btn-line flex-1 justify-center">
             View
           </Link>
           <motion.button

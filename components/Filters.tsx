@@ -40,18 +40,18 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
 
   return (
     <div className="card p-5 md:sticky md:top-24">
-      <h3 className="font-display text-lg uppercase">Filters</h3>
+      <h3 className="t-h3">Filters</h3>
 
       <div className="mt-4">
         <p className="label">Category</p>
         <div className="flex flex-wrap gap-2">
           <button onClick={() => update("cat", null)}
-            className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition ${cat === "all" ? "bg-flame text-white" : "bg-cream-100 hover:bg-cream-200"}`}>
+            className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition ${cat === "all" ? "bg-flame text-white" : "bg-surface hover:bg-surface"}`}>
             All
           </button>
           {CATEGORIES.map((c) => (
             <button key={c} onClick={() => update("cat", c)}
-              className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition ${cat === c ? "bg-flame text-white" : "bg-cream-100 hover:bg-cream-200"}`}>
+              className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition ${cat === c ? "bg-flame text-white" : "bg-surface hover:bg-surface"}`}>
               {CATEGORY_META[c].label}
             </button>
           ))}
@@ -90,7 +90,7 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
         <label htmlFor="bs" className="text-sm font-semibold">Bestsellers only</label>
       </div>
 
-      <button onClick={() => router.replace("/menu")} className="btn-ghost mt-6 w-full justify-center">
+      <button onClick={() => router.replace("/menu")} className="btn-line mt-6 w-full justify-center">
         Reset filters
       </button>
     </div>

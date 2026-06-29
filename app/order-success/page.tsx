@@ -25,19 +25,19 @@ function OrderSuccessInner() {
   }, [id, clear]);
 
   return (
-    <section className="bg-cream-100 py-20 md:py-32 min-h-[70vh]">
+    <section className="bg-surface py-20 md:py-32 min-h-[70vh]">
       <div className="container-x text-center">
         <motion.div initial={{ scale: reduce ? 1 : 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={reduce ? { duration: 0.2 } : { type: "spring", stiffness: 260, damping: 22, mass: 0.9 }} className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-flame text-white">
           <CheckCircle2 className="h-14 w-14" />
         </motion.div>
-        <h1 className="display mt-6 text-[clamp(2.5rem,7vw,5rem)]">ORDER <Underlined>CONFIRMED</Underlined></h1>
-        <p className="mt-4 max-w-xl mx-auto text-cocoa/70">
+        <h1 className="t-h2 mt-6 text-[clamp(2.5rem,7vw,5rem)]">Order <Underlined>confirmed</Underlined></h1>
+        <p className="mt-4 max-w-xl mx-auto text-ink-soft">
           Thank you for ordering from The Taste Makerrs. Our kitchen has started baking. We'll send you delivery updates on WhatsApp & email.
         </p>
         {id && <p className="mt-3 inline-block rounded-pill bg-white px-4 py-2 text-sm font-mono">Order ID: <b>{id}</b></p>}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/menu" className="btn-primary">Order more</Link>
-          <Link href="/" className="btn-ghost">Back to home</Link>
+          <Link href="/menu" className="btn-accent">Order more</Link>
+          <Link href="/" className="btn-line">Back to home</Link>
         </div>
       </div>
     </section>
