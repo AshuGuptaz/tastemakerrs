@@ -114,7 +114,7 @@ export default function CartDrawer() {
                                 <Plus className="h-3.5 w-3.5" />
                               </button>
                             </div>
-                            <span className="font-display text-lg text-flame">₹{it.price * it.qty}</span>
+                            <span className="font-display text-lg text-flame-700">₹{it.price * it.qty}</span>
                           </div>
                         </div>
                       </motion.div>

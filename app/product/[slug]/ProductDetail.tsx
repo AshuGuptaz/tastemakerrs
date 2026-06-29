@@ -64,7 +64,7 @@ export default function ProductDetail({
             <div>
               <p className="text-sm uppercase tracking-wider text-ink-mut">{categoryLabel}{product.unit && ` · ${product.unit}`}</p>
               <h1 className="t-h2 mt-2 text-[clamp(2.2rem,5vw,4rem)]">{product.name}</h1>
-              <p className="mt-3 font-display text-3xl text-flame">₹{product.price}</p>
+              <p className="mt-3 font-display text-3xl text-flame-700">₹{product.price}</p>
 
               <div className="mt-3 flex flex-wrap gap-2">
                 {product.eggless && <span className="pill"><Leaf className="h-3.5 w-3.5 text-flame" /> Eggless option</span>}

@@ -99,7 +99,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-1 flex items-center justify-between gap-2">
           <h3 className="font-display text-xl leading-tight tracking-tight">{product.name}</h3>
-          <span className="font-display text-lg text-flame">₹{product.price}</span>
+          <span className="font-display text-lg text-flame-700">₹{product.price}</span>
         </div>
         {product.unit && <p className="mb-2 text-xs uppercase tracking-wider text-ink-mut">{product.unit}</p>}
         <p className="mb-4 line-clamp-2 text-sm text-ink-soft">{product.description}</p>

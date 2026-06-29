@@ -54,7 +54,7 @@ function MenuContent() {
                 <p className="mt-2 text-ink-mut">Try clearing some filters.</p>
               </div>
             ) : (
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
                 {filtered.map((p, i) => (
                   <ProductCard key={p.id} product={p} index={i} />
                 ))}
@@ -81,7 +81,7 @@ export default function MenuPage() {
           <section className="section bg-transparent">
             <div className="container-x grid gap-8 md:grid-cols-[280px_1fr]">
               <div className="skeleton hidden h-96 rounded-xl2 md:block" />
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <ProductCardSkeleton key={i} />
                 ))}

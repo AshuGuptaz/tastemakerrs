@@ -280,7 +280,7 @@ export default function CheckoutPage() {
       <div className="container-x">
         <h1 className="t-display">Checkout</h1>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+        <div className="mt-8 grid gap-8 pb-28 lg:grid-cols-[1fr_380px] lg:pb-0">
           <div className="space-y-6">
             <div className="card p-6">
               <h3 className="t-h3">Delivery details</h3>
@@ -371,20 +371,33 @@ export default function CheckoutPage() {
 
               <ul className="mt-4 space-y-2 text-sm">
                 <li className="flex justify-between"><span className="text-ink-mut">Subtotal</span><span>₹{subtotal}</span></li>
-                <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span>{delivery === 0 ? <span className="text-flame">FREE</span> : `₹${delivery}`}</span></li>
-                {discount > 0 && <li className="flex justify-between text-flame"><span>Discount</span><span>− ₹{discount}</span></li>}
+                <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span>{delivery === 0 ? <span className="text-flame-700">FREE</span> : `₹${delivery}`}</span></li>
+                {discount > 0 && <li className="flex justify-between text-flame-700"><span>Discount</span><span>− ₹{discount}</span></li>}
               </ul>
               <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
                 <span className="t-h3">Total</span>
-                <span className="font-display text-3xl text-flame">₹{total}</span>
+                <span className="font-display text-3xl text-flame-700">₹{total}</span>
               </div>
-              <button onClick={placeOrder} disabled={loading} className="btn-accent mt-5 w-full justify-center">
+              <button onClick={placeOrder} disabled={loading} className="btn-accent mt-5 hidden w-full justify-center lg:inline-flex">
                 {loading ? "Processing..." : `Pay ₹${total}`}
               </button>
               <Link href="/cart" className="mt-2 block text-center text-xs text-ink-mut hover:text-flame">← Edit cart</Link>
               <p className="mt-3 text-xs text-ink-mut">By placing the order you accept our <Link href="/privacy-policy" className="underline">privacy policy</Link>.</p>
             </div>
           </aside>
+        </div>
+      </div>
+
+      {/* mobile sticky pay bar — keeps the total + Pay in reach without scrolling past the form */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 px-4 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] pt-3 backdrop-blur lg:hidden">
+        <div className="container-x flex items-center justify-between gap-4">
+          <div className="leading-tight">
+            <div className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-mut">Total</div>
+            <div className="font-display text-xl font-semibold text-flame-700">₹{total}</div>
+          </div>
+          <button onClick={placeOrder} disabled={loading} className="btn-accent flex-1 justify-center" style={{ maxWidth: "62%" }}>
+            {loading ? "Processing…" : `Pay ₹${total}`}
+          </button>
         </div>
       </div>
 
