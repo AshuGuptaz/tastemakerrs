@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useReducedMotion } from "framer-motion";
 import { ShoppingBag, Menu as MenuIcon, X, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
@@ -17,12 +17,28 @@ const NAV = [
   { href: "/contact", label: "Contact" },
 ];
 
+// shadow-e2 → shadow-e3 (same 2-shadow structure so framer can interpolate)
+const E2 = "0 6px 20px -6px rgba(18,17,19,0.10), 0 2px 6px -2px rgba(18,17,19,0.06)";
+const E3 = "0 24px 60px -20px rgba(18,17,19,0.22), 0 8px 24px -12px rgba(18,17,19,0.12)";
+
 export default function Navbar() {
   const pathname = usePathname();
+  const reduce = useReducedMotion();
   const { count } = useCart();
   const { openDrawer } = useCartUI();
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+
+  // ── Scroll-linked condense: a single GPU transform (scale) on the pill, driven
+  //    by a snappy spring. No layout properties animate → zero reflow, buttery.
+  const { scrollY } = useScroll();
+  const sq = useSpring(useTransform(scrollY, [0, 60], [0, 1], { clamp: true }), {
+    stiffness: 480,
+    damping: 48,
+    mass: 0.4,
+  });
+  const scale = useTransform(sq, [0, 1], [1, 0.92]);
+  const bg = useTransform(sq, [0, 1], ["rgba(255,255,255,0.72)", "rgba(255,255,255,0.93)"]);
+  const shadow = useTransform(sq, [0, 1], [E2, E3]);
 
   // Lock body scroll while the mobile menu is open.
   useEffect(() => {
@@ -33,42 +49,27 @@ export default function Navbar() {
   // Close the mobile menu on route change.
   useEffect(() => { setOpen(false); }, [pathname]);
 
-  // Shrink the floating pill once the page is scrolled.
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <header className="sticky top-0 z-50 pt-3 md:pt-4">
       <div className="container-x">
-        {/* Floating pill — condenses on scroll */}
-        <div
-          className={`mx-auto flex items-center justify-between rounded-pill border border-line backdrop-blur-xl transition-all duration-300 ease-out ${
-            scrolled
-              ? "max-w-4xl gap-1.5 bg-surface/90 px-2.5 py-1.5 shadow-e3"
-              : "max-w-5xl gap-3 bg-surface/70 px-3.5 py-3 shadow-e2"
-          }`}
+        {/* Floating pill — condenses on scroll via a pure transform (no reflow) */}
+        <motion.div
+          style={{
+            scale: reduce ? 1 : scale,
+            backgroundColor: bg,
+            boxShadow: shadow,
+            transformOrigin: "center top",
+            willChange: "transform",
+          }}
+          className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-pill border border-line px-3.5 py-3 backdrop-blur-xl"
         >
           {/* Brand */}
           <Link
             href="/"
             className="group flex items-center gap-2 rounded-pill pl-1.5 pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
           >
-            <span
-              className={`grid place-items-center rounded-xl bg-ink font-bold text-white transition-all duration-300 ${
-                scrolled ? "h-7 w-7 text-xs" : "h-9 w-9 text-sm"
-              }`}
-            >
-              tm
-            </span>
-            <span
-              className={`whitespace-nowrap font-semibold tracking-tighter2 text-ink transition-all duration-300 ${
-                scrolled ? "text-[0.92rem]" : "text-[1.12rem]"
-              }`}
-            >
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink text-sm font-bold text-white">tm</span>
+            <span className="whitespace-nowrap text-[1.12rem] font-semibold tracking-tighter2 text-ink">
               Taste <span className="text-flame">Makerrs</span>
             </span>
           </Link>
@@ -123,9 +124,7 @@ export default function Navbar() {
 
             <Link
               href="/menu"
-              className={`hidden md:inline-flex btn-ink group whitespace-nowrap text-sm transition-all duration-300 ${
-                scrolled ? "px-3.5 py-1.5" : "px-4 py-2"
-              }`}
+              className="btn-ink group hidden whitespace-nowrap px-4 py-2 text-sm md:inline-flex"
             >
               Order now
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
@@ -139,7 +138,7 @@ export default function Navbar() {
               {open ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Mobile menu + scrim */}
         <AnimatePresence>
