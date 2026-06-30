@@ -3,6 +3,7 @@ import Hero from "@/components/home/Hero";
 import TrustStrip from "@/components/home/TrustStrip";
 import Stats from "@/components/home/Stats";
 import Bento from "@/components/home/Bento";
+import SignatureGallery from "@/components/home/SignatureGallery";
 import Occasions from "@/components/home/Occasions";
 import Showcase from "@/components/home/Showcase";
 import Packages from "@/components/home/Packages";
@@ -19,6 +20,7 @@ export default function HomePage() {
       <TrustStrip />
       <Stats />
       <Bento />
+      <SignatureGallery />
       <Occasions />
       <Showcase />
       <Packages />
