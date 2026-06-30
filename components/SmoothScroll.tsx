@@ -15,9 +15,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const start = () => {
       if (lenis || mq.matches) return;
       lenis = new Lenis({
-        duration: 1.3,
+        duration: 1.05,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
+        wheelMultiplier: 1.05,
       });
       const raf = (time: number) => {
         lenis!.raf(time);

@@ -33,8 +33,8 @@ export default function Reveal({
   return (
     <Comp
       className={className}
-      initial={reduce ? false : { y }}
-      whileInView={{ y: 0 }}
+      initial={reduce ? false : { y, scale: 0.985 }}
+      whileInView={{ y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, ease: EASE, delay }}
       {...rest}

@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 html, body {
-  /* White base with a soft multi-point orange gradient field (Stripe-style). */
+  /* White base with a soft multi-point orange gradient field (Stripe-style).
+     NOTE: no background-attachment:fixed — it forces a full repaint on every
+     scroll frame and is a classic jank source. The warm field is provided by
+     the GPU-promoted AuroraBg layer instead. */
   background:
-    radial-gradient(900px 520px at 10% 4%, rgba(253,186,116,0.18), transparent 58%),
-    radial-gradient(1000px 560px at 92% 2%, rgba(249,115,22,0.16), transparent 58%),
-    radial-gradient(1200px 720px at 50% 106%, rgba(251,146,60,0.14), transparent 60%),
-    radial-gradient(800px 600px at 80% 60%, rgba(253,186,116,0.10), transparent 60%),
+    radial-gradient(900px 520px at 10% 4%, rgba(253,186,116,0.16), transparent 58%),
+    radial-gradient(1000px 560px at 92% 2%, rgba(249,115,22,0.14), transparent 58%),
     #FFFFFF;
-  background-attachment: fixed;
   color: #0B0B0C;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
