@@ -7,9 +7,11 @@ html, body {
      NOTE: no background-attachment:fixed — it forces a full repaint on every
      scroll frame and is a classic jank source. The warm field is provided by
      the GPU-promoted AuroraBg layer instead. */
+  /* Wide, low-opacity, overlapping warm washes → one smooth warm field rather
+     than two distinct orange corners divided by white. */
   background:
-    radial-gradient(900px 520px at 10% 4%, rgba(214,122,71,0.14), transparent 58%),
-    radial-gradient(1000px 560px at 92% 2%, rgba(201,143,79,0.12), transparent 58%),
+    radial-gradient(1300px 900px at 72% -12%, rgba(214,122,71,0.10), transparent 60%),
+    radial-gradient(1200px 950px at 12% 4%, rgba(224,139,90,0.075), transparent 62%),
     #FBF8F3;
   color: #1C1714;
   -webkit-font-smoothing: antialiased;
@@ -195,6 +197,10 @@ html { scrollbar-gutter: stable; }
     transform: none !important;
   }
 }
+
+/* Typewriter caret — blinks beside the rotating word */
+.tw-caret { display: inline-block; margin-left: 1px; font-weight: 300; animation: caret-blink 1.05s steps(1) infinite; }
+@keyframes caret-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 /* Marquee */
 .marquee-track { display: inline-flex; gap: 2.5rem; white-space: nowrap; animation: marquee 60s linear infinite; }

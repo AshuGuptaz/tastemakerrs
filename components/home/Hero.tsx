@@ -4,8 +4,9 @@ import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Star, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import Magnetic from "@/components/ui/Magnetic";
+import Typewriter from "@/components/ui/Typewriter";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 // easeOutExpo — the signature "expensive" reveal curve (Locomotive / SOTD).
@@ -97,31 +98,17 @@ export default function Hero() {
                 {...line(0.27)}
                 className="block font-sans text-[0.42em] font-normal leading-snug tracking-tight text-white/75"
               >
-                Baked fresh, delivered the same morning.
+                Baked fresh, made for{" "}
+                <Typewriter
+                  words={["birthdays", "weddings", "anniversaries", "you"]}
+                  className="font-semibold text-flame-400"
+                  startDelay={1200}
+                />
               </motion.span>
             </span>
           </h1>
 
-          {/* credibility strip */}
-          <motion.div
-            {...fadeUp(0.5)}
-            className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/80"
-          >
-            <span className="flex items-center gap-1.5">
-              <span className="flex">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-flame-400 text-flame-400" />
-                ))}
-              </span>
-              <b className="font-semibold text-white">4.9</b>
-            </span>
-            <span className="hidden h-3 w-px bg-white/25 sm:block" />
-            <span className="text-xs uppercase tracking-[0.14em] text-white/65">
-              2,000+ cakes baked &amp; loved across Lucknow
-            </span>
-          </motion.div>
-
-          {/* CTAs — single primary + quiet text link */}
+          {/* CTAs — single primary + quiet text link (rating lives in the TrustStrip below) */}
           <motion.div
             {...fadeUp(0.6)}
             className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center"
