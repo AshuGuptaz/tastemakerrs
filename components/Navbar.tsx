@@ -7,6 +7,7 @@ import { ShoppingBag, Menu as MenuIcon, X, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
+import Magnetic from "@/components/ui/Magnetic";
 
 const NAV = [
   { href: "/menu", label: "Menu" },
@@ -122,13 +123,15 @@ export default function Navbar() {
               )}
             </button>
 
-            <Link
-              href="/menu"
-              className="btn-ink group hidden whitespace-nowrap px-4 py-2 text-sm md:inline-flex"
-            >
-              Order now
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-            </Link>
+            <Magnetic className="hidden md:inline-block">
+              <Link
+                href="/menu"
+                className="btn-ink group whitespace-nowrap px-4 py-2 text-sm"
+              >
+                Order now
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </Link>
+            </Magnetic>
 
             <button
               className="grid h-9 w-9 place-items-center rounded-pill text-ink hover:bg-ink/[0.05] md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"

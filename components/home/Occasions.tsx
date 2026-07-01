@@ -6,7 +6,7 @@ import Reveal from "@/components/ui/Reveal";
 const OCCASIONS = [
   { title: "Birthdays", copy: "Bento, photo & pinata cakes that steal the show.", img: "/images/cakes/pinata.jpg", href: "/menu?cat=cakes" },
   { title: "Weddings & anniversaries", copy: "Elegant tiers, finished to look as good as they taste.", img: "/images/cakes/strawberry.jpg", href: "/custom-cake" },
-  { title: "Corporate & bulk gifting", copy: "Curated hampers with custom branding on the box.", img: "/images/hampers/hamper.jpg", href: "/menu?cat=hampers" },
+  { title: "Corporate & bulk gifting", copy: "Curated hampers & chocolate boxes with custom branding.", img: "/images/chocolates/pralines.jpg", href: "/menu?cat=hampers" },
 ];
 
 export default function Occasions() {

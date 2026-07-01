@@ -6,18 +6,17 @@ import Image from "next/image";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
-const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=720&q=80`;
-
-// ── Swap these for your own photos later (verified-loading placeholders).
+// Curated local photos (in /public/images/cakes) — each genuinely matches its
+// label, unlike the earlier remote placeholders (cookies shown as "Vanilla" etc.).
 const CAKES = [
-  { img: IMG("1497051788611-2c64812349fa"), name: "Classic Vanilla", note: "Madagascar vanilla · buttercream" },
-  { img: IMG("1551404973-7dec6ee9bba7"), name: "Red Velvet", note: "Cream-cheese frost" },
-  { img: IMG("1564844536308-75c540dbf14e"), name: "Belgian Chocolate", note: "70% dark ganache" },
-  { img: IMG("1526081347589-7fa3cb41b4b2"), name: "Rasmalai Fusion", note: "Saffron · cardamom · pistachio" },
-  { img: IMG("1659549591823-c6efec55b82f"), name: "Pistachio Rose", note: "Roasted pistachio · rose" },
-  { img: IMG("1559553156-2e97137af16f"), name: "Berry Gâteau", note: "Fresh seasonal berries" },
-  { img: IMG("1569896254409-ac66c17041d2"), name: "Hazelnut Praline", note: "Toasted hazelnut crunch" },
-  { img: IMG("1639678114429-a915fdb55000"), name: "Lotus Biscoff", note: "Caramelised cookie butter" },
+  { img: "/images/cakes/vanilla.jpg", name: "Classic Vanilla", note: "Madagascar vanilla · buttercream" },
+  { img: "/images/cakes/red-velvet.jpg", name: "Red Velvet", note: "Cream-cheese frost" },
+  { img: "/images/cakes/chocolate.jpg", name: "Belgian Chocolate", note: "70% dark ganache" },
+  { img: "/images/cakes/rasmalai.jpg", name: "Rasmalai Fusion", note: "Saffron · cardamom · pistachio" },
+  { img: "/images/cakes/pistachio.jpg", name: "Pistachio Rose", note: "Roasted pistachio · rose" },
+  { img: "/images/cakes/fresh-fruit.jpg", name: "Fresh Fruit Gâteau", note: "Fresh seasonal fruit" },
+  { img: "/images/cakes/black-forest.jpg", name: "Black Forest", note: "Cherry · dark chocolate · cream" },
+  { img: "/images/cakes/strawberry.jpg", name: "Strawberry Cream", note: "Fresh strawberries · light cream" },
 ];
 
 export default function SignatureGallery() {
@@ -49,8 +48,8 @@ export default function SignatureGallery() {
 
       <div className="relative mt-10">
         {/* edge fades */}
-        <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-white to-transparent md:w-12" />
-        <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-white to-transparent md:w-12" />
+        <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-canvas to-transparent md:w-12" />
+        <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-canvas to-transparent md:w-12" />
 
         <div
           ref={railRef}

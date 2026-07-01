@@ -69,10 +69,10 @@ export default function Packages() {
           {PACKAGES.map((p, i) => (
             <Reveal key={p.name} delay={i * 0.08}>
               <div
-                className={`relative flex h-full flex-col bg-surface transition-all duration-300 ${
+                className={`relative flex h-full flex-col transition-all duration-300 ${
                   p.popular
-                    ? "rounded-[2rem] border-2 border-flame p-8 shadow-e3 ring-4 ring-flame/10 hover:-translate-y-1"
-                    : "rounded-[1.5rem] border border-line p-8 shadow-e1 hover:-translate-y-1 hover:shadow-e3"
+                    ? "rounded-[2rem] border-2 border-flame bg-wheat-50 p-8 shadow-e3 ring-4 ring-flame/10 hover:-translate-y-1"
+                    : "rounded-[1.5rem] border border-line bg-surface p-8 shadow-e1 hover:-translate-y-1 hover:shadow-e3"
                 }`}
               >
                 {p.popular && (
@@ -85,14 +85,11 @@ export default function Packages() {
                 )}
                 <div className="text-center">
                   <h3 className="t-h3">{p.name}</h3>
-                  <div className="mt-3 font-display text-[clamp(2.5rem,4vw,3rem)] font-semibold tracking-tighter2 text-ink">{p.price}</div>
+                  <div className="price mt-3">{p.price}</div>
                   <p className="mt-1 text-sm text-ink-mut">{p.serves}</p>
                 </div>
 
-                <Link
-                  href="/custom-cake"
-                  className={`mt-7 w-full ${p.popular ? "btn-accent" : "btn-ink"}`}
-                >
+                <Link href="/custom-cake" className="btn-ink mt-7 w-full">
                   Order this package
                 </Link>
 

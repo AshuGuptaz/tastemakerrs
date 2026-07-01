@@ -77,8 +77,8 @@ export default function Testimonials() {
           <Row items={REVIEWS.slice(5, 10)} reverse duration={46} />
         </div>
         {/* edge fades to the warm canvas */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-canvas to-transparent md:w-40" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-canvas to-transparent md:w-40" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-clay-50 to-transparent md:w-40" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-clay-50 to-transparent md:w-40" />
       </div>
     </section>
   );

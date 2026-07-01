@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -10,6 +10,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import ScrollProgress from "@/components/ScrollProgress";
 import CartDrawer from "@/components/CartDrawer";
 import FlyToCart from "@/components/FlyToCart";
+import SugarBurst from "@/components/ui/SugarBurst";
 
 // Inter — the premium geometric-grotesque sans used by Linear, Vercel & co.
 // One variable family drives the whole type system (display + body).
@@ -17,6 +18,17 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+});
+
+// Fraunces — characterful variable serif for headlines, product names & prices.
+// opsz/SOFT/WONK axes give warmth at large sizes; italic loaded for accent words.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  weight: "variable",
+  style: ["normal", "italic"],
+  axes: ["opsz", "SOFT", "WONK"],
 });
 
 export const metadata: Metadata = {
@@ -42,8 +54,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen font-sans text-ink antialiased">
+    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+      <body className="grain min-h-screen font-sans text-ink antialiased">
         <CartProvider>
           <CartUIProvider>
             <SmoothScroll>
@@ -59,6 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Footer />
               <CartDrawer />
               <FlyToCart />
+              <SugarBurst />
               <Toaster position="bottom-right" toastOptions={{
                 style: { background: "#0B0B0C", color: "#fff", borderRadius: "14px" },
                 iconTheme: { primary: "#F97316", secondary: "#fff" },

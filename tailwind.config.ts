@@ -18,31 +18,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* ── White / black / orange system (shape.ai-style clone) ── */
-        canvas: "#FFFFFF",          // pure white page background
-        surface: "#FFFFFF",         // cards / raised surfaces
-        line: "#ECECEC",            // hairline borders
+        /* ── Warm premium-bakery system: toasted-paper canvas + espresso ink +
+              roasted-terracotta accent. Token NAMES are unchanged so components
+              inherit the new palette with zero per-file edits. ── */
+        canvas: "#FBF8F3",          // warm baked-paper white (was clinical #FFF)
+        surface: "#FFFDFA",         // cards a hair brighter than canvas
+        line: "#EAE3D9",            // warm hairline (not cold grey)
         ink: {
-          DEFAULT: "#0B0B0C",       // near-black headings/text & dark buttons
-          soft: "#2A2A2E",          // secondary text
-          mut: "#6B6B73",           // muted/captions
+          DEFAULT: "#1C1714",       // espresso near-black (warm, not cold #0B0B0C)
+          soft: "#3A322D",          // warm secondary text
+          mut: "#6E635B",           // warm muted/captions
         },
 
-        /* ── Accent = orange (was flame/pink). Token names kept so components
-              inherit the new accent without per-file edits. ── */
+        /* ── Accent = roasted terracotta / burnt amber (was default Tailwind
+              orange-500). Token names kept so components inherit it for free. ── */
         cream: { 50: "#FFFBF5", 100: "#FFF4E6", 200: "#FFE7CC", 300: "#FFD9AD", DEFAULT: "#FFF4E6" },
         peach: { 100: "#FFEDD5", 200: "#FED7AA", 300: "#FDBA74", DEFAULT: "#FDBA74" },
         sky:   { 50: "#F6F6F6", 100: "#EFEFEF", 200: "#E4E4E4", DEFAULT: "#EFEFEF" },
-        cocoa: { 50: "#FFF1E6", DEFAULT: "#0B0B0C", 900: "#000000" },
-        flame: { 400: "#FB923C", 500: "#F97316", 600: "#EA580C", 700: "#C2410C", 800: "#9A3412", DEFAULT: "#F97316" },
-        rose:  { 500: "#EA580C", 600: "#C2410C" },
-        wine:  { DEFAULT: "#0B0B0C", dark: "#000000" },
+        cocoa: { 50: "#FFF1E6", DEFAULT: "#1C1714", 900: "#000000" },
+        flame: { 400: "#E08B5A", 500: "#D67A47", 600: "#C25E36", 700: "#A4472A", 800: "#823620", DEFAULT: "#D67A47" },
+        rose:  { 500: "#C25E36", 600: "#A4472A" },
+        wine:  { DEFAULT: "#1C1714", dark: "#000000" },
+
+        /* ── NEW: warm support tones for section rhythm + warm dark surfaces ── */
+        clay:  { 50: "#F3ECE3", 100: "#EAE0D3", 200: "#DCCDB9", DEFAULT: "#EAE0D3" },
+        wheat: { 50: "#FAF4E9", 100: "#F4E9D6", DEFAULT: "#FAF4E9" },
+        espresso: { DEFAULT: "#2A211C", deep: "#1C1714" },
       },
       fontFamily: {
         sans:    ["var(--font-inter)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
-        display: ["var(--font-inter)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
-        serif:   ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
-        script:  ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
+        // Fraunces — warm variable display serif (opsz/SOFT axes). Drives headlines,
+        // product names & prices. Georgia is the metric-near fallback (low CLS).
+        display: ["var(--font-display)", "Fraunces", "Georgia", "Times New Roman", "serif"],
+        serif:   ["var(--font-display)", "Fraunces", "Georgia", "serif"],
+        script:  ["var(--font-display)", "Georgia", "serif"],
       },
       letterSpacing: {
         tightish: "-0.02em",
@@ -53,7 +62,7 @@ const config: Config = {
         e1: "0 1px 2px rgba(18,17,19,0.04), 0 1px 1px rgba(18,17,19,0.03)",
         e2: "0 6px 20px -6px rgba(18,17,19,0.10), 0 2px 6px -2px rgba(18,17,19,0.06)",
         e3: "0 24px 60px -20px rgba(18,17,19,0.22), 0 8px 24px -12px rgba(18,17,19,0.12)",
-        glow: "0 14px 40px -12px rgba(249,115,22,0.45)",
+        glow: "0 14px 40px -12px rgba(214,122,71,0.42)",
         ring: "inset 0 0 0 1px rgba(18,17,19,0.06)",
         // legacy
         soft: "0 10px 30px -10px rgba(18,17,19,0.14)",

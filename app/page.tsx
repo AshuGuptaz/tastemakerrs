@@ -17,16 +17,34 @@ export default function HomePage() {
     <>
       <AuroraBg />
       <Hero />
+
+      {/* Act 1 — Desire: trust, then real cake immediately */}
       <TrustStrip />
-      <Stats />
-      <Bento />
       <SignatureGallery />
+
+      {/* Act 2 — Craft & proof (warm band) */}
+      <div className="band-warm">
+        <Bento />
+        <Stats />
+      </div>
+
+      {/* Act 3 — Occasions & bestsellers */}
       <Occasions />
-      <Showcase />
-      <Packages />
+      <div className="band-warm">
+        <Showcase />
+      </div>
+
+      {/* Pricing — dark full-bleed break */}
+      <div className="band-dark">
+        <Packages />
+      </div>
+
+      {/* Act 4 — Trust & convert */}
       <LovedBy />
-      <Testimonials />
-      <FAQ />
+      <div className="band-warm">
+        <Testimonials />
+        <FAQ />
+      </div>
       <CTA />
     </>
   );

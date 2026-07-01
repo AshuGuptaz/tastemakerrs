@@ -8,10 +8,10 @@ html, body {
      scroll frame and is a classic jank source. The warm field is provided by
      the GPU-promoted AuroraBg layer instead. */
   background:
-    radial-gradient(900px 520px at 10% 4%, rgba(253,186,116,0.16), transparent 58%),
-    radial-gradient(1000px 560px at 92% 2%, rgba(249,115,22,0.14), transparent 58%),
-    #FFFFFF;
-  color: #0B0B0C;
+    radial-gradient(900px 520px at 10% 4%, rgba(214,122,71,0.14), transparent 58%),
+    radial-gradient(1000px 560px at 92% 2%, rgba(201,143,79,0.12), transparent 58%),
+    #FBF8F3;
+  color: #1C1714;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   /* Stop decorative/absolute elements from causing a horizontal scrollbar that
@@ -22,7 +22,23 @@ html, body {
 html { scrollbar-gutter: stable; }
 
 /* Premium selection */
-::selection { background: #F97316; color: #fff; }
+::selection { background: #D67A47; color: #fff; }
+
+/* ─────────────────────────  Film grain  ─────────────────────────
+   The single cheapest "expensive" cue: a fixed fractal-noise overlay (inline
+   data-URI — no request, rasterizes once) that kills gradient banding and makes
+   flat CSS read like printed paper. Applied to <body class="grain">. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-motion: reduce) { .grain::after { opacity: 0.03; } }
 
 @layer components {
   /* ─────────────────────────  Layout  ───────────────────────── */
@@ -32,19 +48,52 @@ html { scrollbar-gutter: stable; }
 
   /* ─────────────────────────  Typography  ───────────────────────── */
   .t-eyebrow {
-    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-flame-700;
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-flame-700;
   }
+  /* Serif display utilities — tuned for Fraunces (the OPPOSITE of the tight,
+     bold settings a grotesque like Inter wants). Weight comes from the variable
+     wght axis; opsz/SOFT carry the warm "baked" character. */
   .t-display {
-    @apply font-display text-[clamp(2.6rem,6.2vw,5.25rem)] font-semibold leading-[1.02] tracking-tighter2 text-ink;
+    @apply font-display text-[clamp(2.75rem,6.4vw,5.5rem)] leading-[1.04] text-ink;
+    font-weight: 480;
+    letter-spacing: -0.012em;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 120, "SOFT" 60, "WONK" 0, "wght" 480;
   }
   .t-h2 {
-    @apply font-display text-[clamp(1.95rem,3.8vw,3.15rem)] font-semibold leading-[1.05] tracking-tighter2 text-ink;
+    @apply font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.06] text-ink;
+    font-weight: 500;
+    letter-spacing: -0.008em;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 80, "SOFT" 50, "WONK" 0, "wght" 500;
   }
   .t-h3 { @apply text-xl font-semibold tracking-tight text-ink md:text-2xl; }
   .t-lead { @apply text-[1.075rem] leading-relaxed text-ink-mut md:text-lg; }
   .text-gradient {
     @apply bg-gradient-to-r from-flame-500 via-flame-600 to-flame-700 bg-clip-text text-transparent;
   }
+  /* Money figures — Fraunces, lining + tabular numerals (patisserie menu, not invoice) */
+  .price {
+    @apply font-display text-[clamp(2.25rem,4vw,3rem)] text-ink;
+    font-weight: 460;
+    letter-spacing: -0.01em;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 60, "wght" 460;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+  }
+
+  /* ── Section rhythm: tonal bands so chapters don't blur into one white sheet.
+        Full-bleed by default (block-level wrappers); inner sections keep their
+        own container-x + vertical padding. ── */
+  .band-warm {
+    background-color: #F3ECE3; /* clay-50 */
+    background-image: radial-gradient(800px 420px at 15% 0%, rgba(214, 122, 71, 0.06), transparent 60%);
+  }
+  .band-dark { background-color: #1C1714; color: #fff; }
+  /* only the section header sits on the dark field — cards inside stay light */
+  .band-dark .t-h2 { color: #fff; }
+  .band-dark .t-lead { color: rgba(255, 255, 255, 0.72); }
+  .band-dark .t-eyebrow { color: #E08B5A; }
 
   /* ─────────────────────────  Buttons (new system)  ───────────────────────── */
   .btn-ink {

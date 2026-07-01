@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Plus, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
+import { fireSugarBurst } from "@/components/ui/SugarBurst";
 import type { Product } from "@/types/product";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
@@ -21,7 +22,9 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
   useEffect(() => () => clearTimeout(addedTimeout.current), []);
 
   function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
-    flyToCart(product.image, e.currentTarget.getBoundingClientRect());
+    const r = e.currentTarget.getBoundingClientRect();
+    flyToCart(product.image, r);
+    fireSugarBurst(r.left + r.width / 2, r.top + r.height / 2);
     add({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image });
     setAdded(true);
     clearTimeout(addedTimeout.current);
