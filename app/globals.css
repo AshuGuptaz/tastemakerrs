@@ -87,13 +87,16 @@ html { scrollbar-gutter: stable; }
   /* ── Section rhythm: tonal bands so chapters don't blur into one white sheet.
         Full-bleed by default (block-level wrappers); inner sections keep their
         own container-x + vertical padding. ── */
-  /* Warm chapter — clay is a whisper away from canvas, so a long, gentle mask
-     fade at both edges dissolves the band into the page with no visible seam. */
+  /* Warm chapter — inset rounded card on canvas (same pattern as band-dark).
+     Rounded corners break the straight edge on all screen sizes — no masking,
+     no clip-on-mobile issues. */
   .band-warm {
+    position: relative;
+    margin: clamp(0.5rem, 1.5vw, 1.5rem);
+    border-radius: clamp(1.25rem, 2.5vw, 2rem);
+    overflow: hidden;
     background-color: #EFE7DB;
-    background-image: radial-gradient(1000px 460px at 18% 40%, rgba(214, 122, 71, 0.05), transparent 62%);
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
-    mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    background-image: radial-gradient(1000px 460px at 18% 40%, rgba(214, 122, 71, 0.06), transparent 62%);
   }
   /* Dark chapter — NEVER fade near-black into cream (that's the muddy smudge).
      Instead float it as an inset rounded card on the canvas: an intentional
