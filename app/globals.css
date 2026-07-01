@@ -87,11 +87,27 @@ html { scrollbar-gutter: stable; }
   /* ── Section rhythm: tonal bands so chapters don't blur into one white sheet.
         Full-bleed by default (block-level wrappers); inner sections keep their
         own container-x + vertical padding. ── */
+  /* Warm chapter — clay is a whisper away from canvas, so a long, gentle mask
+     fade at both edges dissolves the band into the page with no visible seam. */
   .band-warm {
-    background-color: #F3ECE3; /* clay-50 */
-    background-image: radial-gradient(800px 420px at 15% 0%, rgba(214, 122, 71, 0.06), transparent 60%);
+    background-color: #EFE7DB;
+    background-image: radial-gradient(1000px 460px at 18% 40%, rgba(214, 122, 71, 0.05), transparent 62%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
   }
-  .band-dark { background-color: #1C1714; color: #fff; }
+  /* Dark chapter — NEVER fade near-black into cream (that's the muddy smudge).
+     Instead float it as an inset rounded card on the canvas: an intentional
+     object, not a divide. (Stripe / Vercel / Linear dark-section pattern.) */
+  .band-dark {
+    position: relative;
+    margin: clamp(1rem, 3.5vw, 2.75rem);
+    border-radius: clamp(1.5rem, 3vw, 2.25rem);
+    overflow: hidden;
+    background-color: #1C1714;
+    background-image: radial-gradient(1100px 520px at 80% 0%, rgba(214, 122, 71, 0.14), transparent 60%);
+    color: #fff;
+    box-shadow: 0 40px 90px -36px rgba(28, 23, 20, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
   /* only the section header sits on the dark field — cards inside stay light */
   .band-dark .t-h2 { color: #fff; }
   .band-dark .t-lead { color: rgba(255, 255, 255, 0.72); }

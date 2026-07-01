@@ -18,14 +18,14 @@ export default function HomePage() {
       <AuroraBg />
       <Hero />
 
-      {/* Act 1 — Desire: trust, then real cake immediately */}
+      {/* Act 1 — Desire: trust signals, stats, then real cake */}
       <TrustStrip />
+      <Stats />
       <SignatureGallery />
 
       {/* Act 2 — Craft & proof (warm band) */}
       <div className="band-warm">
         <Bento />
-        <Stats />
       </div>
 
       {/* Act 3 — Occasions & bestsellers */}

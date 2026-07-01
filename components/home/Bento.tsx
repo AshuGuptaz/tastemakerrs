@@ -76,6 +76,8 @@ export default function Bento() {
           <Reveal delay={0.1}>
             <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
               <div className="relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50">
+                {/* morphing blob — slow organic drift behind the rings */}
+                <span className="animate-blob-drift absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 bg-flame/10 blur-lg" />
                 {/* concentric rings */}
                 <span className="absolute left-1/2 top-1/2 h-44 w-44 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/70" />
                 <span className="absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line/70" />
@@ -119,11 +121,15 @@ export default function Bento() {
                     <Truck className="h-3.5 w-3.5" /> Out for delivery
                   </span>
                 </div>
-                {/* typing dots */}
+                {/* animated typing dots */}
                 <div className="mt-1 inline-flex items-center gap-1 self-start rounded-full border border-line bg-white px-3 py-1.5 shadow-e1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-ink/30" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-ink/30" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-ink/30" />
+                  {[0, 0.18, 0.36].map((delay, i) => (
+                    <span
+                      key={i}
+                      className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40"
+                      style={{ animationDelay: `${delay}s`, animationDuration: "0.75s" }}
+                    />
+                  ))}
                 </div>
               </div>
               <h3 className="t-h3 mt-5">Order in seconds</h3>

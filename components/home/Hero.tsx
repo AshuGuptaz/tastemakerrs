@@ -96,7 +96,7 @@ export default function Hero() {
             <span className="mt-1 block overflow-hidden pb-[0.1em]">
               <motion.span
                 {...line(0.27)}
-                className="block font-sans text-[0.42em] font-normal leading-snug tracking-tight text-white/75"
+                className="block font-display text-[0.42em] font-normal leading-snug tracking-wide text-white/75"
               >
                 Baked fresh, made for{" "}
                 <Typewriter
