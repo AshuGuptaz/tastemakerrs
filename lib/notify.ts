@@ -86,15 +86,24 @@ export async function sendSMS(opts: { to: string; body: string }) {
     } catch (e: any) { console.error("[notify] Twilio error:", e.message); return { ok: false as const }; }
   }
 
-  // Fast2SMS (India)
+  // Fast2SMS (India) — always returns HTTP 200; real success/failure is in body.return
   if (process.env.FAST2SMS_API_KEY) {
     try {
       const res = await fetch("https://www.fast2sms.com/dev/bulkV2", {
         method: "POST",
         headers: { authorization: process.env.FAST2SMS_API_KEY!, "Content-Type": "application/json" },
-        body: JSON.stringify({ route: "q", message: opts.body, numbers: opts.to.replace(/\D/g, "").slice(-10) }),
+        body: JSON.stringify({
+          route: "q",
+          message: opts.body,
+          numbers: opts.to.replace(/\D/g, "").slice(-10),
+          flash: 0,
+        }),
       });
-      if (!res.ok) { console.error("[notify] Fast2SMS failed:", await res.text()); return { ok: false as const }; }
+      const data = await res.json();
+      if (!data.return) {
+        console.error("[notify] Fast2SMS failed:", JSON.stringify(data));
+        return { ok: false as const };
+      }
       return { ok: true as const };
     } catch (e: any) { console.error("[notify] Fast2SMS error:", e.message); return { ok: false as const }; }
   }
