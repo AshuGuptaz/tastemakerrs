@@ -12,7 +12,8 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   await connectDB();
   const body = await req.json();
-  const updated = await Product.findByIdAndUpdate(params.id, body, { new: true });
+  // Wrap in $set to prevent operator injection (e.g. { "$where": "..." } in body).
+  const updated = await Product.findByIdAndUpdate(params.id, { $set: body }, { new: true });
   return NextResponse.json(updated);
 }
 

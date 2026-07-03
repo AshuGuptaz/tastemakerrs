@@ -34,6 +34,10 @@ export async function POST(req: Request) {
   switch (event.type) {
     case "checkout.session.completed": {
       const s = event.data.object as Stripe.Checkout.Session;
+      // Only mark paid when Stripe has actually collected the money.
+      // Async payment methods (e.g. bank transfer) complete the session before
+      // funds clear; guard against marking as paid prematurely.
+      if (s.payment_status !== "paid") break;
       const orderId = s.metadata?.orderId;
       if (orderId) {
         await Order.findByIdAndUpdate(orderId, {
@@ -46,10 +50,15 @@ export async function POST(req: Request) {
       break;
     }
     case "charge.refunded": {
+      // Charge objects do NOT inherit checkout.session metadata — look up the
+      // order via paymentIntentId (stored in the paid webhook above).
       const c = event.data.object as Stripe.Charge;
-      const orderId = c.metadata?.orderId;
-      if (orderId) {
-        await Order.findByIdAndUpdate(orderId, { paymentStatus: "refunded", status: "refunded" });
+      const piId = typeof c.payment_intent === "string" ? c.payment_intent : null;
+      if (piId) {
+        await Order.findOneAndUpdate(
+          { paymentIntentId: piId, paymentStatus: { $ne: "refunded" } },
+          { paymentStatus: "refunded", status: "refunded" }
+        );
       }
       break;
     }

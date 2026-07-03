@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  // We don't throw at import time so static export still works without DB.
-  // Routes that need the DB will throw if URI is missing.
   console.warn("[mongodb] MONGODB_URI not set");
 }
 
@@ -24,10 +22,15 @@ export async function connectDB() {
   }
   if (cached!.conn) return cached!.conn;
   if (!cached!.promise) {
-    cached!.promise = mongoose.connect(MONGODB_URI, {
-      bufferCommands: false,
-    });
+    cached!.promise = mongoose.connect(MONGODB_URI, { bufferCommands: false });
   }
-  cached!.conn = await cached!.promise;
+  try {
+    cached!.conn = await cached!.promise;
+  } catch (err) {
+    // Clear the cached promise so the next request can retry the connection
+    // rather than hanging forever on a rejected promise.
+    cached!.promise = null;
+    throw err;
+  }
   return cached!.conn;
 }

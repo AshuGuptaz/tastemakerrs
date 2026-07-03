@@ -5,6 +5,23 @@ import { emailConfigured, sendEmail } from "@/lib/notify";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Per-IP rate limit: max 5 contact submissions per 10 minutes.
+const _contactAttempts = new Map<string, { count: number; resetAt: number }>();
+const CONTACT_MAX = 5;
+const CONTACT_WINDOW_MS = 10 * 60_000;
+
+function contactRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = _contactAttempts.get(ip);
+  if (!entry || entry.resetAt < now) {
+    _contactAttempts.set(ip, { count: 1, resetAt: now + CONTACT_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= CONTACT_MAX) return false;
+  entry.count++;
+  return true;
+}
+
 const Body = z.object({
   name: z.string().min(1),
   email: z.string().email(),
@@ -16,6 +33,11 @@ const esc = (s: string) =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
 export async function POST(req: Request) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!contactRateLimit(ip)) {
+    return NextResponse.json({ error: "Too many messages. Please try again later." }, { status: 429 });
+  }
+
   let data: z.infer<typeof Body>;
   try {
     data = Body.parse(await req.json());

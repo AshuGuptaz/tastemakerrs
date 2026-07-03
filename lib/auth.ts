@@ -9,7 +9,14 @@ import { SignJWT, jwtVerify } from "jose";
  */
 
 const ENC = new TextEncoder();
-const SECRET = process.env.ADMIN_JWT_SECRET || "dev-only-secret-change-me";
+
+const getSecret = () => {
+  const s = process.env.ADMIN_JWT_SECRET;
+  if (!s && process.env.NODE_ENV === "production") {
+    throw new Error("ADMIN_JWT_SECRET must be set in production");
+  }
+  return s || "dev-only-secret-change-me";
+};
 
 export const ADMIN_COOKIE = "ttm_admin_token";
 
@@ -18,13 +25,17 @@ export async function signAdmin(email: string) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(ENC.encode(SECRET));
+    .sign(ENC.encode(getSecret()));
 }
 
 export async function verifyAdmin(token: string | undefined) {
   if (!token) return null;
+  const secret = process.env.ADMIN_JWT_SECRET;
+  // Fail-closed in production: if no secret is configured, reject all tokens
+  // rather than accept them against the known dev fallback.
+  if (!secret && process.env.NODE_ENV === "production") return null;
   try {
-    const { payload } = await jwtVerify(token, ENC.encode(SECRET));
+    const { payload } = await jwtVerify(token, ENC.encode(secret || "dev-only-secret-change-me"));
     return payload as { email: string; role: string };
   } catch {
     return null;

@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       maxAge: 20 * 60,
     });
     return res;
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e.message || "Verification failed" }, { status: 400 });
+  } catch {
+    return NextResponse.json({ ok: false, error: "Verification failed" }, { status: 500 });
   }
 }

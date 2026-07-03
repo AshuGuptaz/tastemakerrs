@@ -40,15 +40,18 @@ export async function POST(req: Request) {
     const emailLc = email.trim().toLowerCase();
     const now = Date.now();
 
-    // rate limit
+    // Hourly cap first (count is idempotent; even a race between two concurrent
+    // requests is harmless because both will see the real count).
+    const recent = await Otp.countDocuments({ email: emailLc, createdAt: { $gte: new Date(now - 3600_000) } });
+    if (recent >= MAX_PER_HOUR) {
+      return NextResponse.json({ error: "Too many codes requested. Try again later." }, { status: 429 });
+    }
+
+    // Per-request cooldown (narrow TOCTOU window — acceptable for OTP use-case).
     const last = await Otp.findOne({ email: emailLc, phone }).sort({ createdAt: -1 }).lean();
     if (last && now - new Date(last.createdAt).getTime() < COOLDOWN_MS) {
       const wait = Math.ceil((COOLDOWN_MS - (now - new Date(last.createdAt).getTime())) / 1000);
       return NextResponse.json({ error: `Please wait ${wait}s before requesting another code.`, retryAfter: wait }, { status: 429 });
-    }
-    const recent = await Otp.countDocuments({ email: emailLc, createdAt: { $gte: new Date(now - 3600_000) } });
-    if (recent >= MAX_PER_HOUR) {
-      return NextResponse.json({ error: "Too many codes requested. Try again later." }, { status: 429 });
     }
 
     const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
@@ -79,7 +82,7 @@ export async function POST(req: Request) {
       // Dev convenience only — never returned in production.
       ...(process.env.NODE_ENV !== "production" ? { devCode: code } : {}),
     });
-  } catch (e: any) {
-    return NextResponse.json({ error: e.message || "Could not send code" }, { status: 400 });
+  } catch {
+    return NextResponse.json({ error: "Could not send code" }, { status: 500 });
   }
 }

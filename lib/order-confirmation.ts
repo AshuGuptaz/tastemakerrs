@@ -10,18 +10,22 @@ import {
 } from "@/lib/notify";
 
 /**
- * Send the order confirmation email + SMS. Idempotent (guarded by
+ * Send the order confirmation email + SMS. Idempotent (guarded atomically by
  * `confirmationSentAt`) and best-effort — never throws into the payment flow.
  */
 export async function sendOrderConfirmation(orderId: string) {
   try {
     await connectDB();
-    const order = await Order.findById(orderId);
-    if (!order || order.confirmationSentAt) return;
 
-    // Mark first so a webhook retry or double-callback can't double-send.
-    order.confirmationSentAt = new Date();
-    await order.save();
+    // Atomic find-and-mark: only the first caller that finds confirmationSentAt
+    // absent will get the document back and proceed. Concurrent webhook retries
+    // see null and return immediately, preventing duplicate notifications.
+    const order = await Order.findOneAndUpdate(
+      { _id: orderId, confirmationSentAt: { $exists: false } },
+      { $set: { confirmationSentAt: new Date() } },
+      { new: true }
+    );
+    if (!order) return;
 
     const a = order.address || {};
     const payload = {

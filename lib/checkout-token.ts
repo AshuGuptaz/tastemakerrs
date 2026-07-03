@@ -4,10 +4,23 @@ import crypto from "crypto";
 /**
  * Short-lived "verified contact" token issued after a successful checkout OTP.
  * The order API requires it (when OTP is enabled) and checks email+phone match.
+ *
+ * Uses OTP_JWT_SECRET — a secret SEPARATE from ADMIN_JWT_SECRET so a checkout
+ * token cannot be used to authenticate as admin.
  */
 
-const SECRET = process.env.OTP_JWT_SECRET || process.env.ADMIN_JWT_SECRET || "dev-only-secret-change-me";
-const HASH_SECRET = process.env.OTP_HASH_SECRET || SECRET;
+const getSecret = () => {
+  const s = process.env.OTP_JWT_SECRET;
+  if (!s && process.env.NODE_ENV === "production") {
+    // Refuse to fall back to the admin secret in production; a shared secret
+    // would allow a checkout token to pass admin JWT verification.
+    throw new Error("OTP_JWT_SECRET must be set in production (must differ from ADMIN_JWT_SECRET)");
+  }
+  return s || "dev-only-otp-secret-change-me";
+};
+
+const getHashSecret = () => process.env.OTP_HASH_SECRET || getSecret();
+
 const ENC = new TextEncoder();
 
 export const CHECKOUT_COOKIE = "ttm_checkout_token";
@@ -16,7 +29,7 @@ const norm = (s: string) => s.trim().toLowerCase();
 
 /** HMAC-hash an OTP code so plaintext codes are never stored. */
 export function hashCode(code: string) {
-  return crypto.createHmac("sha256", HASH_SECRET).update(code).digest("hex");
+  return crypto.createHmac("sha256", getHashSecret()).update(code).digest("hex");
 }
 
 export async function signCheckout(email: string, phone: string) {
@@ -24,13 +37,15 @@ export async function signCheckout(email: string, phone: string) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("20m")
-    .sign(ENC.encode(SECRET));
+    .sign(ENC.encode(getSecret()));
 }
 
 export async function verifyCheckout(token: string | undefined) {
   if (!token) return null;
+  const secret = process.env.OTP_JWT_SECRET;
+  if (!secret && process.env.NODE_ENV === "production") return null;
   try {
-    const { payload } = await jwtVerify(token, ENC.encode(SECRET));
+    const { payload } = await jwtVerify(token, ENC.encode(secret || "dev-only-otp-secret-change-me"));
     return payload as { email: string; phone: string };
   } catch {
     return null;
