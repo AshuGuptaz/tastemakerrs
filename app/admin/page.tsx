@@ -2,6 +2,7 @@ import Link from "next/link";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { Product } from "@/models/Product";
+import { formatINR } from "@/lib/format";
 
 // Stats come from the DB at request time — never prerender this at build.
 export const dynamic = "force-dynamic";
@@ -39,7 +40,7 @@ export default async function AdminDashboard() {
           {[
             { label: "Total Orders", value: stats.orders, emoji: "🧾", bg: "bg-cream-100" },
             { label: "Active Products", value: stats.products, emoji: "🎂", bg: "bg-peach-100" },
-            { label: "Revenue (₹)", value: `₹${stats.revenue.toLocaleString("en-IN")}`, emoji: "💸", bg: "bg-sky-100" },
+            { label: "Revenue (₹)", value: formatINR(stats.revenue), emoji: "💸", bg: "bg-sky-100" },
           ].map((s) => (
             <div key={s.label} className="card overflow-hidden">
               <div className={`grid aspect-[16/9] place-items-center ${s.bg}`}>

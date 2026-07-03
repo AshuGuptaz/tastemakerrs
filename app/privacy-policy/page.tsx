@@ -7,10 +7,10 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <section className="bg-cream-50 py-16 md:py-24">
-      <article className="container-x mx-auto max-w-3xl space-y-4 text-cocoa/85">
-        <h1 className="display text-[clamp(2rem,5vw,3.5rem)]">PRIVACY POLICY</h1>
-        <p className="mt-2 text-sm text-cocoa/60">Last updated: June 2026</p>
+    <section className="bg-canvas py-16 md:py-24">
+      <article className="container-x mx-auto max-w-3xl space-y-4 text-ink-soft">
+        <h1 className="font-display font-semibold uppercase leading-[0.98] tracking-tight text-ink text-[clamp(2rem,5vw,3.5rem)]">PRIVACY POLICY</h1>
+        <p className="mt-2 text-sm text-ink-mut">Last updated: June 2026</p>
 
         <h2 className="mt-8 font-display text-2xl uppercase">1. Who we are</h2>
         <p>The Taste Makerrs (“we”, “us”, “our”) is a small-batch bakery operating in India. This policy explains how we handle your information when you use thetastemakerrs.com.</p>

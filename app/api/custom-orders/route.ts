@@ -34,8 +34,13 @@ export async function POST(req: Request) {
     await connectDB();
     const doc = await CustomOrder.create({ ...data, status: "new" });
     return NextResponse.json({ ok: true, id: doc._id.toString() });
-  } catch {
-    console.log("[custom-order] (no DB) ", JSON.stringify(data).slice(0, 500));
-    return NextResponse.json({ ok: true, id: "no-db" });
+  } catch (e: any) {
+    // A DB failure must NOT report success — otherwise the customer thinks the
+    // request was received while it's silently lost. Log without the PII payload.
+    console.error("[custom-orders/POST] db write failed:", e?.message);
+    return NextResponse.json(
+      { ok: false, error: "Could not submit your request. Please try again or call us." },
+      { status: 503 }
+    );
   }
 }

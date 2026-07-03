@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 /**
  * Wraps a (usually pink/flame) word so an animated hand-drawn underline draws
@@ -20,7 +20,7 @@ export default function Underlined({
   return (
     <span className={`relative inline-block pb-[0.28em] text-flame ${className}`}>
       {children}
-      <motion.svg
+      <m.svg
         aria-hidden
         viewBox="0 0 200 10"
         preserveAspectRatio="none"
@@ -37,7 +37,7 @@ export default function Underlined({
           fill="none"
           strokeLinecap="round"
         />
-      </motion.svg>
+      </m.svg>
     </span>
   );
 }

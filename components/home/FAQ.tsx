@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { m, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Plus } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
@@ -23,17 +23,17 @@ function Item({ q, a, open, onToggle }: { q: string; a: string; open: boolean; o
         className="flex w-full items-center justify-between gap-6 py-5 text-left transition-colors hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/30"
       >
         <span className="text-[1.0625rem] font-semibold tracking-tight text-ink">{q}</span>
-        <motion.span
+        <m.span
           animate={{ rotate: open ? 45 : 0 }}
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border transition-colors ${open ? "border-flame bg-flame text-white" : "border-line bg-surface text-ink-soft"}`}
         >
           <Plus className="h-4 w-4" />
-        </motion.span>
+        </m.span>
       </button>
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div
+          <m.div
             key="body"
             initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
             animate={reduce ? { opacity: 1 } : { height: "auto", opacity: 1 }}
@@ -42,7 +42,7 @@ function Item({ q, a, open, onToggle }: { q: string; a: string; open: boolean; o
             className="overflow-hidden"
           >
             <p className="max-w-2xl pb-6 text-[0.975rem] leading-relaxed text-ink-mut">{a}</p>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

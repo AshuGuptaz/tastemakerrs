@@ -2,81 +2,130 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useReducedMotion } from "framer-motion";
+import {
+  m,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useSpring,
+  useReducedMotion,
+} from "framer-motion";
 import { ShoppingBag, Menu as MenuIcon, X, ArrowRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
-import Magnetic from "@/components/ui/Magnetic";
 
 const NAV = [
-  { href: "/menu", label: "Menu" },
+  { href: "/menu",        label: "Menu"      },
   { href: "/custom-cake", label: "Customize" },
-  { href: "/kitchen", label: "Kitchen" },
-  { href: "/offers", label: "Offers" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/kitchen",     label: "Kitchen"   },
+  { href: "/offers",      label: "Offers"    },
+  { href: "/about",       label: "About"     },
+  { href: "/contact",     label: "Contact"   },
 ];
 
-// shadow-e2 → shadow-e3 (same 2-shadow structure so framer can interpolate)
 const E2 = "0 6px 20px -6px rgba(18,17,19,0.10), 0 2px 6px -2px rgba(18,17,19,0.06)";
 const E3 = "0 24px 60px -20px rgba(18,17,19,0.22), 0 8px 24px -12px rgba(18,17,19,0.12)";
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const reduce = useReducedMotion();
+  const pathname  = usePathname();
+  const reduce    = useReducedMotion();
   const { count } = useCart();
   const { openDrawer } = useCartUI();
   const [open, setOpen] = useState(false);
 
-  // ── Scroll-linked condense: a single GPU transform (scale) on the pill, driven
-  //    by a snappy spring. No layout properties animate → zero reflow, buttery.
+  /* ── Scroll-linked squeeze ─────────────────────────────────────────────── */
   const { scrollY } = useScroll();
-  const sq = useSpring(useTransform(scrollY, [0, 40], [0, 1], { clamp: true }), {
-    stiffness: 520,
-    damping: 42,
-    mass: 0.35,
-  });
-  const scale = useTransform(sq, [0, 1], [1, 0.78]);
-  const bg = useTransform(sq, [0, 1], ["rgba(255,255,255,0.72)", "rgba(255,255,255,0.93)"]);
-  const shadow = useTransform(sq, [0, 1], [E2, E3]);
+  const sq = useSpring(
+    useTransform(scrollY, [0, 40], [0, 1], { clamp: true }),
+    { stiffness: 520, damping: 42, mass: 0.35 }
+  );
+  const pillScale = useTransform(sq, [0, 1], [1, 0.78]);
+  const pillBg    = useTransform(sq, [0, 1], ["rgba(255,255,255,0.72)", "rgba(255,255,255,0.96)"]);
+  const pillShadow = useTransform(sq, [0, 1], [E2, E3]);
 
-  // Lock body scroll while the mobile menu is open.
+
+  /* ── Magic hover indicator ─────────────────────────────────────────────── */
+  const navEl = useRef<HTMLElement>(null);
+  const [hovered, setHovered]     = useState<string | null>(null);
+  const [indicator, setIndicator] = useState({ x: 0, w: 0 });
+
+  const track = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const nav = navEl.current;
+    if (!nav) return;
+    const nb = nav.getBoundingClientRect();
+    const eb = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setIndicator({ x: eb.left - nb.left, w: eb.width });
+  };
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
-
-  // Close the mobile menu on route change.
   useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 pt-3 md:pt-4">
       <div className="container-x">
-        {/* Floating pill — condenses on scroll via a pure transform (no reflow) */}
-        <motion.div
+
+        {/* ── Floating pill ─────────────────────────────────────────────── */}
+        <m.div
           style={{
-            scale: reduce ? 1 : scale,
-            backgroundColor: bg,
-            boxShadow: shadow,
+            scale:           reduce ? 1 : pillScale,
+            backgroundColor: pillBg,
+            boxShadow:       pillShadow,
             transformOrigin: "center top",
-            willChange: "transform",
+            willChange:      "transform",
           }}
           className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-pill border border-line px-3.5 py-3 backdrop-blur-xl"
         >
-          {/* Brand */}
+
+          {/* ── Wordmark ── */}
           <Link
             href="/"
-            className="group flex items-center gap-2 rounded-pill pl-1.5 pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
+            className="group flex items-center gap-2 rounded-pill pl-1 pr-2 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
           >
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink text-sm font-bold text-white">tm</span>
-            <span className="whitespace-nowrap text-[1.12rem] font-semibold tracking-tighter2 text-ink">
-              Taste <span className="text-flame">Makerrs</span>
+            {/* Refined monogram mark */}
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-ink text-[0.7rem] font-bold tracking-widest text-white">
+              tm
+            </span>
+            {/* Fraunces two-weight wordmark */}
+            <span className="font-display select-none whitespace-nowrap leading-none">
+              <span
+                className="italic text-flame text-[1.08rem]"
+                style={{ fontVariationSettings: "'opsz' 72, 'SOFT' 100, 'WONK' 0" }}
+              >
+                Taste
+              </span>
+              <span
+                className="font-semibold text-ink text-[1.08rem]"
+                style={{ letterSpacing: "-0.036em", marginLeft: "0.18em" }}
+              >
+                Makerrs
+              </span>
             </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-0.5 md:flex">
+          {/* ── Desktop nav with magic hover indicator ────────────────── */}
+          <nav
+            ref={navEl}
+            className="relative hidden items-center gap-0.5 md:flex"
+            onMouseLeave={() => setHovered(null)}
+          >
+            {/* Sliding ghost pill — tracks the hovered item */}
+            <m.span
+              aria-hidden
+              className="pointer-events-none absolute inset-y-[3px] rounded-pill bg-ink/[0.055]"
+              style={{ willChange: "transform, width, opacity" }}
+              initial={false}
+              animate={{
+                x:       indicator.x,
+                width:   indicator.w,
+                opacity: hovered ? 1 : 0,
+              }}
+              transition={{ type: "spring", stiffness: 500, damping: 36, mass: 0.28 }}
+            />
+
             {NAV.map((n) => {
               const active = pathname === n.href;
               return (
@@ -84,14 +133,18 @@ export default function Navbar() {
                   key={n.href}
                   href={n.href}
                   aria-current={active ? "page" : undefined}
-                  className={`relative rounded-pill px-3.5 py-2 text-sm tracking-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
-                    active ? "font-semibold text-flame-700" : "font-medium text-ink-mut hover:text-ink"
+                  onMouseEnter={(e) => { setHovered(n.href); track(e); }}
+                  className={`relative z-10 rounded-pill px-3.5 py-2 text-sm tracking-tight transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
+                    active
+                      ? "font-semibold text-flame-700"
+                      : "font-medium text-ink-mut hover:text-ink"
                   }`}
                 >
                   {n.label}
+                  {/* Active-page underline pill — separate from hover ghost */}
                   {active && (
-                    <motion.span
-                      layoutId="nav-pill"
+                    <m.span
+                      layoutId="nav-active"
                       className="absolute inset-0 -z-10 rounded-pill bg-flame/10 ring-1 ring-flame/20"
                       transition={{ type: "spring", stiffness: 380, damping: 32 }}
                     />
@@ -101,8 +154,10 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Actions */}
+          {/* ── Actions ───────────────────────────────────────────────── */}
           <div className="flex items-center gap-2">
+
+            {/* Cart */}
             <button
               id="cart-fab"
               onClick={openDrawer}
@@ -111,7 +166,7 @@ export default function Navbar() {
             >
               <ShoppingBag className="h-[1.1rem] w-[1.1rem]" />
               {count > 0 && (
-                <motion.span
+                <m.span
                   key={count}
                   initial={{ scale: 0.4 }}
                   animate={{ scale: [0.4, 1.3, 1] }}
@@ -119,20 +174,12 @@ export default function Navbar() {
                   className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-flame px-1 text-[10px] font-bold text-white ring-2 ring-surface"
                 >
                   {count}
-                </motion.span>
+                </m.span>
               )}
             </button>
 
-            <Magnetic className="hidden md:inline-block">
-              <Link
-                href="/menu"
-                className="btn-ink group whitespace-nowrap px-4 py-2 text-sm"
-              >
-                Order now
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-              </Link>
-            </Magnetic>
 
+            {/* Mobile hamburger */}
             <button
               className="grid h-9 w-9 place-items-center rounded-pill text-ink hover:bg-ink/[0.05] md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
               onClick={() => setOpen(!open)}
@@ -141,12 +188,12 @@ export default function Navbar() {
               {open ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
             </button>
           </div>
-        </motion.div>
+        </m.div>
 
-        {/* Mobile menu + scrim */}
+        {/* ── Mobile menu + scrim ────────────────────────────────────────── */}
         <AnimatePresence>
           {open && (
-            <motion.div
+            <m.div
               key="scrim"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -156,7 +203,7 @@ export default function Navbar() {
             />
           )}
           {open && (
-            <motion.div
+            <m.div
               key="menu"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -170,7 +217,9 @@ export default function Navbar() {
                   onClick={() => setOpen(false)}
                   aria-current={pathname === n.href ? "page" : undefined}
                   className={`block rounded-xl px-4 py-3 text-base tracking-tight transition-colors ${
-                    pathname === n.href ? "bg-flame/10 font-semibold text-flame-700" : "font-medium text-ink hover:bg-ink/[0.04]"
+                    pathname === n.href
+                      ? "bg-flame/10 font-semibold text-flame-700"
+                      : "font-medium text-ink hover:bg-ink/[0.04]"
                   }`}
                 >
                   {n.label}
@@ -179,9 +228,10 @@ export default function Navbar() {
               <Link href="/menu" onClick={() => setOpen(false)} className="btn-ink mt-1 w-full">
                 Order now <ArrowRight className="h-4 w-4" />
               </Link>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
+
       </div>
     </header>
   );

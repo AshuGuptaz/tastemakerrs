@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
@@ -46,7 +46,7 @@ function AvatarCluster() {
   return (
     <div className="relative mx-auto h-[320px] w-full max-w-md md:h-[460px] md:max-w-none">
       {AVATARS.map((a) => (
-        <motion.div
+        <m.div
           key={a.initial + a.top}
           className="absolute -translate-x-1/2 -translate-y-1/2"
           style={{ top: a.top, left: a.left }}
@@ -62,11 +62,11 @@ function AvatarCluster() {
           >
             <span className={`text-lg font-bold ${a.text}`}>{a.initial}</span>
           </div>
-        </motion.div>
+        </m.div>
       ))}
 
       {/* Centre badge */}
-      <motion.div
+      <m.div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         animate={reduce ? undefined : { y: [0, -6, 0] }}
         transition={
@@ -76,7 +76,7 @@ function AvatarCluster() {
         <div className="surface flex h-16 w-16 items-center justify-center rounded-2xl shadow-e2">
           <Sparkles className="h-7 w-7 text-flame" strokeWidth={2} />
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -102,7 +102,7 @@ export default function LovedBy() {
 
               <ul className="mt-8 space-y-4">
                 {CHECKLIST.map((item, i) => (
-                  <motion.li
+                  <m.li
                     key={item}
                     className="flex items-center gap-3"
                     initial={{ opacity: 0, x: -12 }}
@@ -116,7 +116,7 @@ export default function LovedBy() {
                     <span className="text-[0.95rem] font-medium text-ink-soft">
                       {item}
                     </span>
-                  </motion.li>
+                  </m.li>
                 ))}
               </ul>
 

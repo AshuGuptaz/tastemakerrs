@@ -17,7 +17,7 @@ export default function KitchenPage() {
         subtitle="Watch your cake come to life — mixed, baked, frosted and delivered, all by hand."
       />
 
-      <section className="section bg-cream-50 pb-12 md:pb-16">
+      <section className="section bg-canvas pb-12 md:pb-16">
         <div className="container-x">
           <div className="mx-auto max-w-2xl text-center">
             <span className="t-eyebrow">The process</span>
@@ -31,7 +31,7 @@ export default function KitchenPage() {
 
       <ProcessStory />
 
-      <section className="section bg-peach-100">
+      <section className="section bg-surface">
         <div className="container-x grid gap-8 md:grid-cols-3">
           {[
             { t: "FSSAI-registered kitchen", d: "Licensed, pure-veg and audited — hygiene logged daily." },
@@ -40,7 +40,7 @@ export default function KitchenPage() {
           ].map((b) => (
             <div key={b.t} className="card p-6">
               <h3 className="font-display text-xl">{b.t}</h3>
-              <p className="mt-2 text-sm text-cocoa/70">{b.d}</p>
+              <p className="mt-2 text-sm text-ink-mut">{b.d}</p>
             </div>
           ))}
         </div>

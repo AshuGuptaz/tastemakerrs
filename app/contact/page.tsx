@@ -12,9 +12,10 @@ export default function ContactPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name) { setErrorField("name"); toast.error("Please fill name, email and message"); return; }
-    if (!form.email) { setErrorField("email"); toast.error("Please fill name, email and message"); return; }
-    if (!form.message) { setErrorField("message"); toast.error("Please fill name, email and message"); return; }
+    if (!form.name.trim()) { setErrorField("name"); toast.error("Please enter your name"); return; }
+    if (!form.email.trim()) { setErrorField("email"); toast.error("Please enter your email"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setErrorField("email"); toast.error("Please enter a valid email address"); return; }
+    if (!form.message.trim()) { setErrorField("message"); toast.error("Please add a message"); return; }
     setBusy(true);
     try {
       const res = await fetch("/api/contact", {

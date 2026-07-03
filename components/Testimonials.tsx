@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Star } from "lucide-react";
 import Underlined from "./Underlined";
 
@@ -28,7 +28,7 @@ export default function Testimonials() {
   return (
     <section className="section bg-sky-100">
       <div className="container-x">
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -36,11 +36,11 @@ export default function Testimonials() {
           className="h-section"
         >
           Loved by <Underlined>thousands</Underlined> of sweet tooths
-        </motion.h2>
+        </m.h2>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {REVIEWS.map((r, i) => (
-            <motion.figure
+            <m.figure
               key={r.name}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -58,7 +58,7 @@ export default function Testimonials() {
               <figcaption className="mt-6 font-display text-base font-medium text-cocoa">
                 {r.name}
               </figcaption>
-            </motion.figure>
+            </m.figure>
           ))}
         </div>
       </div>

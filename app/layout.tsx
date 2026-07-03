@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
@@ -44,12 +44,27 @@ export const metadata: Metadata = {
     "custom cake", "bento cake", "premium bakery", "The Taste Makerrs",
   ],
   openGraph: {
+    title: "The Taste Makerrs — Premium Bakery, Made With Love",
+    description: "A cake for your favorite memories. Eggless & Jain-friendly, handcrafted in small batches.",
+    type: "website",
+    siteName: "The Taste Makerrs",
+    locale: "en_IN",
+    url: "/",
+    images: [{ url: "/images/hero.png", width: 1200, height: 630, alt: "The Taste Makerrs celebration cakes" }],
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "The Taste Makerrs",
     description: "A cake for your favorite memories.",
-    type: "website",
+    images: ["/images/hero.png"],
   },
-  twitter: { card: "summary_large_image" },
   icons: { icon: "/favicon.svg" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1C1714",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -76,8 +91,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <FlyToCart />
               <SugarBurst />
               <Toaster position="bottom-right" toastOptions={{
-                style: { background: "#0B0B0C", color: "#fff", borderRadius: "14px" },
-                iconTheme: { primary: "#F97316", secondary: "#fff" },
+                style: { background: "#1C1714", color: "#fff", borderRadius: "14px" },
+                iconTheme: { primary: "#D67A47", secondary: "#fff" },
               }} />
             </SmoothScroll>
           </CartUIProvider>

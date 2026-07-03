@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
+import { m, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 import type { ReactNode } from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -26,13 +26,14 @@ export default function Reveal({
   delay?: number;
   y?: number;
   className?: string;
-  as?: keyof typeof motion;
+  as?: keyof typeof m;
 } & Omit<HTMLMotionProps<"div">, "ref">) {
   const reduce = useReducedMotion();
-  const Comp: any = as ? (motion as any)[as] : motion.div;
+  const Comp: any = as ? (m as any)[as] : m.div;
   return (
     <Comp
       className={className}
+      style={{ willChange: "transform" }}
       initial={reduce ? false : { y, scale: 0.985 }}
       whileInView={{ y: 0, scale: 1 }}
       viewport={{ once: true, margin: "-80px" }}

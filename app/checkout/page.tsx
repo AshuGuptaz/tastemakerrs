@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { CreditCard, Globe, MapPin } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import OtpDialog from "@/components/checkout/OtpDialog";
+import { formatINR } from "@/lib/format";
 
 type Address = {
   name: string;
@@ -57,6 +58,7 @@ export default function CheckoutPage() {
   const [errorField, setErrorField] = useState<keyof Address | null>(null);
   const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
   const streetRef = useRef<HTMLInputElement>(null);
+  const submittingRef = useRef(false);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -93,6 +95,9 @@ export default function CheckoutPage() {
         (window as any).google.maps.event.clearInstanceListeners(autocompleteRef.current);
       }
     };
+    // Without a key the script 4xxs and spams the console; degrade to a plain
+    // address field instead of injecting a broken tag.
+    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) return;
     if ((window as any).google?.maps?.places) { initAutocomplete(); return clearListeners; }
     const existing = document.querySelector<HTMLScriptElement>("script[data-gmaps]");
     if (existing) { existing.addEventListener("load", initAutocomplete); return clearListeners; }
@@ -178,7 +183,7 @@ export default function CheckoutPage() {
     const value = couponValue(c, subtotal);
     if (value > 0) {
       setAppliedCoupon(c);
-      toast.success(`Applied ${c} · saved ₹${value}`);
+      toast.success(`Applied ${c} · saved ${formatINR(value)}`);
     } else {
       setAppliedCoupon("");
       toast.error("Coupon not valid for this cart");
@@ -205,6 +210,10 @@ export default function CheckoutPage() {
 
   // Step 2 (after verification or when OTP is disabled): create order + pay.
   const createOrderAndPay = async () => {
+    // Re-entry guard: OTP onVerified/onSkip + a stray Pay tap could otherwise
+    // fire this twice and create two orders. `loading` state is async, so use a ref.
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
     try {
       const orderRes = await fetch("/api/orders", {
@@ -272,6 +281,7 @@ export default function CheckoutPage() {
       toast.error(e.message || "Something went wrong");
     } finally {
       setLoading(false);
+      submittingRef.current = false;
     }
   };
 
@@ -372,7 +382,7 @@ export default function CheckoutPage() {
                       )}
                     </span>
                     <span className="min-w-0 flex-1 truncate">{it.name} <span className="text-ink-mut">× {it.qty}</span></span>
-                    <span className="font-semibold">₹{it.qty * it.price}</span>
+                    <span className="font-semibold">{formatINR(it.qty * it.price)}</span>
                   </li>
                 ))}
               </ul>
@@ -384,16 +394,16 @@ export default function CheckoutPage() {
               </div>
 
               <ul className="mt-4 space-y-2 text-sm">
-                <li className="flex justify-between"><span className="text-ink-mut">Subtotal</span><span>₹{subtotal}</span></li>
-                <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span>{delivery === 0 ? <span className="text-flame-700">FREE</span> : `₹${delivery}`}</span></li>
-                {discount > 0 && <li className="flex justify-between text-flame-700"><span>Discount</span><span>− ₹{discount}</span></li>}
+                <li className="flex justify-between"><span className="text-ink-mut">Subtotal</span><span>{formatINR(subtotal)}</span></li>
+                <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span>{delivery === 0 ? <span className="text-flame-700">FREE</span> : formatINR(delivery)}</span></li>
+                {discount > 0 && <li className="flex justify-between text-flame-700"><span>Discount</span><span>−{formatINR(discount)}</span></li>}
               </ul>
               <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
                 <span className="t-h3">Total</span>
-                <span className="font-display text-3xl text-flame-700">₹{total}</span>
+                <span className="font-display text-3xl text-flame-700">{formatINR(total)}</span>
               </div>
               <button onClick={placeOrder} disabled={loading} className="btn-accent mt-5 hidden w-full justify-center lg:inline-flex">
-                {loading ? "Processing..." : `Pay ₹${total}`}
+                {loading ? "Processing..." : `Pay ${formatINR(total)}`}
               </button>
               <Link href="/cart" className="mt-2 block text-center text-xs text-ink-mut hover:text-flame">← Edit cart</Link>
               <p className="mt-3 text-xs text-ink-mut">By placing the order you accept our <Link href="/privacy-policy" className="underline">privacy policy</Link>.</p>
@@ -407,10 +417,10 @@ export default function CheckoutPage() {
         <div className="container-x flex items-center justify-between gap-4">
           <div className="leading-tight">
             <div className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-mut">Total</div>
-            <div className="font-display text-xl font-semibold text-flame-700">₹{total}</div>
+            <div className="font-display text-xl font-semibold text-flame-700">{formatINR(total)}</div>
           </div>
           <button onClick={placeOrder} disabled={loading} className="btn-accent flex-1 justify-center" style={{ maxWidth: "62%" }}>
-            {loading ? "Processing…" : `Pay ₹${total}`}
+            {loading ? "Processing…" : `Pay ${formatINR(total)}`}
           </button>
         </div>
       </div>

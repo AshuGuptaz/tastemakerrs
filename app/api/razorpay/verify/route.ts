@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
@@ -17,6 +18,9 @@ export async function POST(req: Request) {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = await req.json();
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !orderId) {
       return NextResponse.json({ ok: false, error: "Missing payment fields" }, { status: 400 });
+    }
+    if (!mongoose.isValidObjectId(orderId)) {
+      return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
     }
 
     const secret = process.env.RAZORPAY_KEY_SECRET;

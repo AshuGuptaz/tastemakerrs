@@ -3,7 +3,6 @@
 import { Suspense, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { PRODUCTS, CATEGORY_META } from "@/lib/products";
 import type { Category } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
@@ -14,10 +13,15 @@ import PageHeader from "@/components/ui/PageHeader";
 function MenuContent() {
   const sp = useSearchParams();
   const router = useRouter();
-  const cat = (sp.get("cat") || "all") as Category | "all";
+  // Guard against malformed URL params: an unknown ?cat= must not index into
+  // CATEGORY_META (would throw & white-screen), and a non-numeric ?max= must not
+  // become NaN (would filter out every product with no explanation).
+  const rawCat = sp.get("cat") || "all";
+  const cat = (rawCat === "all" || rawCat in CATEGORY_META ? rawCat : "all") as Category | "all";
   const flavor = sp.get("flavor") || "";
   const bestseller = sp.get("bs") === "1";
-  const max = Number(sp.get("max") || 2500);
+  const parsedMax = Number(sp.get("max"));
+  const max = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : 2500;
   const sort = sp.get("sort") || "featured";
 
   const update = (key: string, val: string | null) => {

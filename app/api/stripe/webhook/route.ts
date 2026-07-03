@@ -40,12 +40,14 @@ export async function POST(req: Request) {
       if (s.payment_status !== "paid") break;
       const orderId = s.metadata?.orderId;
       if (orderId) {
-        await Order.findByIdAndUpdate(orderId, {
-          paymentStatus: "paid",
-          status: "paid",
-          paymentIntentId: s.payment_intent as string,
-        });
-        await sendOrderConfirmation(orderId);
+        // Idempotent: only the first transition to "paid" matches, so a replayed
+        // webhook won't re-trigger confirmation side-effects.
+        const updated = await Order.findOneAndUpdate(
+          { _id: orderId, paymentStatus: { $ne: "paid" } },
+          { paymentStatus: "paid", status: "paid", paymentIntentId: s.payment_intent as string },
+          { new: true }
+        );
+        if (updated) await sendOrderConfirmation(orderId);
       }
       break;
     }

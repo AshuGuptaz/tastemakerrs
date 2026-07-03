@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
+import { formatINR } from "@/lib/format";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -16,14 +17,14 @@ export default function CartDrawer() {
   return (
     <AnimatePresence>
       {drawerOpen && (
-        <motion.div
+        <m.div
           className="fixed inset-0 z-[9995]"
           initial="hidden"
           animate="visible"
           exit="hidden"
         >
           {/* Backdrop */}
-          <motion.div
+          <m.div
             variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
             transition={{ duration: 0.35, ease: EASE }}
             onClick={closeDrawer}
@@ -31,12 +32,12 @@ export default function CartDrawer() {
           />
 
           {/* Panel */}
-          <motion.aside
+          <m.aside
             role="dialog"
             aria-label="Shopping cart"
             variants={{ hidden: { x: "100%" }, visible: { x: 0 } }}
             transition={{ duration: 0.35, ease: EASE }}
-            className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-transparent shadow-soft"
+            className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-canvas shadow-soft"
           >
             <header className="flex items-center justify-between border-b border-line px-6 py-5">
               <h2 className="flex items-center gap-2 font-display text-2xl text-ink">
@@ -68,7 +69,7 @@ export default function CartDrawer() {
                 <div className="no-scrollbar flex-1 overflow-y-auto px-6 py-4">
                   <AnimatePresence initial={false}>
                     {items.map((it) => (
-                      <motion.div
+                      <m.div
                         key={it.id + (it.variant ?? "")}
                         layout
                         initial={{ opacity: 0, height: 0 }}
@@ -114,10 +115,10 @@ export default function CartDrawer() {
                                 <Plus className="h-3.5 w-3.5" />
                               </button>
                             </div>
-                            <span className="font-display text-lg text-flame-700">₹{it.price * it.qty}</span>
+                            <span className="font-display text-lg text-flame-700">{formatINR(it.price * it.qty)}</span>
                           </div>
                         </div>
-                      </motion.div>
+                      </m.div>
                     ))}
                   </AnimatePresence>
                 </div>
@@ -125,7 +126,7 @@ export default function CartDrawer() {
                 <footer className="border-t border-line px-6 py-5">
                   <div className="mb-4 flex items-center justify-between">
                     <span className="text-sm uppercase tracking-wider text-ink-mut">Subtotal</span>
-                    <span className="font-display text-2xl text-ink">₹{subtotal}</span>
+                    <span className="font-display text-2xl text-ink">{formatINR(subtotal)}</span>
                   </div>
                   <div className="flex gap-2">
                     <Link href="/cart" onClick={closeDrawer} className="btn-line flex-1 justify-center">
@@ -138,8 +139,8 @@ export default function CartDrawer() {
                 </footer>
               </>
             )}
-          </motion.aside>
-        </motion.div>
+          </m.aside>
+        </m.div>
       )}
     </AnimatePresence>
   );

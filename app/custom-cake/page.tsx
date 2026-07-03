@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { UploadCloud, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { getBySlug } from "@/lib/products";
 import DatePicker from "@/components/DatePicker";
 import PageHeader from "@/components/ui/PageHeader";
+import { formatINR } from "@/lib/format";
 
 const FLAVORS = [
   { id: "vanilla", label: "Classic Vanilla", price: 0 },
@@ -136,7 +137,7 @@ function CustomCakeContent() {
 
       <section className="section bg-transparent">
         <div className="container-x grid gap-8 pb-28 lg:grid-cols-[1fr_380px] lg:pb-0">
-          <motion.div initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="space-y-8">
+          <m.div initial={reduce ? false : { opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} className="space-y-8">
             {/* Flavor */}
             <div className="card p-6">
               <h3 className="t-h3">1 · Flavor</h3>
@@ -147,7 +148,7 @@ function CustomCakeContent() {
                       flavor === f.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-line bg-white hover:border-line"
                     }`}>
                     <span className="font-semibold">{f.label}</span>
-                    <span className="text-sm text-ink-mut">{f.price ? `+₹${f.price}` : "Included"}</span>
+                    <span className="text-sm text-ink-mut">{f.price ? `+${formatINR(f.price)}` : "Included"}</span>
                   </button>
                 ))}
               </div>
@@ -178,7 +179,7 @@ function CustomCakeContent() {
                       shape === s.id ? "border-flame bg-flame/5 ring-2 ring-flame/30" : "border-line bg-white hover:border-line"
                     }`}>
                     <span className="font-semibold">{s.label}</span>
-                    <span className="text-sm text-ink-mut">{s.price ? `+₹${s.price}` : "Included"}</span>
+                    <span className="text-sm text-ink-mut">{s.price ? `+${formatINR(s.price)}` : "Included"}</span>
                   </button>
                 ))}
               </div>
@@ -246,7 +247,7 @@ function CustomCakeContent() {
                 <div><label className="label" htmlFor="cake-phone">Phone</label><input id="cake-phone" required aria-required="true" value={phone} onChange={(e) => setPhone(e.target.value)} className="input" placeholder="+91 ..." /></div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Summary */}
           <aside className="lg:sticky lg:top-24 self-start">
@@ -267,7 +268,7 @@ function CustomCakeContent() {
               </ul>
               <div className="mt-5 flex items-baseline justify-between border-t border-line pt-4">
                 <span className="t-h3">Total</span>
-                <span className="font-display text-3xl text-flame-700">₹{price}</span>
+                <span className="font-display text-3xl text-flame-700">{formatINR(price)}</span>
               </div>
               <button onClick={() => submit(true)} disabled={submitting} className="btn-accent mt-5 hidden w-full justify-center lg:flex">
                 {submitting ? "Submitting..." : "Add to Cart"}
@@ -286,7 +287,7 @@ function CustomCakeContent() {
         <div className="container-x flex items-center justify-between gap-4">
           <div className="leading-tight">
             <div className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-mut">Total</div>
-            <div className="font-display text-xl font-semibold text-flame-700">₹{price}</div>
+            <div className="font-display text-xl font-semibold text-flame-700">{formatINR(price)}</div>
           </div>
           <button onClick={() => submit(true)} disabled={submitting} className="btn-accent flex-1 justify-center" style={{ maxWidth: "62%" }}>
             {submitting ? "Submitting…" : "Add to Cart"}

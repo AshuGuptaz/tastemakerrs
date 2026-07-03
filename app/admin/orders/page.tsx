@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { formatINR } from "@/lib/format";
 
 type Order = {
   _id: string;
@@ -56,7 +57,7 @@ export default function AdminOrders() {
                     <td className="p-3 font-mono text-xs">{o._id.slice(-8)}</td>
                     <td className="p-3"><div className="font-semibold">{o.address.name}</div><div className="text-xs text-cocoa/60">{o.address.phone} · {o.address.city}</div></td>
                     <td className="p-3 text-xs">{o.items.map((it) => `${it.name} ×${it.qty}`).join(", ")}</td>
-                    <td className="p-3 font-display text-lg">₹{o.total}</td>
+                    <td className="p-3 font-display text-lg">{formatINR(o.total)}</td>
                     <td className="p-3"><span className={`rounded-pill px-2 py-0.5 text-xs ${o.paymentStatus === "paid" ? "bg-flame/10 text-flame" : "bg-cocoa-50 text-cocoa/60"}`}>{o.paymentStatus} · {o.paymentMethod}</span></td>
                     <td className="p-3 capitalize">{o.status.replaceAll("_", " ")}</td>
                     <td className="p-3 text-xs text-cocoa/60">{new Date(o.createdAt).toLocaleString()}</td>

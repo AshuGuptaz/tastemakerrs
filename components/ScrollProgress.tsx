@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { m, useScroll, useSpring, useReducedMotion } from "framer-motion";
 
 /**
  * Thin flame-colored progress bar pinned to the top of the viewport.
@@ -18,7 +18,7 @@ export default function ScrollProgress() {
   const scaleX = reduced ? scrollYProgress : smooth;
 
   return (
-    <motion.div
+    <m.div
       style={{ scaleX }}
       className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-flame"
       aria-hidden

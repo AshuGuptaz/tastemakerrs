@@ -20,7 +20,7 @@ export default function Bento() {
           {/* 1 — Same-day across Lucknow */}
           <Reveal delay={0.02}>
             <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
-              <div className="bg-dots relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50">
+              <div className="bg-dots relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-canvas">
                 {/* route hairline */}
                 <svg aria-hidden className="absolute inset-0 h-full w-full" viewBox="0 0 320 176" fill="none" preserveAspectRatio="none">
                   <path d="M40 132 C 100 120, 120 60, 196 56 S 280 72, 286 44" stroke="#F97316" strokeWidth="2" strokeDasharray="5 6" strokeLinecap="round" opacity="0.6" />
@@ -49,7 +49,7 @@ export default function Bento() {
           {/* 2 — Loved & top-rated */}
           <Reveal delay={0.06}>
             <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
-              <div className="relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50 p-5">
+              <div className="relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-canvas p-5">
                 {/* bars */}
                 <div className="flex h-full items-end justify-between gap-2.5">
                   {[36, 52, 44, 68, 84, 100].map((h, i) => (
@@ -75,7 +75,7 @@ export default function Bento() {
           {/* 3 — Every flavour & diet */}
           <Reveal delay={0.1}>
             <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
-              <div className="relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50">
+              <div className="relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-canvas">
                 {/* morphing blob — slow organic drift behind the rings */}
                 <span className="animate-blob-drift absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 bg-flame/10 blur-lg" />
                 {/* concentric rings */}
@@ -108,7 +108,7 @@ export default function Bento() {
           {/* 4 — Order in seconds */}
           <Reveal delay={0.14}>
             <article className="surface surface-hover gradient-ring group h-full overflow-hidden p-6">
-              <div className="relative flex h-44 flex-col justify-center gap-3 overflow-hidden rounded-[1.25rem] border border-line bg-sky-50 p-5">
+              <div className="relative flex h-44 flex-col justify-center gap-3 overflow-hidden rounded-[1.25rem] border border-line bg-canvas p-5">
                 {/* incoming bubble */}
                 <div className="max-w-[78%] self-start rounded-2xl rounded-bl-md bg-ink px-3.5 py-2 text-[12px] font-medium text-white shadow-e1">
                   <span className="inline-flex items-center gap-1.5">

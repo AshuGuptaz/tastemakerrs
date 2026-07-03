@@ -10,15 +10,29 @@ import { PRODUCTS } from "@/lib/products";
 
 export const runtime = "nodejs";
 
-const DELIVERY_FEE = 50;
-const FREE_DELIVERY_ABOVE = 500;
+// Delivery + coupon rules MUST match what the checkout UI displays, otherwise the
+// amount charged (server-computed) diverges from the total the customer agreed to.
+const DELIVERY_FEE = 79;
+const FREE_DELIVERY_ABOVE = 999;
+
+// Server-side coupon authority — mirrors the checkout page's couponValue() so a
+// client can never invent a discount, and the charged total matches the display.
+function couponValue(code: string, subtotal: number): number {
+  const map: Record<string, number> = {
+    FIRSTBITE: Math.round(subtotal * 0.1),
+    BDAY150: subtotal >= 999 ? 150 : 0,
+    HAMPER20: Math.round(subtotal * 0.2),
+    BULK10: subtotal >= 3000 ? Math.round(subtotal * 0.1) : 0,
+  };
+  return map[code] || 0;
+}
 
 const ItemSchema = z.object({
   productId: z.string().optional(),
-  name: z.string(),
+  name: z.string().max(200),
   price: z.number().positive(),
-  qty: z.number().int().min(1),
-  variant: z.string().optional(),
+  qty: z.number().int().min(1).max(50),
+  variant: z.string().max(100).optional(),
   custom: z.any().optional(),
 });
 
@@ -56,24 +70,27 @@ export async function POST(req: Request) {
       }
     }
 
-    // Server-side price authority: look up each item in the static catalog.
-    // Items with a known productId get the catalog price; unrecognized items
-    // (e.g. custom cakes added via the custom-order flow) keep the submitted
-    // price but must be positive — client can never under-price catalog items.
+    // Server-side price authority. A catalog item is re-priced (and re-named)
+    // from the static catalog — the client price is ignored entirely. A
+    // non-catalog item is only accepted if it is a genuine custom-cake request
+    // (carries a `custom` payload); otherwise it is rejected. This closes the
+    // "send a real product with no/bogus productId and price:1" under-pricing hole.
     const pricedItems = body.items.map((item) => {
-      if (item.productId) {
-        const product = PRODUCTS.find((p) => p.id === item.productId || p.slug === item.productId);
-        if (product) return { ...item, price: product.price };
-      }
+      const product = item.productId
+        ? PRODUCTS.find((p) => p.id === item.productId || p.slug === item.productId)
+        : undefined;
+      if (product) return { ...item, name: product.name, price: product.price };
+      if (!item.custom) throw new Error("Unknown item");
       if (!item.price || item.price <= 0) throw new Error("Invalid item price");
       return item;
     });
 
     const subtotal = pricedItems.reduce((s, i) => s + i.price * i.qty, 0);
     const delivery = subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_FEE;
-    // TODO: validate coupon code server-side when coupon table is implemented.
-    const discount = 0;
-    const total = subtotal + delivery - discount;
+    // Coupon is re-validated & re-priced server-side from the authoritative
+    // subtotal — the client can neither invent a code nor inflate the discount.
+    const discount = body.coupon ? couponValue(body.coupon.trim().toUpperCase(), subtotal) : 0;
+    const total = Math.max(0, subtotal + delivery - discount);
 
     await connectDB();
     const order = await Order.create({

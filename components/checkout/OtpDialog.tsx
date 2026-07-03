@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { ShieldCheck, X } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -122,12 +122,12 @@ export default function OtpDialog({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         className="fixed inset-0 z-[100] grid place-items-center p-4"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       >
         <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={onClose} />
-        <motion.div
+        <m.div
           role="dialog" aria-modal="true" aria-label="Verify your contact"
           initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.97 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
@@ -176,8 +176,8 @@ export default function OtpDialog({
               {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
             </button>
           </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </AnimatePresence>
   );
 }

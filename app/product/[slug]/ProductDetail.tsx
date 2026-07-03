@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Minus, Plus, Heart, Truck, Shield, Sparkles, Leaf, Check } from "lucide-react";
 import toast from "react-hot-toast";
@@ -10,6 +10,7 @@ import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Underlined from "@/components/Underlined";
 import type { Product } from "@/types/product";
+import { formatINR } from "@/lib/format";
 
 export default function ProductDetail({
   product,
@@ -59,7 +60,7 @@ export default function ProductDetail({
           </nav>
 
           <div className="grid gap-10 md:grid-cols-2">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className={`relative grid aspect-square place-items-center overflow-hidden rounded-xl2 ${product.bg}`}
@@ -83,12 +84,12 @@ export default function ProductDetail({
                   Bestseller
                 </span>
               )}
-            </motion.div>
+            </m.div>
 
             <div>
               <p className="text-sm uppercase tracking-wider text-ink-mut">{categoryLabel}{product.unit && ` · ${product.unit}`}</p>
               <h1 className="t-h2 mt-2 text-[clamp(2.2rem,5vw,4rem)]">{product.name}</h1>
-              <p className="mt-3 font-display text-3xl text-flame-700">₹{product.price}</p>
+              <p className="mt-3 font-display text-3xl text-flame-700">{formatINR(product.price)}</p>
 
               <div className="mt-3 flex flex-wrap gap-2">
                 {product.eggless && <span className="pill"><Leaf className="h-3.5 w-3.5 text-flame" /> Eggless option</span>}
@@ -104,22 +105,32 @@ export default function ProductDetail({
               {/* Qty + add */}
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1 rounded-pill border border-line bg-white">
-                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="focus-ring grid h-11 w-11 place-items-center hover:text-flame">
+                  <button
+                    onClick={() => setQty((q) => Math.max(1, q - 1))}
+                    disabled={qty <= 1}
+                    aria-label="Decrease quantity"
+                    className="focus-ring grid h-11 w-11 place-items-center hover:text-flame disabled:cursor-not-allowed disabled:opacity-40"
+                  >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="w-10 text-center font-semibold">{qty}</span>
-                  <button onClick={() => setQty((q) => q + 1)} className="focus-ring grid h-11 w-11 place-items-center hover:text-flame">
+                  <span className="w-10 text-center font-semibold" aria-live="polite">{qty}</span>
+                  <button
+                    onClick={() => setQty((q) => Math.min(50, q + 1))}
+                    disabled={qty >= 50}
+                    aria-label="Increase quantity"
+                    className="focus-ring grid h-11 w-11 place-items-center hover:text-flame disabled:cursor-not-allowed disabled:opacity-40"
+                  >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
 
-                <motion.button
+                <m.button
                   onClick={handleAdd}
                   whileTap={{ scale: 0.96 }}
                   className="btn-accent min-w-[12rem] justify-center"
                 >
-                  {added ? <><Check className="h-4 w-4" /> Added to cart</> : `Add to Cart · ₹${product.price * qty}`}
-                </motion.button>
+                  {added ? <><Check className="h-4 w-4" /> Added to cart</> : `Add to Cart · ${formatINR(product.price * qty)}`}
+                </m.button>
 
                 {product.customizable && (
                   <Link href={`/custom-cake?base=${product.slug}`} className="btn-line">

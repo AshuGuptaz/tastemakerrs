@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
-  motion,
+  m,
   AnimatePresence,
   useScroll,
   useTransform,
@@ -30,7 +30,7 @@ function Segment({ p, index }: { p: MotionValue<number>; index: number }) {
   const width = useTransform(p, (v) => `${Math.max(0, Math.min(1, v * N - index)) * 100}%`);
   return (
     <div className="h-[3px] flex-1 overflow-hidden rounded-full bg-ink/10">
-      <motion.div style={{ width }} className="h-full rounded-full bg-flame" />
+      <m.div style={{ width }} className="h-full rounded-full bg-flame" />
     </div>
   );
 }
@@ -132,7 +132,7 @@ export default function ProcessStory() {
 
               <div className="mt-8 min-h-[15rem]">
                 <AnimatePresence mode="wait">
-                  <motion.div key={active} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.45, ease: SOFT }}>
+                  <m.div key={active} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.45, ease: SOFT }}>
                     <div className="flex items-baseline gap-3">
                       <span className="font-display text-6xl font-semibold leading-none text-flame md:text-7xl">{String(active + 1).padStart(2, "0")}</span>
                       <span className="text-lg text-ink-mut">/ {String(N).padStart(2, "0")}</span>
@@ -145,7 +145,7 @@ export default function ProcessStory() {
                         <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                       </Link>
                     )}
-                  </motion.div>
+                  </m.div>
                 </AnimatePresence>
               </div>
 

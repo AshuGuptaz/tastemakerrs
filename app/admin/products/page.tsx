@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { formatINR } from "@/lib/format";
 
 type P = {
   _id?: string;
@@ -105,7 +106,7 @@ export default function AdminProducts() {
                       {p.name}
                     </td>
                     <td className="p-3 text-cocoa/70">{p.category}</td>
-                    <td className="p-3">₹{p.price}</td>
+                    <td className="p-3">{formatINR(p.price)}</td>
                     <td className="p-3">
                       {p.active === false ? <span className="text-rose-500">Inactive</span> : <span className="text-flame">Active</span>}
                       {p.bestseller && <span className="ml-1 rounded-pill bg-flame/10 px-2 text-xs text-flame">★</span>}

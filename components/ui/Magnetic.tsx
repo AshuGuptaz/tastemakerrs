@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
+import { m, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 
 /**
  * Magnetic wrapper — the element springs a fraction of the way toward the
@@ -46,7 +46,7 @@ export default function Magnetic({
   }
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onMouseMove={onMove}
       onMouseLeave={reset}
@@ -54,6 +54,6 @@ export default function Magnetic({
       className={`${className} [@media(pointer:coarse)]:!transform-none`}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

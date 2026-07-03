@@ -28,6 +28,7 @@ type CartCtx = {
 const CartContext = createContext<CartCtx | null>(null);
 
 const KEY = "ttm_cart_v1";
+const MAX_QTY = 50;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -50,10 +51,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const idx = prev.findIndex((p) => p.id === item.id && p.variant === item.variant);
       if (idx >= 0) {
         const next = [...prev];
-        next[idx] = { ...next[idx], qty: next[idx].qty + qty };
+        next[idx] = { ...next[idx], qty: Math.min(MAX_QTY, next[idx].qty + qty) };
         return next;
       }
-      return [...prev, { ...item, qty }];
+      return [...prev, { ...item, qty: Math.min(MAX_QTY, qty) }];
     });
     toast.success(`Added ${item.name}`);
   };
@@ -64,7 +65,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const setQty: CartCtx["setQty"] = (id, variant, qty) =>
     setItems((prev) =>
       prev.map((p) =>
-        p.id === id && p.variant === variant ? { ...p, qty: Math.max(1, qty) } : p
+        // Clamp 1..MAX_QTY — matches the server-side per-item cap so the cart can
+        // never build a total the order API will reject.
+        p.id === id && p.variant === variant ? { ...p, qty: Math.min(MAX_QTY, Math.max(1, qty)) } : p
       )
     );
 

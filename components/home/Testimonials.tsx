@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { Star } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
@@ -21,7 +21,7 @@ const REVIEWS: Review[] = [
 
 function Card({ r }: { r: Review }) {
   return (
-    <motion.figure
+    <m.figure
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 22 }}
       className="surface w-[300px] shrink-0 p-6 sm:w-[350px]"
@@ -39,7 +39,7 @@ function Card({ r }: { r: Review }) {
           <span className="block text-xs text-ink-mut">{r.role}</span>
         </span>
       </figcaption>
-    </motion.figure>
+    </m.figure>
   );
 }
 
@@ -47,7 +47,7 @@ function Row({ items, reverse = false, duration = 42 }: { items: Review[]; rever
   const reduce = useReducedMotion();
   return (
     <div className="overflow-hidden">
-      <motion.div
+      <m.div
         className="flex w-max gap-5"
         animate={reduce ? undefined : { x: reverse ? ["-50%", "0%"] : ["0%", "-50%"] }}
         transition={reduce ? undefined : { x: { repeat: Infinity, repeatType: "loop", duration, ease: "linear" } }}
@@ -56,7 +56,7 @@ function Row({ items, reverse = false, duration = 42 }: { items: Review[]; rever
         {[...items, ...items].map((r, i) => (
           <Card key={`${r.name}-${i}`} r={r} />
         ))}
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -77,8 +77,8 @@ export default function Testimonials() {
           <Row items={REVIEWS.slice(5, 10)} reverse duration={46} />
         </div>
         {/* edge fades to the warm canvas */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-clay-50 to-transparent md:w-40" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-clay-50 to-transparent md:w-40" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#EFE7DB] to-transparent md:w-40" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#EFE7DB] to-transparent md:w-40" />
       </div>
     </section>
   );

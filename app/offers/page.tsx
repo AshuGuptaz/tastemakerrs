@@ -38,7 +38,7 @@ export default function OffersPage() {
         subtitle="Copy a code and paste it at checkout — one code per order."
       />
 
-      <section className="section bg-cream-50">
+      <section className="section bg-canvas">
         <div className="container-x grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {OFFERS.map((o) => (
             <div key={o.t} className="card flex flex-col overflow-hidden">
@@ -48,17 +48,17 @@ export default function OffersPage() {
               </div>
               <div className="flex flex-1 flex-col p-6">
                 <h3 className="font-display text-2xl">{o.t}</h3>
-                <p className="mt-1 text-cocoa/70">{o.desc}</p>
+                <p className="mt-1 text-ink-mut">{o.desc}</p>
 
                 {o.code ? (
                   <CouponCodeChip code={o.code} />
                 ) : (
-                  <p className="mt-4 rounded-2xl bg-cream-100 px-4 py-2.5 text-xs text-cocoa/70">
+                  <p className="mt-4 rounded-2xl bg-surface px-4 py-2.5 text-xs text-ink-mut">
                     {o.note}
                   </p>
                 )}
 
-                <Link href="/menu" className="btn-primary mt-5 w-full justify-center">Shop now</Link>
+                <Link href="/menu" className="btn-accent mt-5 w-full justify-center">Shop now</Link>
               </div>
             </div>
           ))}

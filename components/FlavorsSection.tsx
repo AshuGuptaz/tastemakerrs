@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight } from "lucide-react";
@@ -47,7 +47,7 @@ export default function FlavorsSection() {
   return (
     <section className="section bg-cream-100">
       <div className="container-x">
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -55,7 +55,7 @@ export default function FlavorsSection() {
           className="h-section"
         >
           A <Underlined>flavor</Underlined> for every craving
-        </motion.h2>
+        </m.h2>
 
         <div className="mt-10 grid gap-0 overflow-hidden rounded-xl2 border border-cocoa/10 bg-white shadow-card md:grid-cols-2">
           {/* List */}
@@ -76,7 +76,7 @@ export default function FlavorsSection() {
           </ul>
 
           {/* Preview */}
-          <motion.div
+          <m.div
             key={f.name}
             initial={{ opacity: 0, scale: 1.015 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -86,7 +86,7 @@ export default function FlavorsSection() {
             <Image src={f.img} alt={f.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-wine/40 via-wine/5 to-transparent" />
             {f.notes.map((n, i) => (
-              <motion.span
+              <m.span
                 key={n.label}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -94,9 +94,9 @@ export default function FlavorsSection() {
                 className={`absolute pill ${n.pos}`}
               >
                 {n.label}
-              </motion.span>
+              </m.span>
             ))}
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
+import { formatINR } from "@/lib/format";
 
 export default function CartPage() {
   const { items, setQty, remove, subtotal, hydrated } = useCart();
@@ -43,7 +44,7 @@ export default function CartPage() {
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_380px]">
             <div className="space-y-4">
               {items.map((it, i) => (
-                <motion.div
+                <m.div
                   key={it.id + (it.variant ?? "")}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -60,7 +61,7 @@ export default function CartPage() {
                   <div className="min-w-0 md:flex-1">
                     <h3 className="line-clamp-2 text-base font-semibold text-ink md:truncate">{it.name}</h3>
                     {it.variant && <p className="text-xs text-ink-mut">{it.variant}</p>}
-                    <p className="mt-1 font-display text-flame-700">₹{it.price}</p>
+                    <p className="mt-1 font-display text-flame-700">{formatINR(it.price)}</p>
                   </div>
                   <div className="col-span-2 flex items-center justify-between gap-3 md:contents">
                     <div className="flex items-center gap-1 rounded-pill border border-line bg-white">
@@ -68,12 +69,12 @@ export default function CartPage() {
                       <span className="w-8 text-center font-semibold">{it.qty}</span>
                       <button onClick={() => setQty(it.id, it.variant, it.qty + 1)} aria-label="Increase quantity" className="grid h-11 w-11 place-items-center rounded-pill hover:text-flame focus-ring"><Plus className="h-4 w-4" /></button>
                     </div>
-                    <p className="font-display text-lg md:w-20 md:text-right">₹{it.qty * it.price}</p>
+                    <p className="font-display text-lg md:w-20 md:text-right">{formatINR(it.qty * it.price)}</p>
                     <button onClick={() => remove(it.id, it.variant)} className="grid h-11 w-11 place-items-center rounded-pill text-ink-mut transition-colors hover:bg-red-50 hover:text-red-600 focus-ring" aria-label={`Remove ${it.name}`}>
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
 
@@ -81,17 +82,17 @@ export default function CartPage() {
               <div className="card p-6">
                 <h3 className="t-h3">Order Summary</h3>
                 <ul className="mt-4 space-y-2 text-sm">
-                  <li className="flex justify-between"><span className="text-ink-mut">Subtotal</span><span>₹{subtotal}</span></li>
-                  <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span>{delivery === 0 ? <span className="text-flame-700">FREE</span> : `₹${delivery}`}</span></li>
+                  <li className="flex justify-between"><span className="text-ink-mut">Subtotal</span><span>{formatINR(subtotal)}</span></li>
+                  <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span>{delivery === 0 ? <span className="text-flame-700">FREE</span> : formatINR(delivery)}</span></li>
                 </ul>
                 {subtotal < 999 && (
                   <p className="mt-3 rounded-2xl bg-surface px-4 py-3 text-xs">
-                    Add <b>₹{999 - subtotal}</b> more for free delivery.
+                    Add <b>{formatINR(999 - subtotal)}</b> more for free delivery.
                   </p>
                 )}
                 <div className="mt-5 flex items-baseline justify-between border-t border-line pt-4">
                   <span className="t-h3">Total</span>
-                  <span className="font-display text-3xl text-flame-700">₹{total}</span>
+                  <span className="font-display text-3xl text-flame-700">{formatINR(total)}</span>
                 </div>
                 <Link href="/checkout" className="btn-accent mt-5 w-full justify-center">
                   <ShoppingBag className="h-4 w-4" /> Proceed to Checkout

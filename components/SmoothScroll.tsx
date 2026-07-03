@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
-import { MotionConfig } from "framer-motion";
+import { LazyMotion, domMax, MotionConfig } from "framer-motion";
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -15,10 +15,11 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const start = () => {
       if (lenis || mq.matches) return;
       lenis = new Lenis({
-        duration: 1.05,
+        duration: 1.2,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        wheelMultiplier: 1.05,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.8,
       });
       const raf = (time: number) => {
         lenis!.raf(time);
@@ -44,5 +45,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   // reducedMotion="user" makes Framer auto-skip transform/layout animations to
   // their target for visitors who prefer less motion — covers the bulk of the
   // app's entrance/hover/spring motion in one place.
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
+  return (
+    <LazyMotion features={domMax} strict>
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+    </LazyMotion>
+  );
 }

@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { m, AnimatePresence, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
 import { Plus, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
 import { fireSugarBurst } from "@/components/ui/SugarBurst";
 import type { Product } from "@/types/product";
+import { formatINR } from "@/lib/format";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { add } = useCart();
@@ -51,7 +52,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
   }
 
   return (
-    <motion.div
+    <m.div
       ref={cardRef}
       initial={reduce ? false : { y: 24 }}
       whileInView={{ y: 0 }}
@@ -65,7 +66,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
     >
       <Link href={`/product/${product.slug}`} className={`relative grid aspect-[4/3] place-items-center ${product.bg} overflow-hidden`}>
         {product.image.startsWith("/") || product.image.startsWith("http") ? (
-          <motion.div
+          <m.div
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="absolute -inset-[3%]"
@@ -77,15 +78,15 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover"
             />
-          </motion.div>
+          </m.div>
         ) : (
-          <motion.div
+          <m.div
             whileHover={{ scale: 1.08 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="text-7xl drop-shadow-lg md:text-8xl"
           >
             {product.image}
-          </motion.div>
+          </m.div>
         )}
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/15 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
         {product.bestseller && (
@@ -103,7 +104,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-1 flex items-center justify-between gap-2">
           <h3 className="font-display text-xl leading-tight tracking-tight">{product.name}</h3>
-          <span className="font-display text-lg text-flame-700">₹{product.price}</span>
+          <span className="font-display text-lg text-flame-700">{formatINR(product.price)}</span>
         </div>
         {product.unit && <p className="mb-2 text-xs uppercase tracking-wider text-ink-mut">{product.unit}</p>}
         <p className="mb-4 line-clamp-2 text-sm text-ink-soft">{product.description}</p>
@@ -112,7 +113,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           <Link href={`/product/${product.slug}`} className="btn-line flex-1 justify-center">
             View
           </Link>
-          <motion.button
+          <m.button
             onClick={handleAdd}
             whileTap={{ scale: 0.88 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -121,7 +122,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           >
             <AnimatePresence mode="wait" initial={false}>
               {added ? (
-                <motion.span
+                <m.span
                   key="check"
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -129,9 +130,9 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Check className="h-5 w-5" />
-                </motion.span>
+                </m.span>
               ) : (
-                <motion.span
+                <m.span
                   key="plus"
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -139,12 +140,12 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Plus className="h-5 w-5" />
-                </motion.span>
+                </m.span>
               )}
             </AnimatePresence>
-          </motion.button>
+          </m.button>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

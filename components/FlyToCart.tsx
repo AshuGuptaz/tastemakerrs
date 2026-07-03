@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { useCartUI } from "@/context/CartUIContext";
 
 const SIZE = 72;
@@ -26,7 +26,7 @@ export default function FlyToCart() {
           const to = targetCenter();
           if (!to) return null;
           return (
-            <motion.img
+            <m.img
               key={f.id}
               src={f.image}
               alt=""

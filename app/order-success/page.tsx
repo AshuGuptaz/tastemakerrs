@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { Suspense, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
@@ -45,9 +45,9 @@ function OrderSuccessInner() {
   return (
     <section className="bg-transparent py-20 md:py-32 min-h-[70vh]">
       <div className="container-x text-center">
-        <motion.div initial={{ scale: reduce ? 1 : 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={reduce ? { duration: 0.2 } : { type: "spring", stiffness: 260, damping: 22, mass: 0.9 }} className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-flame text-white">
+        <m.div initial={{ scale: reduce ? 1 : 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={reduce ? { duration: 0.2 } : { type: "spring", stiffness: 260, damping: 22, mass: 0.9 }} className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-flame text-white">
           <CheckCircle2 className="h-14 w-14" />
-        </motion.div>
+        </m.div>
         <h1 className="t-display mt-6">Order <Underlined>confirmed</Underlined></h1>
         <p className="mt-4 max-w-xl mx-auto text-ink-soft">
           Thank you for ordering from The Taste Makerrs. Our kitchen has started baking. We&apos;ll send you delivery updates on WhatsApp &amp; email.

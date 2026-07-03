@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 /**
  * A single global layer that pops a little burst of "sugar/flour" particles at
@@ -48,7 +48,7 @@ export default function SugarBurst() {
               const dist = 26 + ((i * 37) % 44); // deterministic spread
               const size = 5 + (i % 3) * 2;
               return (
-                <motion.span
+                <m.span
                   key={i}
                   initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
                   animate={{ x: Math.cos(a) * dist, y: Math.sin(a) * dist - 14, opacity: 0, scale: 0.3 }}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Underlined from "./Underlined";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -17,7 +17,7 @@ export default function OccasionsStrip() {
   return (
     <section className="section bg-sky-100">
       <div className="container-x">
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -25,11 +25,11 @@ export default function OccasionsStrip() {
           className="h-section text-center"
         >
           Every occasion deserves a <Underlined>yummy</Underlined> cake
-        </motion.h2>
+        </m.h2>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {OCCASIONS.map((o, i) => (
-            <motion.div
+            <m.div
               key={o.title}
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -55,7 +55,7 @@ export default function OccasionsStrip() {
                   Shop now →
                 </Link>
               </div>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

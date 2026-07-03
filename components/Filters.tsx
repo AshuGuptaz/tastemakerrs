@@ -4,6 +4,7 @@ import { CATEGORIES, CATEGORY_META, ALL_FLAVORS } from "@/lib/products";
 import type { Category } from "@/types/product";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { formatINR } from "@/lib/format";
 
 type Props = {
   cat: Category | "all";
@@ -59,11 +60,11 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
       </div>
 
       <div className="mt-5">
-        <label htmlFor="filter-max" className="label">Max Price · ₹{localMax}</label>
+        <label htmlFor="filter-max" className="label">Max Price · {formatINR(localMax)}</label>
         <input
           id="filter-max" type="range" min={50} max={2500} step={50} value={localMax}
           onChange={onMaxChange}
-          aria-label={`Maximum price, ₹${localMax}`}
+          aria-label={`Maximum price, ${formatINR(localMax)}`}
           className="w-full accent-flame"
         />
       </div>

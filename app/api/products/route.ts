@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Product } from "@/models/Product";
 import { PRODUCTS } from "@/lib/products";
 import { getAdminFromCookies } from "@/lib/auth-server";
+import { ProductInput } from "@/lib/product-schema";
 
 /**
  * GET  /api/products       — list active products (DB-backed; falls back to seed)
@@ -23,11 +24,15 @@ export async function POST(req: Request) {
   const admin = await getAdminFromCookies();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
+    const data = ProductInput.parse(await req.json());
     await connectDB();
-    const body = await req.json();
-    const created = await Product.create(body);
+    const created = await Product.create(data);
     return NextResponse.json(created);
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 400 });
+    if (e?.name === "ZodError") {
+      return NextResponse.json({ error: "Invalid product data" }, { status: 400 });
+    }
+    console.error("[products/POST]", e?.message);
+    return NextResponse.json({ error: "Could not create product" }, { status: 400 });
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import ProductCard from "./ProductCard";
 import Underlined from "./Underlined";
 import { getBestsellers } from "@/lib/products";
@@ -12,7 +12,7 @@ export default function FeaturedProducts() {
     <section className="section bg-cream-50">
       <div className="container-x">
         <div className="flex items-end justify-between gap-4">
-          <motion.h2
+          <m.h2
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -20,7 +20,7 @@ export default function FeaturedProducts() {
             className="h-section"
           >
             Baked <Underlined>fresh</Underlined> — bestsellers
-          </motion.h2>
+          </m.h2>
           <Link href="/menu" className="hidden md:inline-flex btn-ghost">See all</Link>
         </div>
 
