@@ -6,17 +6,15 @@ import Image from "next/image";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
-// Curated local photos (in /public/images/cakes) — each genuinely matches its
-// label, unlike the earlier remote placeholders (cookies shown as "Vanilla" etc.).
 const CAKES = [
-  { img: "/images/cakes/vanilla.jpg", name: "Classic Vanilla", note: "Madagascar vanilla · buttercream" },
-  { img: "/images/cakes/red-velvet.jpg", name: "Red Velvet", note: "Cream-cheese frost" },
-  { img: "/images/cakes/chocolate.jpg", name: "Belgian Chocolate", note: "70% dark ganache" },
-  { img: "/images/cakes/rasmalai.jpg", name: "Rasmalai Fusion", note: "Saffron · cardamom · pistachio" },
-  { img: "/images/cakes/pistachio.jpg", name: "Pistachio Rose", note: "Roasted pistachio · rose" },
-  { img: "/images/cakes/fresh-fruit.jpg", name: "Fresh Fruit Gâteau", note: "Fresh seasonal fruit" },
-  { img: "/images/cakes/black-forest.jpg", name: "Black Forest", note: "Cherry · dark chocolate · cream" },
-  { img: "/images/cakes/strawberry.jpg", name: "Strawberry Cream", note: "Fresh strawberries · light cream" },
+  { img: "/images/gallery/lily-cake.jpg",          name: "Minimalist Lily",    note: "Elegant · single-tier · pearl finish" },
+  { img: "/images/gallery/blueberry-cake.jpg",     name: "Blueberry Gourmet",  note: "Fresh blueberries · gold accent" },
+  { img: "/images/gallery/floral-birthday.jpg",    name: "Birthday Florals",   note: "Real flowers · custom topper" },
+  { img: "/images/gallery/heart-anniversary.jpg",  name: "Heart of Love",      note: "Pink heart · floral arrangement" },
+  { img: "/images/gallery/butterfly-birthday.jpg", name: "Butterfly Dream",    note: "1st birthday · fairy lights · fondant" },
+  { img: "/images/gallery/silver-jubilee.jpg",     name: "Silver Jubilee",     note: "3-tier · purple ombré · gold foil" },
+  { img: "/images/gallery/candle-cake.jpg",        name: "Artisan Candle",     note: "Hand-sculpted · white glaze · pearls" },
+  { img: "/images/gallery/tier-cake.jpg",          name: "Grand Tier",         note: "3-tier · chrysanthemums · fairy lights" },
 ];
 
 export default function SignatureGallery() {

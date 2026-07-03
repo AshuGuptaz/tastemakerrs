@@ -4,9 +4,9 @@ import { ArrowUpRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
 const OCCASIONS = [
-  { title: "Birthdays", copy: "Bento, photo & pinata cakes that steal the show.", img: "/images/cakes/pinata.jpg", href: "/menu?cat=cakes" },
-  { title: "Weddings & anniversaries", copy: "Elegant tiers, finished to look as good as they taste.", img: "/images/cakes/strawberry.jpg", href: "/custom-cake" },
-  { title: "Corporate & bulk gifting", copy: "Curated hampers & chocolate boxes with custom branding.", img: "/images/chocolates/pralines.jpg", href: "/menu?cat=hampers" },
+  { title: "Birthdays", copy: "Bento, photo & pinata cakes that steal the show.", img: "/images/gallery/floral-birthday.jpg", href: "/menu?cat=cakes" },
+  { title: "Weddings & anniversaries", copy: "Elegant tiers, finished to look as good as they taste.", img: "/images/gallery/wedding-cake.png", href: "/custom-cake" },
+  { title: "Corporate & bulk gifting", copy: "Curated hampers & chocolate boxes with custom branding.", img: "/images/gallery/cookie-bouquet.jpg", href: "/menu?cat=hampers" },
 ];
 
 export default function Occasions() {

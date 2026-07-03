@@ -42,20 +42,20 @@ const make = (
 
 export const PRODUCTS: Product[] = [
   // ===== CAKES (per 500g, customizable) =====
-  make("Classic Vanilla", "cakes", 450, { unit: "500g", flavors: ["vanilla"], image: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100", customizable: true, bestseller: true }),
-  make("Truffle", "cakes", 650, { unit: "500g", flavors: ["chocolate"], image: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50", customizable: true, bestseller: true }),
-  make("Rich Chocolate", "cakes", 550, { unit: "500g", flavors: ["chocolate"], image: "https://images.unsplash.com/photo-1569896254409-ac66c17041d2?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50", customizable: true }),
-  make("Seasonal Fresh Fruit", "cakes", 600, { unit: "500g", flavors: ["fruit", "vanilla"], image: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", customizable: true }),
-  make("Black Forest", "cakes", 555, { unit: "500g", flavors: ["chocolate", "cherry"], image: "https://images.unsplash.com/photo-1564844536308-75c540dbf14e?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100", customizable: true }),
-  make("Classic Pineapple", "cakes", 500, { unit: "500g", flavors: ["pineapple"], image: "https://images.unsplash.com/photo-1564844536308-75c540dbf14e?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100", customizable: true }),
-  make("Rasmalai Fusion", "cakes", 650, { unit: "500g", flavors: ["rasmalai", "kesar"], image: "https://images.unsplash.com/photo-1569896254409-ac66c17041d2?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", customizable: true, bestseller: true, jainFriendly: true,
+  make("Classic Vanilla", "cakes", 450, { unit: "500g", flavors: ["vanilla"], image: "/images/gallery/anniversary-cake.png", bg: "bg-cream-100", customizable: true, bestseller: true }),
+  make("Truffle", "cakes", 650, { unit: "500g", flavors: ["chocolate"], image: "/images/gallery/choco-drip.jpg", bg: "bg-cocoa-50", customizable: true, bestseller: true }),
+  make("Rich Chocolate", "cakes", 550, { unit: "500g", flavors: ["chocolate"], image: "/images/gallery/choco-drip.jpg", bg: "bg-cocoa-50", customizable: true }),
+  make("Seasonal Fresh Fruit", "cakes", 600, { unit: "500g", flavors: ["fruit", "vanilla"], image: "/images/gallery/birthday-cake.jpg", bg: "bg-peach-100", customizable: true }),
+  make("Black Forest", "cakes", 555, { unit: "500g", flavors: ["chocolate", "cherry"], image: "/images/gallery/candle-cake.jpg", bg: "bg-cream-100", customizable: true }),
+  make("Classic Pineapple", "cakes", 500, { unit: "500g", flavors: ["pineapple"], image: "/images/gallery/anniversary-cake.png", bg: "bg-cream-100", customizable: true }),
+  make("Rasmalai Fusion", "cakes", 650, { unit: "500g", flavors: ["rasmalai", "kesar"], image: "/images/gallery/silver-jubilee.jpg", bg: "bg-peach-100", customizable: true, bestseller: true, jainFriendly: true,
     description: "Saffron-soaked sponge layered with thickened malai and pistachio crunch — our most-loved Indian fusion cake." }),
-  make("Luxury Pistachio", "cakes", 876, { unit: "500g", flavors: ["pistachio"], image: "https://images.unsplash.com/photo-1564844536308-75c540dbf14e?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100", customizable: true, bestseller: true }),
-  make("Blueberry Burst", "cakes", 655, { unit: "500g", flavors: ["blueberry"], image: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100", customizable: true }),
-  make("Crunchy Butterscotch", "cakes", 500, { unit: "500g", flavors: ["butterscotch"], image: "https://images.unsplash.com/photo-1569896254409-ac66c17041d2?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100", customizable: true }),
-  make("Strawberry Shortcake", "cakes", 500, { unit: "500g", flavors: ["strawberry"], image: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", customizable: true, bestseller: true }),
-  make("Red Velvet Royale", "cakes", 650, { unit: "500g", flavors: ["red velvet"], image: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", customizable: true, bestseller: true }),
-  make("Pinata Cake", "cakes", 1500, { unit: "500g", flavors: ["chocolate", "surprise"], image: "https://images.unsplash.com/photo-1564844536308-75c540dbf14e?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-200", customizable: true, bestseller: true,
+  make("Luxury Pistachio", "cakes", 876, { unit: "500g", flavors: ["pistachio"], image: "/images/gallery/lily-cake.jpg", bg: "bg-sky-100", customizable: true, bestseller: true }),
+  make("Blueberry Burst", "cakes", 655, { unit: "500g", flavors: ["blueberry"], image: "/images/gallery/blueberry-cake.jpg", bg: "bg-sky-100", customizable: true }),
+  make("Crunchy Butterscotch", "cakes", 500, { unit: "500g", flavors: ["butterscotch"], image: "/images/gallery/birthday-cake.jpg", bg: "bg-cream-100", customizable: true }),
+  make("Strawberry Shortcake", "cakes", 500, { unit: "500g", flavors: ["strawberry"], image: "/images/gallery/heart-anniversary.jpg", bg: "bg-peach-100", customizable: true, bestseller: true }),
+  make("Red Velvet Royale", "cakes", 650, { unit: "500g", flavors: ["red velvet"], image: "/images/gallery/floral-birthday.jpg", bg: "bg-peach-100", customizable: true, bestseller: true }),
+  make("Pinata Cake", "cakes", 1500, { unit: "500g", flavors: ["chocolate", "surprise"], image: "/images/gallery/butterfly-birthday.jpg", bg: "bg-peach-200", customizable: true, bestseller: true,
     description: "Smash-style chocolate shell hiding a treasure of candies inside — perfect for parties and birthdays." }),
 
   // ===== CUPCAKES (Box of 6) =====
@@ -69,19 +69,19 @@ export const PRODUCTS: Product[] = [
   // ===== MUFFINS (per piece) =====
   make("Vanilla Muffin", "muffins", 60, { unit: "Per piece", flavors: ["vanilla"], image: "https://images.unsplash.com/photo-1723638174646-5322cd088233?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100" }),
   make("Tutti Frutti Muffin", "muffins", 65, { unit: "Per piece", flavors: ["tutti frutti"], image: "https://images.unsplash.com/photo-1659549591823-c6efec55b82f?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100" }),
-  make("Triple Chocolate Muffin", "muffins", 69, { unit: "Per piece", flavors: ["chocolate"], image: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50", bestseller: true }),
-  make("Chocolate Chunk Muffin", "muffins", 79, { unit: "Per piece", flavors: ["chocolate"], image: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50" }),
-  make("Strawberry Muffin", "muffins", 79, { unit: "Per piece", flavors: ["strawberry"], image: "https://images.unsplash.com/photo-1659549591823-c6efec55b82f?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100" }),
-  make("Dark Double Chocolate Muffin", "muffins", 89, { unit: "Per piece", flavors: ["chocolate"], image: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50", bestseller: true }),
-  make("Blueberry Muffin", "muffins", 89, { unit: "Per piece", flavors: ["blueberry"], image: "https://images.unsplash.com/photo-1659549591823-c6efec55b82f?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100" }),
-  make("Nutella Hazelnut Muffin", "muffins", 90, { unit: "Per piece", flavors: ["hazelnut", "chocolate"], image: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", bestseller: true }),
+  make("Triple Chocolate Muffin", "muffins", 69, { unit: "Per piece", flavors: ["chocolate"], image: "/images/muffins/chocolate-muffin.jpg", bg: "bg-cocoa-50", bestseller: true }),
+  make("Chocolate Chunk Muffin", "muffins", 79, { unit: "Per piece", flavors: ["chocolate"], image: "/images/muffins/muffin.jpg", bg: "bg-cocoa-50" }),
+  make("Strawberry Muffin", "muffins", 79, { unit: "Per piece", flavors: ["strawberry"], image: "/images/muffins/muffin.jpg", bg: "bg-peach-100" }),
+  make("Dark Double Chocolate Muffin", "muffins", 89, { unit: "Per piece", flavors: ["chocolate"], image: "/images/muffins/chocolate-muffin.jpg", bg: "bg-cocoa-50", bestseller: true }),
+  make("Blueberry Muffin", "muffins", 89, { unit: "Per piece", flavors: ["blueberry"], image: "/images/muffins/blueberry-muffin.jpg", bg: "bg-sky-100" }),
+  make("Nutella Hazelnut Muffin", "muffins", 90, { unit: "Per piece", flavors: ["hazelnut", "chocolate"], image: "/images/muffins/muffin.jpg", bg: "bg-peach-100", bestseller: true }),
   make("Pistachio Muffin", "muffins", 120, { unit: "Per piece", flavors: ["pistachio"], image: "https://images.unsplash.com/photo-1723638174646-5322cd088233?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100" }),
 
   // ===== COOKIES =====
-  make("Choco Chip Cookie", "cookies", 180, { unit: "Box of 6", flavors: ["chocolate"], image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50" }),
-  make("Oats & Raisin Cookie", "cookies", 200, { unit: "Box of 6", flavors: ["oats"], image: "https://images.unsplash.com/photo-1497051788611-2c64812349fa?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100" }),
-  make("Almond Biscotti", "cookies", 240, { unit: "Box of 6", flavors: ["almond"], image: "https://images.unsplash.com/photo-1571165841024-2ce92069301d?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100" }),
-  make("Red Velvet Sandwich Cookie", "cookies", 280, { unit: "Box of 6", flavors: ["red velvet"], image: "https://images.unsplash.com/photo-1639678114429-a915fdb55000?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", bestseller: true }),
+  make("Choco Chip Cookie", "cookies", 180, { unit: "Box of 6", flavors: ["chocolate"], image: "/images/cookies/choc-chip.jpg", bg: "bg-cocoa-50" }),
+  make("Oats & Raisin Cookie", "cookies", 200, { unit: "Box of 6", flavors: ["oats"], image: "/images/cookies/oatmeal.jpg", bg: "bg-cream-100" }),
+  make("Almond Biscotti", "cookies", 240, { unit: "Box of 6", flavors: ["almond"], image: "/images/cookies/biscotti.jpg", bg: "bg-peach-100" }),
+  make("Red Velvet Sandwich Cookie", "cookies", 280, { unit: "Box of 6", flavors: ["red velvet"], image: "/images/cookies/choc-chip.jpg", bg: "bg-peach-100", bestseller: true }),
 
   // ===== CHOCOLATES =====
   make("Hazelnut Pralines", "chocolates", 450, { unit: "Box of 12", flavors: ["hazelnut"], image: "https://images.unsplash.com/photo-1526081347589-7fa3cb41b4b2?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50", bestseller: true }),

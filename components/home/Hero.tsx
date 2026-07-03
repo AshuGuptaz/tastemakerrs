@@ -12,8 +12,6 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 // easeOutExpo — the signature "expensive" reveal curve (Locomotive / SOTD).
 const REVEAL = [0.16, 1, 0.3, 1] as const;
 
-// ── Swap this for your real hero cake photo (landscape, ~1600px wide or larger).
-//    Drop the file in /public and use src="/hero-cake.jpg", or keep a remote URL.
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=1600&q=85";
 
