@@ -67,7 +67,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </a>
               <ScrollProgress />
               <Navbar />
-              <main id="main" className="min-h-[60vh]">{children}</main>
+              {/* pt offsets the fixed navbar (≈72px mobile / ≈76px desktop) so page
+                  content on non-hero pages starts below the bar. The hero cancels
+                  this with -mt-[72px] md:-mt-[76px] so it fills from viewport top. */}
+              <main id="main" className="min-h-[60vh] pt-[72px] md:pt-[76px]">{children}</main>
               <Footer />
               <CartDrawer />
               <FlyToCart />

@@ -51,7 +51,7 @@ export default function Navbar() {
   useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 pt-3 md:pt-4">
+    <header className="fixed inset-x-0 top-0 z-50 pt-3 md:pt-4">
       <div className="container-x">
         {/* Floating pill — condenses on scroll via a pure transform (no reflow) */}
         <motion.div

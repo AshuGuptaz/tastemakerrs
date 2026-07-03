@@ -40,7 +40,7 @@ export default function Hero() {
   });
 
   return (
-    <section ref={ref} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden">
+    <section ref={ref} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden -mt-[72px] md:-mt-[76px]">
       {/* full-bleed cake — the atmosphere (isolate on <section> keeps these layers
           inside the hero's own stacking context; positive z so they never fall
           behind the page background) */}
