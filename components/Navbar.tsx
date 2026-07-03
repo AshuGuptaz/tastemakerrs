@@ -32,12 +32,12 @@ export default function Navbar() {
   // ── Scroll-linked condense: a single GPU transform (scale) on the pill, driven
   //    by a snappy spring. No layout properties animate → zero reflow, buttery.
   const { scrollY } = useScroll();
-  const sq = useSpring(useTransform(scrollY, [0, 60], [0, 1], { clamp: true }), {
-    stiffness: 480,
-    damping: 48,
-    mass: 0.4,
+  const sq = useSpring(useTransform(scrollY, [0, 40], [0, 1], { clamp: true }), {
+    stiffness: 520,
+    damping: 42,
+    mass: 0.35,
   });
-  const scale = useTransform(sq, [0, 1], [1, 0.92]);
+  const scale = useTransform(sq, [0, 1], [1, 0.78]);
   const bg = useTransform(sq, [0, 1], ["rgba(255,255,255,0.72)", "rgba(255,255,255,0.93)"]);
   const shadow = useTransform(sq, [0, 1], [E2, E3]);
 
