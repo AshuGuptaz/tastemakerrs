@@ -59,7 +59,8 @@ export async function POST(req: Request) {
       maxAge: 20 * 60,
     });
     return res;
-  } catch {
+  } catch (e: any) {
+    console.error("[otp/verify] error:", e?.message);
     return NextResponse.json({ ok: false, error: "Verification failed" }, { status: 500 });
   }
 }

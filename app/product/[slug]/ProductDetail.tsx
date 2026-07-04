@@ -6,6 +6,7 @@ import { m } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Minus, Plus, Heart, Truck, Shield, Sparkles, Leaf, Check } from "lucide-react";
 import toast from "react-hot-toast";
+import { CartToast } from "@/components/ui/CartToast";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
 import Underlined from "@/components/Underlined";
@@ -34,6 +35,10 @@ export default function ProductDetail({
     add({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image }, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 1100);
+    toast.custom(
+      (t) => <CartToast name={product.name} image={product.image} visible={t.visible} />,
+      { duration: 2400, position: "top-right" }
+    );
   }
 
   function toggleWishlist() {

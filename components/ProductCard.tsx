@@ -8,8 +8,10 @@ import { Plus, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
 import { fireSugarBurst } from "@/components/ui/SugarBurst";
+import { CartToast } from "@/components/ui/CartToast";
 import type { Product } from "@/types/product";
 import { formatINR } from "@/lib/format";
+import toast from "react-hot-toast";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { add } = useCart();
@@ -30,6 +32,10 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
     setAdded(true);
     clearTimeout(addedTimeout.current);
     addedTimeout.current = setTimeout(() => setAdded(false), 900);
+    toast.custom(
+      (t) => <CartToast name={product.name} image={product.image} visible={t.visible} />,
+      { duration: 2400, position: "top-right" }
+    );
   }
 
   const mx = useMotionValue(0.5);

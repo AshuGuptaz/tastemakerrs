@@ -82,7 +82,8 @@ export async function POST(req: Request) {
       // Dev convenience only — never returned in production.
       ...(process.env.NODE_ENV !== "production" ? { devCode: code } : {}),
     });
-  } catch {
+  } catch (e: any) {
+    console.error("[otp/send] error:", e?.message);
     return NextResponse.json({ error: "Could not send code" }, { status: 500 });
   }
 }
