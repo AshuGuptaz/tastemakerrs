@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
 
 export type CartItem = {
   id: string;
@@ -56,7 +55,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { ...item, qty: Math.min(MAX_QTY, qty) }];
     });
-    toast.success(`Added ${item.name}`);
+    // NOTE: no toast here — callers own the "added" feedback (ProductCard /
+    // ProductDetail fire the branded CartToast; custom-cake shows its own toast).
+    // Firing one here too produced a duplicate toast on every add.
   };
 
   const remove: CartCtx["remove"] = (id, variant) =>

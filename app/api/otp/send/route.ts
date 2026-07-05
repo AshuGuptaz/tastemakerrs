@@ -83,6 +83,11 @@ export async function POST(req: Request) {
       ...(process.env.NODE_ENV !== "production" ? { devCode: code } : {}),
     });
   } catch (e: any) {
+    // Client validation failures (bad email/phone) are 400s, not server faults —
+    // so callers can distinguish them and real 500s stay meaningful in logs.
+    if (e?.name === "ZodError") {
+      return NextResponse.json({ error: "Enter a valid email and 10-digit mobile number." }, { status: 400 });
+    }
     console.error("[otp/send] error:", e?.message);
     return NextResponse.json({ error: "Could not send code" }, { status: 500 });
   }
