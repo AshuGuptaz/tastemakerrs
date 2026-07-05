@@ -50,6 +50,42 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* The mark & its meaning */}
+      <section className="section pt-0">
+        <div className="container-x">
+          <Reveal>
+            <div className="card relative overflow-hidden px-6 py-12 md:px-16 md:py-16">
+              <div aria-hidden className="pointer-events-none absolute inset-0">
+                <div className="absolute left-1/2 top-[-30%] h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(214,122,71,0.12),transparent_65%)] blur-2xl" />
+              </div>
+              <div className="relative grid items-center gap-10 md:grid-cols-[0.8fr_1.2fr]">
+                <div className="flex justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/brand/mark-line-full.svg"
+                    alt="The Taste Makerrs logo mark — a two-tier cake with a single lit candle"
+                    className="h-40 w-40 md:h-52 md:w-52"
+                  />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-flame">The mark</p>
+                  <h2 className="t-h2 mt-3">A cake for your <span className="text-gradient">favourite memories</span></h2>
+                  <p className="mt-4 leading-relaxed text-ink-soft">
+                    Our logo is an elegant two-tier celebration cake crowned with a single lit candle — the quiet
+                    centrepiece of every birthday, anniversary and reason to gather. The lone terracotta flame is
+                    the one warm accent we allow ourselves: a small light for the moments worth remembering.
+                  </p>
+                  <p className="mt-4 leading-relaxed text-ink-mut">
+                    Drawn in a single confident line and set in a warm high-contrast serif, it&apos;s made to feel
+                    handmade — because everything we bake is.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       <section className="section pt-0">
         <div className="container-x">
           <h2 className="t-h2 text-center">What we <span className="text-gradient">stand for</span></h2>

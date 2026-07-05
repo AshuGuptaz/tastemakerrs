@@ -58,7 +58,15 @@ export const metadata: Metadata = {
     description: "A cake for your favorite memories.",
     images: ["/images/hero.png"],
   },
-  icons: { icon: "/favicon.svg" },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon-180.png", sizes: "180x180" }],
+  },
 };
 
 export const viewport: Viewport = {

@@ -132,14 +132,21 @@ export async function sendSMS(opts: { to: string; body: string }) {
 
 /* ───────────────────────────── Templates ────────────────────────────────── */
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.thetastemakerrs.com";
+
 function shell(inner: string) {
   return `<!doctype html><html><body style="margin:0;background:#FBF1E4;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">
   <div style="max-width:520px;margin:0 auto;padding:32px 20px;">
-    <div style="text-align:center;margin-bottom:20px;">
-      <span style="display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:18px;letter-spacing:-.02em;">
-        <span style="display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:${INK};color:#fff;font-size:13px;">tm</span>
-        Taste <span style="color:${ACCENT};">Makerrs</span>
-      </span>
+    <div style="text-align:center;margin-bottom:24px;">
+      <a href="${SITE_URL}" style="display:inline-block;">
+        <img
+          src="${SITE_URL}/brand/logo-horizontal-full.png"
+          alt="The Taste Makerrs"
+          width="260"
+          height="71"
+          style="display:block;border:0;max-width:260px;height:auto;"
+        />
+      </a>
     </div>
     <div style="background:#fff;border:1px solid #F0E2CE;border-radius:24px;padding:32px;box-shadow:0 10px 30px -12px rgba(154,86,22,.18);">
       ${inner}

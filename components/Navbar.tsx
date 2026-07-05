@@ -80,30 +80,25 @@ export default function Navbar() {
           className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-pill border border-line px-3.5 py-3 backdrop-blur-xl"
         >
 
-          {/* ── Wordmark ── */}
+          {/* ── Logo ── */}
           <Link
             href="/"
+            aria-label="The Taste Makerrs — home"
             className="group flex items-center gap-2 rounded-pill pl-1 pr-2 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
           >
-            {/* Refined monogram mark */}
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-ink text-[0.7rem] font-bold tracking-widest text-white">
-              tm
-            </span>
-            {/* Fraunces two-weight wordmark */}
-            <span className="font-display select-none whitespace-nowrap leading-none">
-              <span
-                className="italic text-flame text-[1.08rem]"
-                style={{ fontVariationSettings: "'opsz' 72, 'SOFT' 100, 'WONK' 0" }}
-              >
-                Taste
-              </span>
-              <span
-                className="font-semibold text-ink text-[1.08rem]"
-                style={{ letterSpacing: "-0.036em", marginLeft: "0.18em" }}
-              >
-                Makerrs
-              </span>
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/mark-solid-full.svg"
+              alt=""
+              aria-hidden
+              className="h-8 w-8 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/wordmark-full.svg"
+              alt="The Taste Makerrs"
+              className="h-[1.15rem] w-auto select-none"
+            />
           </Link>
 
           {/* ── Desktop nav with magic hover indicator ────────────────── */}

@@ -12,8 +12,8 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 // easeOutExpo — the signature "expensive" reveal curve (Locomotive / SOTD).
 const REVEAL = [0.16, 1, 0.3, 1] as const;
 
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=1600&q=85";
+const HERO_VIDEO = "/hero-cake.mp4";
+const HERO_POSTER = "/hero-cake-poster.jpg";
 
 export default function Hero() {
   const reduce = useReducedMotion();
@@ -43,16 +43,32 @@ export default function Hero() {
     <section ref={ref} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden -mt-[72px] md:-mt-[76px]">
       {/* full-bleed cake — the atmosphere (isolate on <section> keeps these layers
           inside the hero's own stacking context; positive z so they never fall
-          behind the page background) */}
+          behind the page background). Reduced-motion users get the still poster
+          instead of the autoplaying loop. */}
       <m.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0 z-0">
-        <Image
-          src={HERO_IMAGE}
-          alt="A freshly baked celebration cake from The Taste Makerrs"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        {reduce ? (
+          <Image
+            src={HERO_POSTER}
+            alt="A freshly baked celebration cake from The Taste Makerrs"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        ) : (
+          <video
+            className="h-full w-full object-cover object-center"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={HERO_POSTER}
+            aria-label="A freshly baked celebration cake from The Taste Makerrs"
+          >
+            <source src={HERO_VIDEO} type="video/mp4" />
+          </video>
+        )}
       </m.div>
 
       {/* warm espresso scrim (not neutral ink) so the shadows read edible */}

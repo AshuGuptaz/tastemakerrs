@@ -1,19 +1,27 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
+import VideoBackdrop from "@/components/ui/VideoBackdrop";
 
-/** Dark premium CTA panel (Stripe/Linear style) with an accent gradient mesh. */
+/** Dark premium CTA panel (Stripe/Linear style) with a cinematic cake backdrop. */
 export default function CTA() {
   return (
     <section className="section">
       <div className="container-x">
         <Reveal>
           <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-24">
+            {/* cinematic cake video backdrop */}
+            <div aria-hidden className="pointer-events-none absolute inset-0">
+              <VideoBackdrop src="/signature-cake.mp4" poster="/signature-cake-poster.jpg" />
+            </div>
+            {/* warm ink scrim so the type stays legible over the footage */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/80 to-ink/85" />
+
             {/* accent mesh */}
             <div aria-hidden className="pointer-events-none absolute inset-0">
-              <div className="absolute left-1/2 top-[-35%] h-[30rem] w-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.55),transparent_60%)] blur-2xl" />
-              <div className="absolute bottom-[-45%] right-[4%] h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(253,186,116,0.40),transparent_62%)] blur-2xl" />
-              <div className="absolute bottom-[-30%] left-[6%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(234,88,12,0.34),transparent_64%)] blur-2xl" />
+              <div className="absolute left-1/2 top-[-35%] h-[30rem] w-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.45),transparent_60%)] blur-2xl" />
+              <div className="absolute bottom-[-45%] right-[4%] h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(253,186,116,0.32),transparent_62%)] blur-2xl" />
+              <div className="absolute bottom-[-30%] left-[6%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(234,88,12,0.28),transparent_64%)] blur-2xl" />
               <div className="absolute inset-0 bg-grid opacity-[0.07]" />
             </div>
 

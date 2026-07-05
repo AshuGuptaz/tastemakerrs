@@ -17,11 +17,11 @@ export default function Footer() {
 
         <div className="relative z-10 grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <Link href="/" className="group inline-flex items-center gap-2">
-              <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-flame-400 to-flame-600 text-sm font-bold text-white shadow-glow">tm</span>
-              <span className="text-[1.15rem] font-semibold tracking-tighter2 text-white">
-                Taste <span className="text-flame-400">Makerrs</span>
-              </span>
+            <Link href="/" aria-label="The Taste Makerrs — home" className="group inline-flex items-center gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/mark-solid-reversed.svg" alt="" aria-hidden className="h-9 w-9 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/wordmark-reversed.svg" alt="The Taste Makerrs" className="h-[1.35rem] w-auto select-none" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
               Small-batch bakery in Lucknow. Baked fresh, delivered with love.
