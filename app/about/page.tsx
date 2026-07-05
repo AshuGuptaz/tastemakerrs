@@ -71,15 +71,82 @@ export default function AboutPage() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-flame">The mark</p>
                   <h2 className="t-h2 mt-3">A cake for your <span className="text-gradient">favourite memories</span></h2>
                   <p className="mt-4 leading-relaxed text-ink-soft">
-                    Our logo is an elegant two-tier celebration cake crowned with a single lit candle — the quiet
-                    centrepiece of every birthday, anniversary and reason to gather. The lone terracotta flame is
-                    the one warm accent we allow ourselves: a small light for the moments worth remembering.
-                  </p>
-                  <p className="mt-4 leading-relaxed text-ink-mut">
-                    Drawn in a single confident line and set in a warm high-contrast serif, it&apos;s made to feel
-                    handmade — because everything we bake is.
+                    That line is the whole brand — so our logo simply <em>is</em> that cake: a hand-finished two-tier
+                    celebration cake with a single lit candle. It&apos;s the product, the occasion, and the feeling,
+                    all in one small, warm mark. We avoided a generic badge or a plain monogram — a bakery this
+                    personal deserved a symbol you <em>feel</em> something about.
                   </p>
                 </div>
+              </div>
+
+              {/* What every element indicates */}
+              <div className="relative mt-12 grid gap-x-10 gap-y-7 border-t border-line pt-10 sm:grid-cols-2">
+                {[
+                  { t: "The two tiers", d: "Celebration & small-batch craft. A single layer is everyday; a tiered cake is made for a moment — occasion-worthy, made to order." },
+                  { t: "The single flame", d: "The memory itself — a wish, a birthday, an anniversary. It's the one spot of terracotta in the whole system, so the warmth is literally the focal point." },
+                  { t: "The hand-piped drips", d: "The soft, slightly irregular scallops are the trace of a human hand finishing each cake. No two are exactly alike." },
+                  { t: "The terracotta full-stop", d: "A quiet signature of confidence. A period says this is complete, and we stand behind it — in the brand's ember colour." },
+                ].map((el) => (
+                  <div key={el.t} className="flex gap-3">
+                    <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-flame" />
+                    <div>
+                      <h3 className="font-display text-lg text-ink">{el.t}</h3>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-mut">{el.d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="relative mt-11 text-center font-display text-2xl italic text-flame-700 md:text-3xl">
+                “A single candle. On everything worth remembering.”
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Made to be unwrapped — packaging & craft */}
+      <section className="section pt-0">
+        <div className="container-x">
+          <Reveal>
+            <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-14 md:rounded-[2.5rem] md:px-12 md:py-20">
+              <div aria-hidden className="pointer-events-none absolute inset-0">
+                <div className="absolute right-[-6%] top-[-25%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(214,122,71,0.24),transparent_62%)] blur-2xl" />
+                <div className="absolute inset-0 bg-grid opacity-[0.05]" />
+              </div>
+
+              <div className="relative mx-auto max-w-2xl text-center">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-flame-400">One warm light</p>
+                <h2 className="font-display mt-3 text-[clamp(1.9rem,4vw,3rem)] font-semibold leading-[1.05] tracking-tighter2 text-white">
+                  Made to be <span className="italic text-flame-400">unwrapped</span>
+                </h2>
+                <p className="mt-4 leading-relaxed text-white/65">
+                  Warm minimalism, end to end — a cream box, an ember ribbon, a hand-tied tag. Every order arrives
+                  looking like the moment it was made for.
+                </p>
+              </div>
+
+              <div className="relative mt-11 grid gap-5 md:grid-cols-3">
+                {[
+                  { src: "/brand/mockups/packaging_box.png", label: "The signature box" },
+                  { src: "/brand/mockups/hang_tag.png", label: "A hand-tied tag" },
+                  { src: "/brand/mockups/signage.png", label: "The storefront" },
+                ].map((m) => (
+                  <figure key={m.label} className="group overflow-hidden rounded-[1.25rem] border border-white/10 bg-black/20">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src={m.src}
+                        alt={m.label}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                      />
+                    </div>
+                    <figcaption className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-white/55">
+                      {m.label}
+                    </figcaption>
+                  </figure>
+                ))}
               </div>
             </div>
           </Reveal>
