@@ -133,7 +133,7 @@ export default function AdminProducts() {
               <input className="input" aria-label="Name" placeholder="Name" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-") })} />
               <input className="input" aria-label="Slug" placeholder="slug" value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: e.target.value })} />
               <select className="input" value={editing.category} onChange={(e) => setEditing({ ...editing, category: e.target.value })}>
-                {["cakes", "cupcakes", "muffins", "cookies", "chocolates", "jars", "hampers"].map((c) => <option key={c}>{c}</option>)}
+                {["cakes", "muffins", "cookies", "chocolates", "jars", "hampers"].map((c) => <option key={c}>{c}</option>)}
               </select>
               <input className="input" type="number" min={0} aria-label="Price" placeholder="Price" value={editing.price === 0 && !editing._id ? "" : editing.price} onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })} />
               <input className="input" aria-label="Unit" placeholder="Unit (e.g. 500g, Box of 6)" value={editing.unit || ""} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} />

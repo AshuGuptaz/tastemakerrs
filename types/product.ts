@@ -1,6 +1,5 @@
 export type Category =
   | "cakes"
-  | "cupcakes"
   | "muffins"
   | "cookies"
   | "chocolates"

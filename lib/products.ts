@@ -42,11 +42,9 @@ const make = (
 
 export const PRODUCTS: Product[] = [
   // ===== CAKES (per 500g, customizable) =====
-  make("Classic Vanilla", "cakes", 450, { unit: "500g", flavors: ["vanilla"], image: "/images/gallery/anniversary-cake.png", bg: "bg-cream-100", customizable: true, bestseller: true }),
   make("Truffle", "cakes", 650, { unit: "500g", flavors: ["chocolate"], image: "/images/gallery/choco-drip.jpg", bg: "bg-cocoa-50", customizable: true, bestseller: true }),
   make("Rich Chocolate", "cakes", 550, { unit: "500g", flavors: ["chocolate"], image: "/images/gallery/choco-drip.jpg", bg: "bg-cocoa-50", customizable: true }),
   make("Seasonal Fresh Fruit", "cakes", 600, { unit: "500g", flavors: ["fruit", "vanilla"], image: "/images/gallery/birthday-cake.jpg", bg: "bg-peach-100", customizable: true }),
-  make("Black Forest", "cakes", 555, { unit: "500g", flavors: ["chocolate", "cherry"], image: "/images/gallery/candle-cake.jpg", bg: "bg-cream-100", customizable: true }),
   make("Classic Pineapple", "cakes", 500, { unit: "500g", flavors: ["pineapple"], image: "/images/gallery/anniversary-cake.png", bg: "bg-cream-100", customizable: true }),
   make("Rasmalai Fusion", "cakes", 650, { unit: "500g", flavors: ["rasmalai", "kesar"], image: "/images/gallery/silver-jubilee.jpg", bg: "bg-peach-100", customizable: true, bestseller: true, jainFriendly: true,
     description: "Saffron-soaked sponge layered with thickened malai and pistachio crunch — our most-loved Indian fusion cake." }),
@@ -57,14 +55,6 @@ export const PRODUCTS: Product[] = [
   make("Red Velvet Royale", "cakes", 650, { unit: "500g", flavors: ["red velvet"], image: "/images/gallery/floral-birthday.jpg", bg: "bg-peach-100", customizable: true, bestseller: true }),
   make("Pinata Cake", "cakes", 1500, { unit: "500g", flavors: ["chocolate", "surprise"], image: "/images/gallery/butterfly-birthday.jpg", bg: "bg-peach-200", customizable: true, bestseller: true,
     description: "Smash-style chocolate shell hiding a treasure of candies inside — perfect for parties and birthdays." }),
-
-  // ===== CUPCAKES (Box of 6) =====
-  make("Vanilla Delight", "cupcakes", 270, { unit: "Box of 6", flavors: ["vanilla"], image: "https://images.unsplash.com/photo-1723638174646-5322cd088233?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100" }),
-  make("Chocolate Bliss", "cupcakes", 330, { unit: "Box of 6", flavors: ["chocolate"], image: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50", bestseller: true }),
-  make("Red Velvet Cream Cheese", "cupcakes", 365, { unit: "Box of 6", flavors: ["red velvet"], image: "https://images.unsplash.com/photo-1659549591823-c6efec55b82f?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", bestseller: true }),
-  make("Thandai Mix", "cupcakes", 390, { unit: "Box of 6", flavors: ["thandai", "kesar"], image: "https://images.unsplash.com/photo-1723638174646-5322cd088233?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100", jainFriendly: true }),
-  make("Rasmalai", "cupcakes", 414, { unit: "Box of 6", flavors: ["rasmalai"], image: "https://images.unsplash.com/photo-1659549591823-c6efec55b82f?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100", jainFriendly: true }),
-  make("Kesar Pista", "cupcakes", 534, { unit: "Box of 6", flavors: ["kesar", "pistachio"], image: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100", bestseller: true }),
 
   // ===== MUFFINS (per piece) =====
   make("Vanilla Muffin", "muffins", 60, { unit: "Per piece", flavors: ["vanilla"], image: "https://images.unsplash.com/photo-1723638174646-5322cd088233?auto=format&fit=crop&w=900&q=80", bg: "bg-cream-100" }),
@@ -117,7 +107,6 @@ export function getBestsellers(limit = 8): Product[] {
 
 export const CATEGORY_META: Record<Category, { label: string; description: string; emoji: string }> = {
   cakes:      { label: "Cakes",      description: "Layered, frosted, made for memories.",       emoji: "🎂" },
-  cupcakes:   { label: "Cupcakes",   description: "Hand-piped little wonders. Box of 6.",        emoji: "🧁" },
   muffins:    { label: "Muffins",    description: "Soft, fluffy, perfect with chai.",            emoji: "🧁" },
   cookies:    { label: "Cookies",    description: "Crunchy outside, chewy inside.",              emoji: "🍪" },
   chocolates: { label: "Chocolates", description: "Bonbons, pralines, barks. Pure indulgence.",  emoji: "🍫" },
@@ -125,6 +114,6 @@ export const CATEGORY_META: Record<Category, { label: string; description: strin
   hampers:    { label: "Hampers",    description: "Curated gift boxes for every occasion.",      emoji: "🎁" },
 };
 
-export const CATEGORIES: Category[] = ["cakes", "cupcakes", "muffins", "cookies", "chocolates", "jars", "hampers"];
+export const CATEGORIES: Category[] = ["cakes", "muffins", "cookies", "chocolates", "jars", "hampers"];
 
 export const ALL_FLAVORS = Array.from(new Set(PRODUCTS.flatMap((p) => p.flavors))).sort();

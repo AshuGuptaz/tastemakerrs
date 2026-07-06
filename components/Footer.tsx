@@ -50,7 +50,6 @@ export default function Footer() {
             <h4 className={headingCls}>Shop</h4>
             <ul className="mt-4 space-y-2.5">
               <li><Link href="/menu?cat=cakes" className={linkCls}>Cakes</Link></li>
-              <li><Link href="/menu?cat=cupcakes" className={linkCls}>Cupcakes</Link></li>
               <li><Link href="/menu?cat=muffins" className={linkCls}>Muffins</Link></li>
               <li><Link href="/menu?cat=cookies" className={linkCls}>Cookies</Link></li>
               <li><Link href="/menu?cat=hampers" className={linkCls}>Hampers</Link></li>
