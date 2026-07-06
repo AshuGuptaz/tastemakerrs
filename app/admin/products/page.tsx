@@ -17,7 +17,6 @@ type P = {
   bg?: string;
   bestseller?: boolean;
   eggless?: boolean;
-  jainFriendly?: boolean;
   customizable?: boolean;
   active?: boolean;
 };
@@ -25,7 +24,7 @@ type P = {
 const EMPTY: P = {
   slug: "", name: "", category: "cakes", price: 0, unit: "", description: "",
   image: "🎂", bg: "bg-cream-100",
-  bestseller: false, eggless: true, jainFriendly: false, customizable: false, active: true,
+  bestseller: false, eggless: true, customizable: false, active: true,
 };
 
 export default function AdminProducts() {
@@ -142,7 +141,6 @@ export default function AdminProducts() {
               <div className="flex flex-wrap gap-3 text-sm">
                 <label className="flex items-center gap-2"><input type="checkbox" checked={!!editing.bestseller} onChange={(e) => setEditing({ ...editing, bestseller: e.target.checked })} className="accent-flame" /> Bestseller</label>
                 <label className="flex items-center gap-2"><input type="checkbox" checked={!!editing.eggless} onChange={(e) => setEditing({ ...editing, eggless: e.target.checked })} className="accent-flame" /> Eggless</label>
-                <label className="flex items-center gap-2"><input type="checkbox" checked={!!editing.jainFriendly} onChange={(e) => setEditing({ ...editing, jainFriendly: e.target.checked })} className="accent-flame" /> Jain</label>
                 <label className="flex items-center gap-2"><input type="checkbox" checked={!!editing.customizable} onChange={(e) => setEditing({ ...editing, customizable: e.target.checked })} className="accent-flame" /> Customizable</label>
               </div>
               <button onClick={save} disabled={busy} className="btn-primary justify-center">{busy ? "Saving..." : (editing._id ? "Save changes" : "Create product")}</button>

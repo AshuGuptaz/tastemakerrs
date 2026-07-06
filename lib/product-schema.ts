@@ -15,7 +15,6 @@ export const ProductInput = z.object({
   flavors: z.array(z.string().max(50)).max(50).optional(),
   bestseller: z.boolean().optional(),
   eggless: z.boolean().optional(),
-  jainFriendly: z.boolean().optional(),
   customizable: z.boolean().optional(),
   image: z.string().max(2000).optional(),
   bg: z.string().max(50).optional(),

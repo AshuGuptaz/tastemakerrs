@@ -14,7 +14,6 @@ const Body = z.object({
   weight: z.string().min(1).max(50),
   shape: z.string().min(1).max(50),
   eggless: z.boolean(),
-  jain: z.boolean(),
   message: z.string().max(500).optional().default(""),
   date: z.string().min(1),
   image: z.string().max(2_000_000).optional(), // data URL or upload URL

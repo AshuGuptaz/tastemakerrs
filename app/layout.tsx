@@ -38,14 +38,14 @@ export const metadata: Metadata = {
     template: "%s · The Taste Makerrs",
   },
   description:
-    "Premium small-batch bakery. Eggless & Jain-friendly options. Cakes, cupcakes, muffins, cookies and hampers — handcrafted with love.",
+    "Premium small-batch bakery. Eggless options. Cakes, cupcakes, muffins, cookies and hampers — handcrafted with love.",
   keywords: [
-    "bakery", "cakes", "cupcakes", "muffins", "eggless cake", "jain cake",
+    "bakery", "cakes", "cupcakes", "muffins", "eggless cake",
     "custom cake", "bento cake", "premium bakery", "The Taste Makerrs",
   ],
   openGraph: {
     title: "The Taste Makerrs — Premium Bakery, Made With Love",
-    description: "A cake for your favorite memories. Eggless & Jain-friendly, handcrafted in small batches.",
+    description: "A cake for your favorite memories. Eggless, handcrafted in small batches.",
     type: "website",
     siteName: "The Taste Makerrs",
     locale: "en_IN",

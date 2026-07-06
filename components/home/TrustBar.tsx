@@ -5,7 +5,6 @@ const ITEMS = [
   "Belgian chocolate",
   "Madagascar vanilla",
   "Same-day delivery",
-  "Jain-friendly options",
   "No preservatives",
   "Small-batch baking",
   "FSSAI-certified kitchen",

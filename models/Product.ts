@@ -10,7 +10,6 @@ export interface IProduct {
   flavors: string[];
   bestseller?: boolean;
   eggless?: boolean;
-  jainFriendly?: boolean;
   customizable?: boolean;
   image: string;
   bg: string;
@@ -30,7 +29,6 @@ const ProductSchema = new Schema<IProduct>(
     flavors: { type: [String], default: [] },
     bestseller: { type: Boolean, default: false },
     eggless: { type: Boolean, default: true },
-    jainFriendly: { type: Boolean, default: false },
     customizable: { type: Boolean, default: false },
     image: { type: String, default: "🎂" },
     bg: { type: String, default: "bg-cream-100" },

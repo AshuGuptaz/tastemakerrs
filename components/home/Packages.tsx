@@ -33,7 +33,6 @@ const PACKAGES: Pkg[] = [
       "Choice of 4 premium flavours",
       "Designer finish + edible photo print",
       "Box of 6 matching cupcakes",
-      "Jain-friendly option",
       "Priority same-day delivery",
       "Complimentary cake stand",
     ],

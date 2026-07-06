@@ -37,7 +37,7 @@ const FLAVORS: Flavor[] = [
   { name: "Custom", img: "https://images.unsplash.com/photo-1526081347589-7fa3cb41b4b2?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100", notes: [
     { label: "Your photo on cake", pos: "top-8 left-8" },
     { label: "Your message", pos: "bottom-8 right-10" },
-    { label: "Eggless / Jain", pos: "top-1/2 right-8" },
+    { label: "Eggless option", pos: "top-1/2 right-8" },
   ]},
 ];
 

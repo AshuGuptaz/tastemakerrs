@@ -98,7 +98,6 @@ export default function ProductDetail({
 
               <div className="mt-3 flex flex-wrap gap-2">
                 {product.eggless && <span className="pill"><Leaf className="h-3.5 w-3.5 text-flame" /> Eggless option</span>}
-                {product.jainFriendly && <span className="pill"><span className="h-2 w-2 rounded-full bg-green-600" /> Jain-friendly</span>}
                 {product.customizable && <span className="pill"><Sparkles className="h-3.5 w-3.5 text-flame" /> Customizable</span>}
                 {product.flavors.map((f) => (
                   <span key={f} className="pill">#{f}</span>

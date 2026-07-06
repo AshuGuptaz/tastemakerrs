@@ -41,7 +41,6 @@ function CustomCakeContent() {
   const [weight, setWeight] = useState(WEIGHTS[0].id);
   const [shape, setShape] = useState(SHAPES[0].id);
   const [eggless, setEggless] = useState(false);
-  const [jain, setJain] = useState(false);
   const [message, setMessage] = useState("");
   const [date, setDate] = useState("");
   const [imageData, setImageData] = useState<string | null>(null);
@@ -75,9 +74,9 @@ function CustomCakeContent() {
     const flavorAdd = FLAVORS.find((f) => f.id === flavor)?.price || 0;
     const shapeAdd = SHAPES.find((s) => s.id === shape)?.price || 0;
     const mult = WEIGHTS.find((w) => w.id === weight)?.multiplier || 1;
-    const customAdd = (jain ? 100 : 0) + (eggless ? 30 : 0) + (imageData ? 150 : 0);
+    const customAdd = (eggless ? 30 : 0) + (imageData ? 150 : 0);
     return Math.round((basePrice + flavorAdd + shapeAdd) * mult + customAdd);
-  }, [flavor, weight, shape, eggless, jain, imageData, baseProduct]);
+  }, [flavor, weight, shape, eggless, imageData, baseProduct]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -99,7 +98,7 @@ function CustomCakeContent() {
     setSubmitting(true);
     try {
       const payload = {
-        flavor, weight, shape, eggless, jain, message, date, image: imageData,
+        flavor, weight, shape, eggless, message, date, image: imageData,
         contact: { name, phone }, price,
       };
       const res = await fetch("/api/custom-orders", {
@@ -193,10 +192,6 @@ function CustomCakeContent() {
                   <input type="checkbox" checked={eggless} onChange={(e) => setEggless(e.target.checked)} className="accent-flame" />
                   Eggless (+₹30)
                 </label>
-                <label className={`flex items-center gap-2 rounded-pill border px-4 py-2.5 cursor-pointer ${jain ? "border-flame bg-flame/5" : "border-line bg-white"}`}>
-                  <input type="checkbox" checked={jain} onChange={(e) => setJain(e.target.checked)} className="accent-flame" />
-                  Jain-friendly (+₹100)
-                </label>
               </div>
             </div>
 
@@ -262,7 +257,6 @@ function CustomCakeContent() {
                 <li className="flex justify-between"><span className="text-ink-mut">Weight</span><span className="font-semibold">{WEIGHTS.find((w) => w.id === weight)?.label}</span></li>
                 <li className="flex justify-between"><span className="text-ink-mut">Shape</span><span className="font-semibold">{SHAPES.find((s) => s.id === shape)?.label}</span></li>
                 <li className="flex justify-between"><span className="text-ink-mut">Eggless</span><span className="font-semibold">{eggless ? "Yes" : "No"}</span></li>
-                <li className="flex justify-between"><span className="text-ink-mut">Jain</span><span className="font-semibold">{jain ? "Yes" : "No"}</span></li>
                 {message && <li className="flex justify-between"><span className="text-ink-mut">Message</span><span className="font-semibold truncate max-w-[60%]">"{message}"</span></li>}
                 {date && <li className="flex justify-between"><span className="text-ink-mut">Delivery</span><span className="font-semibold">{new Date(date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span></li>}
               </ul>

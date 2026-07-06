@@ -25,7 +25,6 @@ const OFFERS: Offer[] = [
   { t: "Birthday",    desc: "₹150 off birthday cakes ≥ ₹999",  code: "BDAY150",   bg: "bg-cream-200",  img: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=900&q=80" },
   { t: "Hamper Love", desc: "20% off any hamper",              code: "HAMPER20",  bg: "bg-sky-100",    img: "https://images.unsplash.com/photo-1687795097254-f019f9d7fd17?auto=format&fit=crop&w=900&q=80" },
   { t: "Bulk Treats", desc: "10% off orders ≥ ₹3,000",         code: "BULK10",    bg: "bg-peach-200",  img: "https://images.unsplash.com/photo-1569896254409-ac66c17041d2?auto=format&fit=crop&w=900&q=80" },
-  { t: "Jain Plus",   desc: "Jain-friendly options on every cake", note: "Just choose “Jain-friendly” on the Customize page — available on any cake.", bg: "bg-cream-100", img: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80" },
   { t: "Sweet Combo", desc: "Cake + 6 cupcakes for ₹999",      note: "Add both to your cart and mention “Sweet Combo” in your delivery notes.", bg: "bg-cocoa-50", img: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80" },
 ];
 

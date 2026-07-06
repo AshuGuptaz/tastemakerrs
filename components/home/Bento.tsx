@@ -100,7 +100,7 @@ export default function Bento() {
               </div>
               <h3 className="t-h3 mt-5">Every flavour &amp; diet</h3>
               <p className="mt-2 text-sm text-ink-mut">
-                Classic to Rasmalai, eggless to Jain-friendly — there&apos;s a perfect cake for everyone.
+                Classic to Rasmalai, eggless on request — there&apos;s a perfect cake for everyone.
               </p>
             </article>
           </Reveal>

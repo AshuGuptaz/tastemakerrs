@@ -36,7 +36,7 @@ export default function KitchenPage() {
           {[
             { t: "FSSAI-registered kitchen", d: "Licensed, pure-veg and audited — hygiene logged daily." },
             { t: "Hygiene SOP", d: "ISO-22000 inspired protocols. Daily kitchen logs." },
-            { t: "100% Pure Veg", d: "No eggs in our Jain line. Eggless on request for everything else." },
+            { t: "100% Pure Veg", d: "Eggless on request for every cake in the menu." },
           ].map((b) => (
             <div key={b.t} className="card p-6">
               <h3 className="font-display text-xl">{b.t}</h3>

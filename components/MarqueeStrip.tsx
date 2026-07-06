@@ -3,7 +3,6 @@
 const ITEMS = [
   "Premium ingredients",
   "Eggless on request",
-  "Jain-friendly",
   "Same-day delivery",
   "Small-batch baking",
   "Made with love",

@@ -34,7 +34,6 @@ const make = (
   flavors: partial.flavors || [],
   bestseller: partial.bestseller || false,
   eggless: partial.eggless ?? true,
-  jainFriendly: partial.jainFriendly ?? false,
   customizable: partial.customizable ?? false,
   image: partial.image || "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80",
   bg: partial.bg || "bg-cream-100",
@@ -46,7 +45,7 @@ export const PRODUCTS: Product[] = [
   make("Rich Chocolate", "cakes", 550, { unit: "500g", flavors: ["chocolate"], image: "/images/gallery/choco-drip.jpg", bg: "bg-cocoa-50", customizable: true }),
   make("Seasonal Fresh Fruit", "cakes", 600, { unit: "500g", flavors: ["fruit", "vanilla"], image: "/images/gallery/birthday-cake.jpg", bg: "bg-peach-100", customizable: true }),
   make("Classic Pineapple", "cakes", 500, { unit: "500g", flavors: ["pineapple"], image: "/images/gallery/anniversary-cake.png", bg: "bg-cream-100", customizable: true }),
-  make("Rasmalai Fusion", "cakes", 650, { unit: "500g", flavors: ["rasmalai", "kesar"], image: "/images/gallery/silver-jubilee.jpg", bg: "bg-peach-100", customizable: true, bestseller: true, jainFriendly: true,
+  make("Rasmalai Fusion", "cakes", 650, { unit: "500g", flavors: ["rasmalai", "kesar"], image: "/images/gallery/silver-jubilee.jpg", bg: "bg-peach-100", customizable: true, bestseller: true,
     description: "Saffron-soaked sponge layered with thickened malai and pistachio crunch — our most-loved Indian fusion cake." }),
   make("Luxury Pistachio", "cakes", 876, { unit: "500g", flavors: ["pistachio"], image: "/images/gallery/lily-cake.jpg", bg: "bg-sky-100", customizable: true, bestseller: true }),
   make("Blueberry Burst", "cakes", 655, { unit: "500g", flavors: ["blueberry"], image: "/images/gallery/blueberry-cake.jpg", bg: "bg-sky-100", customizable: true }),
@@ -88,7 +87,7 @@ export const PRODUCTS: Product[] = [
   make("Festive Premium Hamper", "hampers", 2499, { unit: "Box", flavors: ["mixed"], image: "https://images.unsplash.com/photo-1526081347589-7fa3cb41b4b2?auto=format&fit=crop&w=900&q=80", bg: "bg-sky-100", bestseller: true,
     description: "Full-size cake, 6 cupcakes, 6 muffins, 12 pralines and 2 dessert jars in a luxe gift box." }),
   make("Corporate Diwali Box", "hampers", 1999, { unit: "Box", flavors: ["mixed"], image: "https://images.unsplash.com/photo-1687795097254-f019f9d7fd17?auto=format&fit=crop&w=900&q=80", bg: "bg-peach-100",
-    description: "Eggless & Jain-friendly hamper for corporate gifting. Custom branding available on the box." }),
+    description: "Eggless hamper for corporate gifting. Custom branding available on the box." }),
 ];
 
 export function getByCategory(cat: Category): Product[] {

@@ -17,7 +17,6 @@ export type Product = {
   flavors: string[];      // for filter
   bestseller?: boolean;
   eggless?: boolean;
-  jainFriendly?: boolean;
   customizable?: boolean;
   image: string;          // emoji glyph used as visual placeholder
   bg: string;             // tailwind bg color class

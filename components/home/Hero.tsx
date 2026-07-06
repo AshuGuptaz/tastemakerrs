@@ -97,7 +97,7 @@ export default function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flame-400 opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-flame-400" />
             </span>
-            Small-batch · Eggless &amp; Jain-friendly
+            Small-batch · Eggless options
           </m.div>
 
           {/* headline — Fraunces, one italic accent word, masked-line entrance */}

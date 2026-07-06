@@ -12,7 +12,7 @@ const REVIEWS: Review[] = [
   { name: "Larry", role: "Festive hamper", quote: "Sent the hamper to my parents in another city. Arrived perfect, packaging on point — they couldn't stop talking about it." },
   { name: "Priya", role: "Repeat customer", quote: "The rasmalai fusion cake is unreal. It's now my go-to for every single celebration." },
   { name: "Karan", role: "Same-day delivery", quote: "Same-day actually meant same-day. Fresh, on time, and genuinely gorgeous." },
-  { name: "Meera", role: "Jain-friendly", quote: "Jain-friendly AND delicious — finally a bakery that gets it right without compromising on taste." },
+  { name: "Meera", role: "Eggless order", quote: "Eggless and still incredibly moist — finally a bakery that gets it right without compromising on taste." },
   { name: "Rohan", role: "Custom photo cake", quote: "Customised a photo cake in minutes and they called to confirm every detail. Premium service end to end." },
   { name: "Sara", role: "Chocolate lover", quote: "The truffle cake is the best chocolate cake I've had in the city. Period." },
   { name: "Aditya", role: "Kids' party", quote: "The pinata cake was the star of the party — the kids absolutely went wild for it." },

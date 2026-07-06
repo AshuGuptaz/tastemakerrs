@@ -7,7 +7,7 @@ import Reveal from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "The story behind The Taste Makerrs — small-batch bakery, premium ingredients, eggless and Jain-friendly options.",
+  description: "The story behind The Taste Makerrs — small-batch bakery, premium ingredients, eggless options.",
 };
 
 export default function AboutPage() {
@@ -28,7 +28,7 @@ export default function AboutPage() {
             </p>
             <p className="mt-4 leading-relaxed text-ink-mut">
               We use premium ingredients — Madagascar vanilla, Belgian chocolate, fresh seasonal fruit — and we&apos;ll
-              happily make any of our cakes eggless or Jain-friendly. No pre-mixes. No shortcuts. Just slow,
+              happily make any of our cakes eggless. No pre-mixes. No shortcuts. Just slow,
               careful baking.
             </p>
             <Link href="/menu" className="btn-accent mt-8">Explore the menu →</Link>
@@ -160,7 +160,7 @@ export default function AboutPage() {
             {[
               { t: "Small-batch baking", d: "We bake what we sell that day. No leftovers, no compromises." },
               { t: "Premium ingredients", d: "Belgian chocolate, French butter, Madagascar vanilla, real fruit." },
-              { t: "Inclusive choices", d: "Eggless on every cake. Jain-friendly options. Sugar-conscious recipes." },
+              { t: "Inclusive choices", d: "Eggless on every cake. Sugar-conscious recipes." },
               { t: "Hand-finished", d: "Every flower, drip and pipe is done by hand — no two cakes are identical." },
               { t: "Fresh delivery", d: "Same-day delivery across Lucknow — as fresh as it left the kitchen." },
               { t: "Made with love", d: "It sounds clichéd, but you can taste it. Promise." },

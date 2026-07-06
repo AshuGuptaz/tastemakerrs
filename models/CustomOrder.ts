@@ -5,7 +5,6 @@ export interface ICustomOrder {
   weight: string;
   shape: string;
   eggless: boolean;
-  jain: boolean;
   message?: string;
   date: string;
   image?: string; // data URL or upload URL
@@ -21,7 +20,6 @@ const CustomOrderSchema = new Schema<ICustomOrder>(
     weight: String,
     shape: String,
     eggless: Boolean,
-    jain: Boolean,
     message: String,
     date: String,
     image: String,

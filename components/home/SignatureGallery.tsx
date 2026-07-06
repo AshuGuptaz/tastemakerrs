@@ -82,7 +82,7 @@ export default function SignatureGallery() {
               <ArrowRight className="h-5 w-5" />
             </span>
             <h3 className="mt-4 t-h3">See the full menu</h3>
-            <p className="mt-1 text-sm text-ink-mut">40+ flavours, eggless &amp; Jain options.</p>
+            <p className="mt-1 text-sm text-ink-mut">40+ flavours, all with an eggless option.</p>
           </Link>
         </div>
       </div>
