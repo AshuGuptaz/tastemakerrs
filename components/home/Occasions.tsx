@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
+import HandDrawnCircle from "@/components/ui/HandDrawnCircle";
 
 const OCCASIONS = [
   { title: "Birthdays", copy: "Bento, photo & pinata cakes that steal the show.", img: "/images/gallery/floral-birthday.jpg", href: "/menu?cat=cakes" },
@@ -15,7 +16,7 @@ export default function Occasions() {
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">For every occasion</span>
-          <h2 className="t-h2 mt-4">A cake for <span className="text-gradient">every reason</span> to gather.</h2>
+          <h2 className="t-h2 mt-4">A cake for <HandDrawnCircle className="mx-1 text-flame">every reason</HandDrawnCircle> to gather.</h2>
         </Reveal>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
