@@ -66,7 +66,7 @@ export default function CartDrawer() {
               </div>
             ) : (
               <>
-                <div className="no-scrollbar flex-1 overflow-y-auto px-6 py-4">
+                <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-6 py-4">
                   <AnimatePresence initial={false}>
                     {items.map((it) => (
                       <m.div
