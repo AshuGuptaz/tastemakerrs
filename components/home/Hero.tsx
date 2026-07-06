@@ -12,8 +12,8 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 // easeOutExpo — the signature "expensive" reveal curve (Locomotive / SOTD).
 const REVEAL = [0.16, 1, 0.3, 1] as const;
 
-const HERO_VIDEO = "/hero-cake.mp4";
-const HERO_POSTER = "/hero-cake-poster.jpg";
+const HERO_VIDEO = "/signature-cake.mp4";
+const HERO_POSTER = "/signature-cake-poster.jpg";
 
 export default function Hero() {
   const reduce = useReducedMotion();

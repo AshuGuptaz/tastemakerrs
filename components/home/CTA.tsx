@@ -12,7 +12,7 @@ export default function CTA() {
           <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-24">
             {/* cinematic cake video backdrop */}
             <div aria-hidden className="pointer-events-none absolute inset-0">
-              <VideoBackdrop src="/signature-cake.mp4" poster="/signature-cake-poster.jpg" />
+              <VideoBackdrop src="/hero-cake.mp4" poster="/hero-cake-poster.jpg" />
             </div>
             {/* warm ink scrim so the type stays legible over the footage */}
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/80 to-ink/85" />
