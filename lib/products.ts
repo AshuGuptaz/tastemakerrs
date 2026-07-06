@@ -70,8 +70,6 @@ export const PRODUCTS: Product[] = [
   // ===== COOKIES =====
   make("Choco Chip Cookie", "cookies", 180, { unit: "Box of 6", flavors: ["chocolate"], image: "/images/cookies/choc-chip.jpg", bg: "bg-cocoa-50" }),
   make("Oats & Raisin Cookie", "cookies", 200, { unit: "Box of 6", flavors: ["oats"], image: "/images/cookies/oatmeal.jpg", bg: "bg-cream-100" }),
-  make("Almond Biscotti", "cookies", 240, { unit: "Box of 6", flavors: ["almond"], image: "/images/cookies/biscotti.jpg", bg: "bg-peach-100" }),
-  make("Red Velvet Sandwich Cookie", "cookies", 280, { unit: "Box of 6", flavors: ["red velvet"], image: "/images/cookies/choc-chip.jpg", bg: "bg-peach-100", bestseller: true }),
 
   // ===== CHOCOLATES =====
   make("Hazelnut Pralines", "chocolates", 450, { unit: "Box of 12", flavors: ["hazelnut"], image: "https://images.unsplash.com/photo-1526081347589-7fa3cb41b4b2?auto=format&fit=crop&w=900&q=80", bg: "bg-cocoa-50", bestseller: true }),
