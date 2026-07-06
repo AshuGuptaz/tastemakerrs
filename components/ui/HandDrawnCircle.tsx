@@ -1,16 +1,8 @@
 "use client";
 
-import { m, useReducedMotion } from "framer-motion";
-import type { ReactNode } from "react";
+import { m, useReducedMotion, useAnimation } from "framer-motion";
+import { useEffect, useRef, type ReactNode } from "react";
 
-/**
- * Wraps a word/phrase inside a heading with a hand-drawn circle that draws
- * itself in when scrolled into view — a warm, handcrafted accent.
- *
- * Adapted from KokonutUI's HandWrittenTitle to this project's conventions:
- * uses `m` (LazyMotion domMax), the flame accent, `whileInView` instead of
- * on-mount, and respects reduced-motion.
- */
 export default function HandDrawnCircle({
   children,
   className = "",
@@ -19,6 +11,29 @@ export default function HandDrawnCircle({
   className?: string;
 }) {
   const reduce = useReducedMotion();
+  const controls = useAnimation();
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (reduce) {
+      controls.set("visible");
+      return;
+    }
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Small delay so the heading text settles before the circle draws
+          setTimeout(() => controls.start("visible"), 300);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [controls, reduce]);
 
   const draw = {
     hidden: { pathLength: 0, opacity: 0 },
@@ -26,32 +41,33 @@ export default function HandDrawnCircle({
       pathLength: 1,
       opacity: 1,
       transition: {
-        pathLength: { duration: 1.6, ease: [0.43, 0.13, 0.23, 0.96] },
-        opacity: { duration: 0.4 },
+        pathLength: { duration: 1.8, ease: [0.43, 0.13, 0.23, 0.96] },
+        opacity: { duration: 0.3 },
       },
     },
   };
 
   return (
-    <span className={`relative inline-block ${className}`}>
+    <span ref={ref} className={`relative inline-block ${className}`}>
       <span className="relative z-10">{children}</span>
+      {/* overflow:visible prevents the SVG viewport from clipping the stroke */}
       <m.svg
         aria-hidden
-        viewBox="0 0 500 180"
-        preserveAspectRatio="none"
-        className="pointer-events-none absolute left-1/2 top-1/2 -z-0 h-[150%] w-[122%] -translate-x-1/2 -translate-y-1/2 text-flame"
-        initial={reduce ? "visible" : "hidden"}
-        whileInView="visible"
-        viewport={{ once: true, margin: "-80px" }}
+        viewBox="0 0 500 200"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[130%] -translate-x-1/2 -translate-y-1/2 text-flame"
+        style={{ overflow: "visible", zIndex: 0 }}
+        initial="hidden"
+        animate={controls}
       >
         <m.path
-          d="M 355 26
-             C 470 62, 452 138, 250 158
-             C 70 158, 30 130, 34 92
-             C 38 40, 150 22, 250 22
-             C 340 22, 372 44, 372 44"
+          d="M 455 65
+             C 490 15, 390 5, 250 5
+             C 110 5, 10 35, 10 100
+             C 10 165, 110 195, 250 195
+             C 390 195, 490 160, 490 100
+             C 490 82, 472 68, 455 65"
           fill="none"
-          strokeWidth="6"
+          strokeWidth="5.5"
           stroke="currentColor"
           strokeLinecap="round"
           strokeLinejoin="round"
