@@ -371,7 +371,7 @@ export default function CheckoutPage() {
           <aside className="lg:sticky lg:top-24 self-start">
             <div className="card p-6">
               <h3 className="t-h3">Your order</h3>
-              <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-2">
+              <ul data-lenis-prevent className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-2">
                 {items.map((it) => (
                   <li key={it.id + (it.variant ?? "")} className="flex items-center gap-3 text-sm">
                     <span className="relative grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-surface text-xl">
