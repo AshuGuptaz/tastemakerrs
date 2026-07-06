@@ -50,11 +50,18 @@ export default function HandDrawnCircle({
   return (
     <span ref={ref} className={`relative inline-block ${className}`}>
       <span className="relative z-10">{children}</span>
-      {/* overflow:visible prevents the SVG viewport from clipping the stroke */}
+      {/*
+        Sized via fixed-length insets, not percentage width/height — percentage
+        height on an absolutely-positioned child only resolves against a parent
+        with an explicit height, and this span's height comes from its inline
+        text content (auto), so h-[165%] silently collapsed to 0 and let the
+        circle float wherever its top-anchor happened to land.
+      */}
       <m.svg
         aria-hidden
         viewBox="0 0 500 200"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[165%] w-[130%] -translate-x-1/2 -translate-y-1/2 text-flame"
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute -inset-x-3 -inset-y-2 text-flame sm:-inset-x-4 sm:-inset-y-3"
         style={{ overflow: "visible", zIndex: 0 }}
         initial="hidden"
         animate={controls}
