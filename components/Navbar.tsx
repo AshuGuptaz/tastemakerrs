@@ -51,11 +51,11 @@ export default function Navbar() {
   const [indicator, setIndicator] = useState({ x: 0, w: 0 });
 
   const track = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const nav = navEl.current;
-    if (!nav) return;
-    const nb = nav.getBoundingClientRect();
-    const eb = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    setIndicator({ x: eb.left - nb.left, w: eb.width });
+    // Use layout offsets (immune to the parent's scroll-squeeze CSS scale),
+    // not getBoundingClientRect — the latter returns scaled screen pixels that
+    // misplace the ghost pill once the navbar shrinks.
+    const el = e.currentTarget as HTMLElement;
+    setIndicator({ x: el.offsetLeft, w: el.offsetWidth });
   };
 
   useEffect(() => {

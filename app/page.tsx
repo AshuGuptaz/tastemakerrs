@@ -7,7 +7,6 @@ import SignatureGallery from "@/components/home/SignatureGallery";
 import Occasions from "@/components/home/Occasions";
 import Showcase from "@/components/home/Showcase";
 import Packages from "@/components/home/Packages";
-import LovedBy from "@/components/home/LovedBy";
 import Testimonials from "@/components/home/Testimonials";
 import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
@@ -40,7 +39,6 @@ export default function HomePage() {
       </div>
 
       {/* Act 4 — Trust & convert */}
-      <LovedBy />
       <div className="band-warm">
         <Testimonials />
         <FAQ />
