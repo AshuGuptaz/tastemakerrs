@@ -26,6 +26,10 @@ const ENC = new TextEncoder();
 export const CHECKOUT_COOKIE = "ttm_checkout_token";
 
 const norm = (s: string) => s.trim().toLowerCase();
+// Digits-only so a +91 / spaces / dashes variant on one side can't fail an
+// otherwise-valid match (both endpoints validate ^[6-9]\d{9}$ today, so this is
+// defensive — it keeps the comparison correct if that ever loosens).
+const normPhone = (s: string) => s.replace(/\D/g, "").replace(/^91(?=\d{10}$)/, "");
 
 /** HMAC-hash an OTP code so plaintext codes are never stored. */
 export function hashCode(code: string) {
@@ -33,7 +37,7 @@ export function hashCode(code: string) {
 }
 
 export async function signCheckout(email: string, phone: string) {
-  return new SignJWT({ email: norm(email), phone: phone.trim() })
+  return new SignJWT({ email: norm(email), phone: normPhone(phone) })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("20m")
@@ -58,5 +62,5 @@ export function contactMatches(
   address: { email: string; phone: string }
 ) {
   if (!token) return false;
-  return token.email === norm(address.email) && token.phone === address.phone.trim();
+  return token.email === norm(address.email) && normPhone(token.phone) === normPhone(address.phone);
 }

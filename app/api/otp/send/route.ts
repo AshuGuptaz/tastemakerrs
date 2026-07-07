@@ -25,6 +25,8 @@ const Body = z.object({
 
 const COOLDOWN_MS = 30_000;
 const MAX_PER_HOUR = 6;
+const CODE_TTL_MS = 10 * 60_000; // code validity
+const RATE_WINDOW_MS = 3600_000; // 1 h — also the row TTL, so counting works
 
 export async function POST(req: Request) {
   try {
@@ -40,15 +42,21 @@ export async function POST(req: Request) {
     const emailLc = email.trim().toLowerCase();
     const now = Date.now();
 
-    // Hourly cap first (count is idempotent; even a race between two concurrent
-    // requests is harmless because both will see the real count).
-    const recent = await Otp.countDocuments({ email: emailLc, createdAt: { $gte: new Date(now - 3600_000) } });
+    // Hourly cap, keyed on phone OR email. Phone is the primary throttle because
+    // it's the billed SMS channel — keying on email alone let an attacker rotate
+    // a throwaway email while pinning the victim's phone to bomb it with SMS and
+    // burn Fast2SMS credit. (Rows now live 1 h, so this window is enforceable.)
+    const recent = await Otp.countDocuments({
+      $or: [{ phone }, { email: emailLc }],
+      createdAt: { $gte: new Date(now - RATE_WINDOW_MS) },
+    });
     if (recent >= MAX_PER_HOUR) {
       return NextResponse.json({ error: "Too many codes requested. Try again later." }, { status: 429 });
     }
 
-    // Per-request cooldown (narrow TOCTOU window — acceptable for OTP use-case).
-    const last = await Otp.findOne({ email: emailLc, phone }).sort({ createdAt: -1 }).lean();
+    // Per-request cooldown, also keyed on phone OR email (narrow TOCTOU window —
+    // acceptable for OTP use-case).
+    const last = await Otp.findOne({ $or: [{ phone }, { email: emailLc }] }).sort({ createdAt: -1 }).lean();
     if (last && now - new Date(last.createdAt).getTime() < COOLDOWN_MS) {
       const wait = Math.ceil((COOLDOWN_MS - (now - new Date(last.createdAt).getTime())) / 1000);
       return NextResponse.json({ error: `Please wait ${wait}s before requesting another code.`, retryAfter: wait }, { status: 429 });
@@ -59,7 +67,8 @@ export async function POST(req: Request) {
       email: emailLc,
       phone,
       codeHash: hashCode(code),
-      expiresAt: new Date(now + 10 * 60_000),
+      codeExpiresAt: new Date(now + CODE_TTL_MS),
+      expiresAt: new Date(now + RATE_WINDOW_MS),
     });
 
     // deliver on configured channels (graceful no-op otherwise)

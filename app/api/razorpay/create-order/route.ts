@@ -61,7 +61,9 @@ export async function POST(req: Request) {
     });
   } catch (e: any) {
     console.error("[razorpay/create-order]", e?.error?.description || e?.message);
-    const status = e?.statusCode === 401 ? 401 : 500;
-    return NextResponse.json({ error: "Could not start payment. Please try again." }, { status });
+    // Don't forward Razorpay's own 401 (expired/invalid key) to the browser — the
+    // client treats 401 as an OTP/auth failure. A provider error is 502, our
+    // real auth failure is returned directly above with 401.
+    return NextResponse.json({ error: "Could not start payment. Please try again." }, { status: 502 });
   }
 }

@@ -7,6 +7,7 @@ import { getAdminFromCookies } from "@/lib/auth-server";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
 import { PRODUCTS } from "@/lib/products";
+import { priceCustomCake, customCakeName } from "@/lib/custom-cake";
 
 export const runtime = "nodejs";
 
@@ -73,30 +74,47 @@ export async function POST(req: Request) {
     // Server-side price authority. A catalog item is re-priced (and re-named)
     // from the static catalog — the client price is ignored entirely. A
     // non-catalog item is only accepted if it is a genuine custom-cake request
-    // (carries a `custom` payload); otherwise it is rejected. This closes the
-    // "send a real product with no/bogus productId and price:1" under-pricing hole.
+    // (carries a `custom` payload), and even then its price is RECOMPUTED from
+    // the authoritative custom-cake formula (lib/custom-cake) — never trusted
+    // from the client. This closes the "send a real product with a bogus
+    // productId + custom:{} + price:1" under-pricing hole; a forged item is
+    // repriced to a real custom-cake price and its name is server-authoritative.
     const pricedItems = body.items.map((item) => {
       const product = item.productId
         ? PRODUCTS.find((p) => p.id === item.productId || p.slug === item.productId)
         : undefined;
       if (product) return { ...item, name: product.name, price: product.price };
-      if (!item.custom) throw new Error("Unknown item");
-      if (!item.price || item.price <= 0) throw new Error("Invalid item price");
-      return item;
+
+      const c = item.custom as Record<string, unknown> | undefined;
+      if (!c || typeof c !== "object") throw new Error("Unknown item");
+      const spec = {
+        base: typeof c.base === "string" ? c.base : null,
+        flavor: typeof c.flavor === "string" ? c.flavor : undefined,
+        weight: typeof c.weight === "string" ? c.weight : undefined,
+        shape: typeof c.shape === "string" ? c.shape : undefined,
+        eggless: c.eggless === true,
+        hasImage: Boolean(c.image),
+      };
+      const price = priceCustomCake(spec);
+      if (!price || price <= 0) throw new Error("Invalid item price");
+      return { ...item, name: customCakeName(spec), price };
     });
 
     const subtotal = pricedItems.reduce((s, i) => s + i.price * i.qty, 0);
     const delivery = subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_FEE;
     // Coupon is re-validated & re-priced server-side from the authoritative
     // subtotal — the client can neither invent a code nor inflate the discount.
-    const discount = body.coupon ? couponValue(body.coupon.trim().toUpperCase(), subtotal) : 0;
+    const normalizedCoupon = body.coupon ? body.coupon.trim().toUpperCase() : null;
+    const discount = normalizedCoupon ? couponValue(normalizedCoupon, subtotal) : 0;
     const total = Math.max(0, subtotal + delivery - discount);
 
     await connectDB();
     const order = await Order.create({
       items: pricedItems,
       address: body.address,
-      coupon: body.coupon ?? null,
+      // Store the normalized code that the discount was actually computed from,
+      // not the raw client casing.
+      coupon: discount > 0 ? normalizedCoupon : null,
       paymentMethod: body.paymentMethod,
       subtotal,
       delivery,
@@ -110,8 +128,14 @@ export async function POST(req: Request) {
     if (e?.name === "ZodError") {
       return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
     }
+    // Client-caused rejections (bad/unknown item) are 400; anything else is an
+    // infra failure (DB down, etc.) and must be 503 so a transient outage isn't
+    // reported to the customer as a bad request.
+    if (e?.message === "Unknown item" || e?.message === "Invalid item price") {
+      return NextResponse.json({ error: "One or more items are no longer available." }, { status: 400 });
+    }
     console.error("[orders/POST]", e?.message);
-    return NextResponse.json({ error: "Could not create order" }, { status: 400 });
+    return NextResponse.json({ error: "Could not create order. Please try again." }, { status: 503 });
   }
 }
 

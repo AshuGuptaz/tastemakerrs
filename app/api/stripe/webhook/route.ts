@@ -56,7 +56,11 @@ export async function POST(req: Request) {
       // order via paymentIntentId (stored in the paid webhook above).
       const c = event.data.object as Stripe.Charge;
       const piId = typeof c.payment_intent === "string" ? c.payment_intent : null;
-      if (piId) {
+      // Only mark the order fully refunded on a FULL refund. A partial refund
+      // (e.g. ₹100 goodwill on a ₹2000 order) must not drop the whole order out
+      // of fulfillment — the customer still paid the balance.
+      const fullyRefunded = c.refunded === true || (c.amount_refunded ?? 0) >= (c.amount ?? 0);
+      if (piId && fullyRefunded) {
         await Order.findOneAndUpdate(
           { paymentIntentId: piId, paymentStatus: { $ne: "refunded" } },
           { paymentStatus: "refunded", status: "refunded" }

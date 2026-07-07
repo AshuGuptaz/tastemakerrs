@@ -27,6 +27,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (e?.name === "ZodError") {
       return NextResponse.json({ error: "Invalid product data" }, { status: 400 });
     }
+    if (e?.code === 11000) {
+      return NextResponse.json({ error: "A product with this slug already exists" }, { status: 409 });
+    }
     console.error("[products/PATCH]", e?.message);
     return NextResponse.json({ error: "Could not update product" }, { status: 400 });
   }

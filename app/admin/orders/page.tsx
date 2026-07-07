@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatINR } from "@/lib/format";
 
 type Order = {
@@ -16,16 +17,26 @@ type Order = {
 };
 
 export default function AdminOrders() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // GET /api/orders returns { orders, total, page, pages } — NOT a bare array.
+    // The old `Array.isArray(d)` check was always false, so the table showed
+    // "No orders yet" even when paid orders existed. Read d.orders instead.
     fetch("/api/orders")
-      .then((r) => r.json())
-      .then((d) => setOrders(Array.isArray(d) ? d : []))
+      .then(async (r) => {
+        if (r.status === 401) {
+          router.push("/admin/login");
+          return null;
+        }
+        return r.json();
+      })
+      .then((d) => setOrders(d && Array.isArray(d.orders) ? d.orders : []))
       .catch(() => setOrders([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [router]);
 
   return (
     <section className="bg-cream-50 py-12">

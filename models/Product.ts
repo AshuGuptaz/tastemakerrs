@@ -32,7 +32,7 @@ const ProductSchema = new Schema<IProduct>(
     customizable: { type: Boolean, default: false },
     image: { type: String, default: "🎂" },
     bg: { type: String, default: "bg-cream-100" },
-    active: { type: Boolean, default: true },
+    active: { type: Boolean, default: true, index: true },
   },
   { timestamps: true }
 );

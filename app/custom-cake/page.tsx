@@ -11,35 +11,21 @@ import { getBySlug } from "@/lib/products";
 import DatePicker from "@/components/DatePicker";
 import PageHeader from "@/components/ui/PageHeader";
 import { formatINR } from "@/lib/format";
-
-const FLAVORS = [
-  { id: "vanilla", label: "Classic Vanilla", price: 0 },
-  { id: "chocolate", label: "Rich Chocolate", price: 50 },
-  { id: "red-velvet", label: "Red Velvet", price: 100 },
-  { id: "rasmalai", label: "Rasmalai Fusion", price: 150 },
-  { id: "pistachio", label: "Luxury Pistachio", price: 250 },
-];
-const WEIGHTS = [
-  { id: "500g", label: "500 g", multiplier: 1 },
-  { id: "1kg", label: "1 kg", multiplier: 1.8 },
-  { id: "1.5kg", label: "1.5 kg", multiplier: 2.6 },
-  { id: "2kg", label: "2 kg", multiplier: 3.4 },
-];
-const SHAPES = [
-  { id: "round", label: "Round", price: 0 },
-  { id: "square", label: "Square", price: 50 },
-  { id: "heart", label: "Heart", price: 100 },
-  { id: "tier", label: "Two-Tier", price: 400 },
-];
+import {
+  CUSTOM_FLAVORS as FLAVORS,
+  CUSTOM_WEIGHTS as WEIGHTS,
+  CUSTOM_SHAPES as SHAPES,
+  priceCustomCake,
+} from "@/lib/custom-cake";
 
 function CustomCakeContent() {
   const sp = useSearchParams();
   const baseSlug = sp.get("base");
   const baseProduct = baseSlug ? getBySlug(baseSlug) : undefined;
 
-  const [flavor, setFlavor] = useState(FLAVORS[0].id);
-  const [weight, setWeight] = useState(WEIGHTS[0].id);
-  const [shape, setShape] = useState(SHAPES[0].id);
+  const [flavor, setFlavor] = useState<string>(FLAVORS[0].id);
+  const [weight, setWeight] = useState<string>(WEIGHTS[0].id);
+  const [shape, setShape] = useState<string>(SHAPES[0].id);
   const [eggless, setEggless] = useState(false);
   const [message, setMessage] = useState("");
   const [date, setDate] = useState("");
@@ -69,14 +55,12 @@ function CustomCakeContent() {
     }
   }, [baseProduct]);
 
-  const price = useMemo(() => {
-    const basePrice = (baseProduct?.price || 600);
-    const flavorAdd = FLAVORS.find((f) => f.id === flavor)?.price || 0;
-    const shapeAdd = SHAPES.find((s) => s.id === shape)?.price || 0;
-    const mult = WEIGHTS.find((w) => w.id === weight)?.multiplier || 1;
-    const customAdd = (eggless ? 30 : 0) + (imageData ? 150 : 0);
-    return Math.round((basePrice + flavorAdd + shapeAdd) * mult + customAdd);
-  }, [flavor, weight, shape, eggless, imageData, baseProduct]);
+  // Priced via the shared authority (lib/custom-cake) so the displayed number is
+  // exactly what /api/orders recomputes and charges.
+  const price = useMemo(
+    () => priceCustomCake({ base: baseSlug, flavor, weight, shape, eggless, hasImage: !!imageData }),
+    [flavor, weight, shape, eggless, imageData, baseSlug]
+  );
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -98,7 +82,7 @@ function CustomCakeContent() {
     setSubmitting(true);
     try {
       const payload = {
-        flavor, weight, shape, eggless, message, date, image: imageData,
+        base: baseSlug ?? null, flavor, weight, shape, eggless, message, date, image: imageData,
         contact: { name, phone }, price,
       };
       const res = await fetch("/api/custom-orders", {

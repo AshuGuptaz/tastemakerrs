@@ -11,7 +11,7 @@ export const ProductInput = z.object({
   category: z.string().min(1).max(50),
   price: z.number().nonnegative(),
   unit: z.string().max(50).optional(),
-  description: z.string().max(2000),
+  description: z.string().min(1).max(2000),
   flavors: z.array(z.string().max(50)).max(50).optional(),
   bestseller: z.boolean().optional(),
   eggless: z.boolean().optional(),

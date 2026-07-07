@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import crypto from "crypto";
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { Otp } from "@/models/Otp";
 import { hashCode, signCheckout, CHECKOUT_COOKIE } from "@/lib/checkout-token";
@@ -18,22 +19,26 @@ const MAX_ATTEMPTS = 5;
 export async function POST(req: Request) {
   try {
     const { otpId, code } = Body.parse(await req.json());
-    await connectDB();
-
-    const doc = await Otp.findById(otpId);
-    if (!doc || doc.consumed) {
+    // Guard the ObjectId shape so a malformed id is a clean 400, not a CastError 500.
+    if (!mongoose.isValidObjectId(otpId)) {
       return NextResponse.json({ ok: false, error: "This code is no longer valid. Request a new one." }, { status: 400 });
     }
-    if (doc.expiresAt.getTime() < Date.now()) {
-      return NextResponse.json({ ok: false, error: "Code expired. Request a new one." }, { status: 400 });
-    }
-    if (doc.attempts >= MAX_ATTEMPTS) {
-      doc.consumed = true;
-      await doc.save();
-      return NextResponse.json({ ok: false, error: "Too many attempts. Request a new code." }, { status: 429 });
+    await connectDB();
+
+    // Atomically consume one attempt. The conditional filter + $inc is a single
+    // document operation, so concurrent guesses can't each read a stale low
+    // `attempts` and blow past MAX_ATTEMPTS — the brute-force window a
+    // load-mutate-save pattern would leave open. A null result means the code is
+    // consumed, expired, missing, or out of attempts.
+    const doc = await Otp.findOneAndUpdate(
+      { _id: otpId, consumed: false, codeExpiresAt: { $gt: new Date() }, attempts: { $lt: MAX_ATTEMPTS } },
+      { $inc: { attempts: 1 } },
+      { new: true }
+    );
+    if (!doc) {
+      return NextResponse.json({ ok: false, error: "This code is no longer valid or has too many attempts. Request a new one." }, { status: 400 });
     }
 
-    doc.attempts += 1;
     const expected = doc.codeHash;
     const actual = hashCode(code);
     const match =
@@ -41,13 +46,19 @@ export async function POST(req: Request) {
       crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(actual));
 
     if (!match) {
-      await doc.save();
       const left = MAX_ATTEMPTS - doc.attempts;
       return NextResponse.json({ ok: false, error: `Incorrect code.${left > 0 ? ` ${left} attempt${left === 1 ? "" : "s"} left.` : ""}` }, { status: 400 });
     }
 
-    doc.consumed = true;
-    await doc.save();
+    // Consume atomically so a correct code can be redeemed exactly once even if
+    // two requests race in with it.
+    const consumed = await Otp.findOneAndUpdate(
+      { _id: otpId, consumed: false },
+      { consumed: true }
+    );
+    if (!consumed) {
+      return NextResponse.json({ ok: false, error: "This code is no longer valid. Request a new one." }, { status: 400 });
+    }
 
     const token = await signCheckout(doc.email, doc.phone);
     const res = NextResponse.json({ ok: true });

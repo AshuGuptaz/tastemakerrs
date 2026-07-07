@@ -52,19 +52,28 @@ export async function POST(req: Request) {
 
     await connectDB();
 
-    // Cross-check: the razorpay_order_id in the payload must match the one we
-    // created for this DB order. Prevents an attacker from reusing a valid
-    // signature from a different (possibly cheap) Razorpay order.
-    const order = await Order.findById(orderId);
-    if (!order || order.razorpayOrderId !== razorpay_order_id) {
+    // Single atomic transition: cross-check that razorpay_order_id matches the
+    // one we created for this DB order (prevents reusing a valid signature from
+    // a different/cheaper Razorpay order) AND that the order hasn't already been
+    // paid. The `paymentStatus: { $ne: "paid" }` guard makes this idempotent —
+    // the signature triple is client-visible and long-lived, so without it a
+    // replayed verify payload could revert a refunded/fulfilled order to "paid".
+    const updated = await Order.findOneAndUpdate(
+      { _id: orderId, razorpayOrderId: razorpay_order_id, paymentStatus: { $ne: "paid" } },
+      { paymentStatus: "paid", status: "paid", razorpayPaymentId: razorpay_payment_id },
+      { new: true }
+    );
+
+    if (!updated) {
+      // Either the order/id didn't match, or it was already paid. Distinguish so
+      // a genuine double-submit of an already-paid order still reports success
+      // (the client polls this), while a mismatch is rejected.
+      const existing = await Order.findById(orderId);
+      if (existing && existing.razorpayOrderId === razorpay_order_id && existing.paymentStatus === "paid") {
+        return NextResponse.json({ ok: true });
+      }
       return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
     }
-
-    await Order.findByIdAndUpdate(orderId, {
-      paymentStatus: "paid",
-      status: "paid",
-      razorpayPaymentId: razorpay_payment_id,
-    });
 
     await sendOrderConfirmation(orderId);
 

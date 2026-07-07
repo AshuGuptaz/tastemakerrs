@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatINR } from "@/lib/format";
 
 type P = {
@@ -28,6 +29,7 @@ const EMPTY: P = {
 };
 
 export default function AdminProducts() {
+  const router = useRouter();
   const [list, setList] = useState<P[]>([]);
   const [editing, setEditing] = useState<P>(EMPTY);
   const [busy, setBusy] = useState(false);
@@ -51,6 +53,13 @@ export default function AdminProducts() {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // A 401 means the admin cookie expired mid-session — send them to re-auth
+  // instead of dead-ending on a generic "failed" toast.
+  const handleAuth = (res: Response) => {
+    if (res.status === 401) { toast.error("Session expired — please sign in again."); router.push("/admin/login"); return true; }
+    return false;
+  };
+
   const save = async () => {
     setBusy(true);
     try {
@@ -58,7 +67,13 @@ export default function AdminProducts() {
       const url = isEdit ? `/api/products/${editing._id}` : "/api/products";
       const method = isEdit ? "PATCH" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(editing) });
-      if (!res.ok) throw new Error("Save failed");
+      if (handleAuth(res)) return;
+      if (!res.ok) {
+        // 409 = slug collision (auto-slugified from the name), surfaced clearly
+        // so the admin knows to rename rather than seeing a generic failure.
+        const msg = res.status === 409 ? "A product with this slug already exists — change the name/slug." : "Save failed";
+        throw new Error(msg);
+      }
       toast.success(isEdit ? "Updated" : "Created");
       setEditing(EMPTY);
       load();
@@ -69,9 +84,13 @@ export default function AdminProducts() {
   const remove = async (id?: string) => {
     if (!id) return;
     if (!confirm("Deactivate this product?")) return;
-    await fetch(`/api/products/${id}`, { method: "DELETE" });
-    toast.success("Removed");
-    load();
+    try {
+      const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+      if (handleAuth(res)) return;
+      if (!res.ok) throw new Error("Could not remove product");
+      toast.success("Removed");
+      load();
+    } catch (e: any) { toast.error(e.message); }
   };
 
   return (
