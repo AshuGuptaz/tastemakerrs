@@ -10,6 +10,8 @@
  * card/OTP/token values.
  */
 
+import * as Sentry from "@sentry/nextjs";
+
 type Meta = Record<string, unknown>;
 
 function emit(level: "error" | "warn" | "info", scope: string, message: string, meta?: Meta) {
@@ -22,8 +24,7 @@ function emit(level: "error" | "warn" | "info", scope: string, message: string, 
 export function logError(scope: string, err: unknown, meta?: Meta) {
   const message = err instanceof Error ? err.message : String(err);
   emit("error", scope, message, meta);
-  // Sentry hook (when configured):
-  //   if (process.env.SENTRY_DSN) Sentry.captureException(err, { tags: { scope }, extra: meta });
+  if (process.env.SENTRY_DSN) Sentry.captureException(err, { tags: { scope }, extra: meta });
 }
 
 export function logWarn(scope: string, message: string, meta?: Meta) {
