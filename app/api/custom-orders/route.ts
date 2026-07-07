@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { connectDB } from "@/lib/mongodb";
 import { CustomOrder } from "@/models/CustomOrder";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { logError } from "@/lib/logger";
 
 const ContactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -22,6 +24,14 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
+  const rl = await rateLimit(`custom-order:${clientIp(req)}`, { limit: 10, windowMs: 60_000 });
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please slow down." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+    );
+  }
+
   let data: z.infer<typeof Body>;
   try {
     data = Body.parse(await req.json());
@@ -36,7 +46,7 @@ export async function POST(req: Request) {
   } catch (e: any) {
     // A DB failure must NOT report success — otherwise the customer thinks the
     // request was received while it's silently lost. Log without the PII payload.
-    console.error("[custom-orders/POST] db write failed:", e?.message);
+    logError("custom-orders/POST", e);
     return NextResponse.json(
       { ok: false, error: "Could not submit your request. Please try again or call us." },
       { status: 503 }

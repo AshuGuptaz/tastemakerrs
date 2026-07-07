@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Product } from "@/models/Product";
 import { getAdminFromCookies } from "@/lib/auth-server";
 import { ProductInput } from "@/lib/product-schema";
+import { logError } from "@/lib/logger";
 
 /**
  * PATCH  /api/products/:id — admin only: update
@@ -30,7 +31,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (e?.code === 11000) {
       return NextResponse.json({ error: "A product with this slug already exists" }, { status: 409 });
     }
-    console.error("[products/PATCH]", e?.message);
+    logError("products/PATCH", e);
     return NextResponse.json({ error: "Could not update product" }, { status: 400 });
   }
 }
@@ -47,7 +48,7 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
     if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true, updated });
   } catch (e: any) {
-    console.error("[products/DELETE]", e?.message);
+    logError("products/DELETE", e);
     return NextResponse.json({ error: "Could not remove product" }, { status: 400 });
   }
 }

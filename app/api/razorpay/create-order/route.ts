@@ -6,6 +6,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+import { logError } from "@/lib/logger";
 
 /**
  * POST /api/razorpay/create-order
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
       currency: rpOrder.currency,
     });
   } catch (e: any) {
-    console.error("[razorpay/create-order]", e?.error?.description || e?.message);
+    logError("razorpay/create-order", new Error(e?.error?.description || e?.message || "unknown"));
     // Don't forward Razorpay's own 401 (expired/invalid key) to the browser — the
     // client treats 401 as an OTP/auth failure. A provider error is 502, our
     // real auth failure is returned directly above with 401.

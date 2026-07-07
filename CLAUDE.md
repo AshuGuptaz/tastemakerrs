@@ -15,12 +15,15 @@
 
 ## Critical architecture rules
 
-### Pricing sync (MUST keep identical)
-Delivery/coupon rules are duplicated in TWO places — edit both or charge ≠ display:
-- **Client display**: `app/checkout/page.tsx` → `couponValue()` + `delivery = subtotal >= 999 ? 0 : 79`
-- **Server authority**: `app/api/orders/route.ts` → same `couponValue()` + `DELIVERY_FEE=79` / `FREE_DELIVERY_ABOVE=999`
+### Pricing (single source of truth)
+Delivery/coupon/total math lives ONLY in `lib/pricing.ts` (`couponValue`, `deliveryFee`, `computeTotals`, `DELIVERY_FEE=79`, `FREE_DELIVERY_ABOVE=999`). Both the client display (`app/checkout/page.tsx`) and the server authority (`app/api/orders/route.ts`) import from it — never re-implement the math inline (that duplication used to cause charge ≠ display). Custom-cake pricing is likewise centralized in `lib/custom-cake.ts` (`priceCustomCake`, `customCakeName`), imported by the studio page and re-derived server-side in `/api/orders`. Tests in `tests/*.test.ts` lock these invariants (`npm test`).
+
+`/api/orders` returns `{ subtotal, delivery, discount, total }`; checkout reconciles them against the displayed total before opening the payment modal (catches stale cart prices → no surprise charge).
 
 Coupon codes: `FIRSTBITE` (10%), `BDAY150` (≥₹999 → ₹150), `HAMPER20` (20%), `BULK10` (≥₹3000 → 10%). Qty capped at 50 client (`CartContext MAX_QTY`) and server (`ItemSchema max(50)`).
+
+### Rate limiting (shared, cross-instance)
+`lib/rate-limit.ts` (`rateLimit(key, {limit, windowMs})`, `resetRateLimit`, `clientIp`) is backed by the `RateLimit` MongoDB collection (TTL-cleaned), so limits hold across serverless instances — not a per-lambda in-memory Map. Applied to admin login, OTP send (per-IP, on top of per-phone/email caps), contact, orders, and custom-orders. Fails OPEN on store errors. Use `lib/logger.ts` (`logError/logWarn/logInfo`, JSON, Sentry-ready) for server logs — no raw `console.error` in routes.
 
 ### OTP checkout token flow
 1. `/api/otp/send` → stores hashed code in MongoDB, sends via Resend/Fast2SMS

@@ -9,6 +9,7 @@ import { CreditCard, Globe, MapPin } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import OtpDialog from "@/components/checkout/OtpDialog";
 import { formatINR } from "@/lib/format";
+import { couponValue, deliveryFee } from "@/lib/pricing";
 
 type Address = {
   name: string;
@@ -35,17 +36,6 @@ const LABELS: Record<keyof Address, string> = {
   notes: "notes",
 };
 
-// Pure helper — rupee discount for a coupon at a given subtotal
-function couponValue(code: string, subtotal: number): number {
-  const map: Record<string, number> = {
-    FIRSTBITE: Math.round(subtotal * 0.10),
-    BDAY150: subtotal >= 999 ? 150 : 0,
-    HAMPER20: Math.round(subtotal * 0.20),
-    BULK10: subtotal >= 3000 ? Math.round(subtotal * 0.10) : 0,
-  };
-  return map[code] || 0;
-}
-
 export default function CheckoutPage() {
   const { items, subtotal, clear, hydrated } = useCart();
   const [addr, setAddr] = useState<Address>(EMPTY);
@@ -65,8 +55,9 @@ export default function CheckoutPage() {
   const autocompleteRef = useRef<any>(null);
   const router = useRouter();
 
-  const delivery = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 79;
-  // Derive discount reactively from the applied coupon code so it always tracks the current cart
+  // Delivery + discount from the shared pricing authority (lib/pricing) — the
+  // exact same code the server uses, so the display can't drift from the charge.
+  const delivery = deliveryFee(subtotal);
   const discount = couponValue(appliedCoupon, subtotal);
   const total = Math.max(0, subtotal + delivery - discount);
 
@@ -227,6 +218,17 @@ export default function CheckoutPage() {
       });
       const order = await orderRes.json();
       if (!orderRes.ok) throw new Error(order.error || "Order creation failed");
+
+      // Reconcile against the server's authoritative total. If a catalog price
+      // changed since these items were added to the cart, the amount we'd charge
+      // differs from what was displayed — stop and make the customer re-confirm
+      // rather than silently charging a different number.
+      if (typeof order.total === "number" && Math.round(order.total) !== Math.round(total)) {
+        toast.error(`Prices have changed — the total is now ${formatINR(order.total)}. Please review your cart and place the order again.`);
+        submittingRef.current = false;
+        setLoading(false);
+        return;
+      }
 
       if (method === "razorpay") {
         if (!razorpayReady) throw new Error("Payment is loading, please wait and try again.");

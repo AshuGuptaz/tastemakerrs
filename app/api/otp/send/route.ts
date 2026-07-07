@@ -4,6 +4,8 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Otp } from "@/models/Otp";
 import { hashCode } from "@/lib/checkout-token";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { logError } from "@/lib/logger";
 import {
   otpEnabled,
   emailConfigured,
@@ -36,6 +38,16 @@ export async function POST(req: Request) {
     // client to proceed without it so checkout never breaks before keys are set.
     if (!otpEnabled()) {
       return NextResponse.json({ enabled: false });
+    }
+
+    // Per-IP layer on top of the per-phone/email caps below — blunts a single
+    // source rotating identities to spray codes. Shared MongoDB store.
+    const ipRl = await rateLimit(`otp-ip:${clientIp(req)}`, { limit: 12, windowMs: RATE_WINDOW_MS });
+    if (!ipRl.allowed) {
+      return NextResponse.json(
+        { error: "Too many codes requested. Try again later." },
+        { status: 429, headers: { "Retry-After": String(ipRl.retryAfter) } }
+      );
     }
 
     await connectDB();
@@ -97,7 +109,7 @@ export async function POST(req: Request) {
     if (e?.name === "ZodError") {
       return NextResponse.json({ error: "Enter a valid email and 10-digit mobile number." }, { status: 400 });
     }
-    console.error("[otp/send] error:", e?.message);
+    logError("otp/send", e);
     return NextResponse.json({ error: "Could not send code" }, { status: 500 });
   }
 }

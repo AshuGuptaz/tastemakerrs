@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
+import { logError } from "@/lib/logger";
 
 /**
  * POST /api/razorpay/verify
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
 
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret) {
-      console.error("[razorpay/verify] RAZORPAY_KEY_SECRET is not set");
+      logError("razorpay/verify", new Error("RAZORPAY_KEY_SECRET is not set"));
       return NextResponse.json({ ok: false, error: "Payment verification unavailable" }, { status: 500 });
     }
 
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (e: any) {
-    console.error("[razorpay/verify]", e?.message);
+    logError("razorpay/verify", e);
     return NextResponse.json({ ok: false, error: "Verification failed" }, { status: 500 });
   }
 }

@@ -1,26 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { emailConfigured, sendEmail } from "@/lib/notify";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { logError, logInfo } from "@/lib/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Per-IP rate limit: max 5 contact submissions per 10 minutes.
-const _contactAttempts = new Map<string, { count: number; resetAt: number }>();
+// Per-IP rate limit: max 5 contact submissions per 10 minutes (shared MongoDB
+// store — works across serverless instances, unlike the old in-memory Map).
 const CONTACT_MAX = 5;
 const CONTACT_WINDOW_MS = 10 * 60_000;
-
-function contactRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = _contactAttempts.get(ip);
-  if (!entry || entry.resetAt < now) {
-    _contactAttempts.set(ip, { count: 1, resetAt: now + CONTACT_WINDOW_MS });
-    return true;
-  }
-  if (entry.count >= CONTACT_MAX) return false;
-  entry.count++;
-  return true;
-}
 
 const Body = z.object({
   name: z.string().min(1),
@@ -33,9 +23,12 @@ const esc = (s: string) =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (!contactRateLimit(ip)) {
-    return NextResponse.json({ error: "Too many messages. Please try again later." }, { status: 429 });
+  const rl = await rateLimit(`contact:${clientIp(req)}`, { limit: CONTACT_MAX, windowMs: CONTACT_WINDOW_MS });
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many messages. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+    );
   }
 
   let data: z.infer<typeof Body>;
@@ -64,11 +57,12 @@ export async function POST(req: Request) {
       text: `${data.name} <${data.email}> ${data.phone}\n\n${data.message}`,
     });
     if ("ok" in r && !r.ok) {
+      logError("contact/POST", new Error("email send failed"), { to });
       return NextResponse.json({ error: "We couldn't send that right now — please WhatsApp us." }, { status: 502 });
     }
   } else {
     // No email provider configured — log so the message isn't silently lost in dev.
-    console.log("[contact]", data);
+    logInfo("contact/POST", "no email provider configured; enquiry not delivered", { from: data.email });
   }
 
   return NextResponse.json({ ok: true });

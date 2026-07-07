@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { Otp } from "@/models/Otp";
 import { hashCode, signCheckout, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+import { logError } from "@/lib/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,7 +77,7 @@ export async function POST(req: Request) {
     if (e?.name === "ZodError") {
       return NextResponse.json({ ok: false, error: "Enter the 6-digit code." }, { status: 400 });
     }
-    console.error("[otp/verify] error:", e?.message);
+    logError("otp/verify", e);
     return NextResponse.json({ ok: false, error: "Verification failed" }, { status: 500 });
   }
 }

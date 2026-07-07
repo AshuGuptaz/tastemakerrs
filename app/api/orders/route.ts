@@ -8,25 +8,11 @@ import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
 import { PRODUCTS } from "@/lib/products";
 import { priceCustomCake, customCakeName } from "@/lib/custom-cake";
+import { computeTotals } from "@/lib/pricing";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { logError } from "@/lib/logger";
 
 export const runtime = "nodejs";
-
-// Delivery + coupon rules MUST match what the checkout UI displays, otherwise the
-// amount charged (server-computed) diverges from the total the customer agreed to.
-const DELIVERY_FEE = 79;
-const FREE_DELIVERY_ABOVE = 999;
-
-// Server-side coupon authority — mirrors the checkout page's couponValue() so a
-// client can never invent a discount, and the charged total matches the display.
-function couponValue(code: string, subtotal: number): number {
-  const map: Record<string, number> = {
-    FIRSTBITE: Math.round(subtotal * 0.1),
-    BDAY150: subtotal >= 999 ? 150 : 0,
-    HAMPER20: Math.round(subtotal * 0.2),
-    BULK10: subtotal >= 3000 ? Math.round(subtotal * 0.1) : 0,
-  };
-  return map[code] || 0;
-}
 
 const ItemSchema = z.object({
   productId: z.string().optional(),
@@ -62,6 +48,16 @@ const Body = z.object({
  */
 export async function POST(req: Request) {
   try {
+    // Cross-instance rate limit (shared MongoDB store) — caps order-creation
+    // spam per IP even when OTP is disabled. Fails open if the limiter errors.
+    const rl = await rateLimit(`order:${clientIp(req)}`, { limit: 20, windowMs: 60_000 });
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please slow down." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
+      );
+    }
+
     const body = Body.parse(await req.json());
 
     if (otpEnabled()) {
@@ -101,20 +97,16 @@ export async function POST(req: Request) {
     });
 
     const subtotal = pricedItems.reduce((s, i) => s + i.price * i.qty, 0);
-    const delivery = subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_FEE;
-    // Coupon is re-validated & re-priced server-side from the authoritative
-    // subtotal — the client can neither invent a code nor inflate the discount.
-    const normalizedCoupon = body.coupon ? body.coupon.trim().toUpperCase() : null;
-    const discount = normalizedCoupon ? couponValue(normalizedCoupon, subtotal) : 0;
-    const total = Math.max(0, subtotal + delivery - discount);
+    // Delivery + coupon come from the shared pricing authority (lib/pricing) —
+    // identical to the checkout UI, so the client can neither invent a discount
+    // nor see a total different from what we charge.
+    const { delivery, discount, total, coupon } = computeTotals(subtotal, body.coupon);
 
     await connectDB();
     const order = await Order.create({
       items: pricedItems,
       address: body.address,
-      // Store the normalized code that the discount was actually computed from,
-      // not the raw client casing.
-      coupon: discount > 0 ? normalizedCoupon : null,
+      coupon,
       paymentMethod: body.paymentMethod,
       subtotal,
       delivery,
@@ -123,7 +115,10 @@ export async function POST(req: Request) {
       status: "pending",
       paymentStatus: "unpaid",
     });
-    return NextResponse.json({ id: order._id.toString(), ok: true });
+    // Return the authoritative totals so the client can reconcile them against
+    // what it displayed (catches stale cart prices before opening the payment
+    // modal) — see checkout/page.tsx.
+    return NextResponse.json({ id: order._id.toString(), ok: true, subtotal, delivery, discount, total });
   } catch (e: any) {
     if (e?.name === "ZodError") {
       return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
@@ -134,7 +129,7 @@ export async function POST(req: Request) {
     if (e?.message === "Unknown item" || e?.message === "Invalid item price") {
       return NextResponse.json({ error: "One or more items are no longer available." }, { status: 400 });
     }
-    console.error("[orders/POST]", e?.message);
+    logError("orders/POST", e);
     return NextResponse.json({ error: "Could not create order. Please try again." }, { status: 503 });
   }
 }

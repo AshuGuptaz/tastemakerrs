@@ -4,6 +4,7 @@ import { Product } from "@/models/Product";
 import { PRODUCTS } from "@/lib/products";
 import { getAdminFromCookies } from "@/lib/auth-server";
 import { ProductInput } from "@/lib/product-schema";
+import { logError } from "@/lib/logger";
 
 /**
  * GET  /api/products       — list active products (DB-backed; falls back to seed)
@@ -23,7 +24,7 @@ export async function GET() {
     // Fall back to the static seed so the menu still renders, but log it —
     // otherwise a real DB outage looks identical to an empty catalog and admin
     // writes silently target a DB that's actually down.
-    console.error("[products/GET] DB read failed, serving seed:", e?.message);
+    logError("products/GET", e, { note: "DB read failed, serving seed" });
   }
   return NextResponse.json(PRODUCTS);
 }
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
     if (e?.code === 11000) {
       return NextResponse.json({ error: "A product with this slug already exists" }, { status: 409 });
     }
-    console.error("[products/POST]", e?.message);
+    logError("products/POST", e);
     return NextResponse.json({ error: "Could not create product" }, { status: 400 });
   }
 }
