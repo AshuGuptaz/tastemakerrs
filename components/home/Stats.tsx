@@ -10,7 +10,7 @@ const STATS = [
 
 export default function Stats() {
   return (
-    <section className="section pt-12 md:pt-16">
+    <section className="section pt-12 pb-8 md:pt-16 md:pb-10">
       <div className="container-x">
         <Reveal>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

@@ -27,7 +27,7 @@ export default function SignatureGallery() {
   };
 
   return (
-    <section className="section overflow-hidden">
+    <section className="section pt-8 md:pt-10 overflow-hidden">
       <div className="container-x flex flex-wrap items-end justify-between gap-4">
         <Reveal className="max-w-2xl">
           <span className="t-eyebrow">Signature flavours</span>
