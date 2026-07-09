@@ -51,7 +51,7 @@ export default function MaintenancePage() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-canvas px-6 text-center">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden bg-canvas px-6 text-center">
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" />
 
       {/* Pulsing ring */}
