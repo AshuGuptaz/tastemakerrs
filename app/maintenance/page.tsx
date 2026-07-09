@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
 import { m } from "framer-motion";
 
 export default function MaintenancePage() {
@@ -74,12 +73,10 @@ export default function MaintenancePage() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.1 }}
       >
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/brand/logo-redesign-primary.png"
           alt="The Taste Makerrs"
-          width={380}
-          height={220}
-          priority
           className="w-[260px] md:w-[340px]"
         />
       </m.div>
