@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { m } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 
 export default function MaintenancePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const reduceMotion = useReducedMotion();
 
-  // Floating gold dust particles
+  // Floating gold dust particles — skipped for prefers-reduced-motion
   useEffect(() => {
+    if (reduceMotion) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -46,25 +48,29 @@ export default function MaintenancePage() {
     tick();
 
     return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden bg-ink px-6 text-center">
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" />
 
-      {/* Pulsing gold rings */}
-      <m.div
-        className="absolute rounded-full border border-[#C4A05F]/20"
-        initial={{ width: 180, height: 180, opacity: 0.7 }}
-        animate={{ width: 380, height: 380, opacity: 0 }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: "easeOut" }}
-      />
-      <m.div
-        className="absolute rounded-full border border-[#C4A05F]/15"
-        initial={{ width: 180, height: 180, opacity: 0.5 }}
-        animate={{ width: 500, height: 500, opacity: 0 }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: "easeOut", delay: 1 }}
-      />
+      {/* Pulsing gold rings — ambient motion, skipped for prefers-reduced-motion */}
+      {!reduceMotion && (
+        <>
+          <m.div
+            className="absolute rounded-full border border-[#C4A05F]/20"
+            initial={{ width: 180, height: 180, opacity: 0.7 }}
+            animate={{ width: 380, height: 380, opacity: 0 }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeOut" }}
+          />
+          <m.div
+            className="absolute rounded-full border border-[#C4A05F]/15"
+            initial={{ width: 180, height: 180, opacity: 0.5 }}
+            animate={{ width: 500, height: 500, opacity: 0 }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeOut", delay: 1 }}
+          />
+        </>
+      )}
 
       {/* Logo */}
       <m.div
@@ -129,8 +135,8 @@ export default function MaintenancePage() {
           <m.span
             key={i}
             className="h-2 w-2 rounded-full bg-[#C4A05F]"
-            animate={{ scale: [1, 1.6, 1], opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 1.3, repeat: Infinity, delay: i * 0.22, ease: "easeInOut" }}
+            animate={reduceMotion ? { opacity: 0.7 } : { scale: [1, 1.6, 1], opacity: [0.3, 1, 0.3] }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 1.3, repeat: Infinity, delay: i * 0.22, ease: "easeInOut" }}
           />
         ))}
       </m.div>
