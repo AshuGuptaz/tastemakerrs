@@ -134,8 +134,8 @@ export default function MaintenancePage() {
         transition={{ delay: 0.9 }}
       >
         Questions? Write to us at{" "}
-        <a href="mailto:hello@thetastemakerrs.com" className="underline underline-offset-2 hover:text-flame transition-colors">
-          hello@thetastemakerrs.com
+        <a href="mailto:tastemakerrs@gmail.com" className="underline underline-offset-2 hover:text-flame transition-colors">
+          tastemakerrs@gmail.com
         </a>
       </m.p>
     </div>
