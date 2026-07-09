@@ -13,7 +13,8 @@ export async function middleware(req: NextRequest) {
     !pathname.startsWith("/admin") &&
     !pathname.startsWith("/api/admin") &&
     !pathname.startsWith("/_next") &&
-    !pathname.startsWith("/favicon")
+    !pathname.startsWith("/favicon") &&
+    !/\.[a-zA-Z0-9]+$/.test(pathname) // let static assets (images, fonts, etc.) through
   ) {
     const url = req.nextUrl.clone();
     url.pathname = "/maintenance";
