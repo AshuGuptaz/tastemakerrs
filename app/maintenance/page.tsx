@@ -81,41 +81,42 @@ export default function MaintenancePage() {
         />
       </m.div>
 
-      {/* Animated GIF hero, heading pulled up over it (21st.dev minhxthanh/404-page-not-found technique) */}
+      {/* Animated GIF medallion — hotlinked from Dribbble's CDN, so its white
+          background is baked into the pixels (no alpha channel) and can't be
+          made transparent from here. Framed as a gold-ringed medallion instead
+          of a raw rectangle so the white reads as intentional, not a bug. */}
       <m.div
-        className="relative z-10 w-full max-w-sm"
-        initial={{ opacity: 0, scale: 0.94 }}
+        className="relative z-10 mb-6 h-[150px] w-[150px] overflow-hidden rounded-full border-2 border-[#C4A05F]/50 shadow-[0_0_40px_rgba(196,160,95,0.25)] sm:h-[170px] sm:w-[170px]"
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <div
-          className="bg-[url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif)] h-[170px] sm:h-[210px] md:h-[240px] bg-center bg-no-repeat bg-contain"
+          className="h-full w-full bg-[url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif)] bg-center bg-no-repeat bg-cover"
           aria-hidden="true"
         />
-
-        <div className="mt-[-30px] sm:mt-[-38px]">
-          {/* Heading */}
-          <m.h1
-            className="font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold leading-tight tracking-tight text-[#F5EDD8]"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            Something sweet is{" "}
-            <span className="text-[#C4A05F]">coming.</span>
-          </m.h1>
-
-          {/* Subtitle */}
-          <m.p
-            className="mx-auto mt-4 max-w-sm font-sans text-[0.95rem] leading-relaxed text-[#9E8E78]"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.42 }}
-          >
-            We&apos;re baking up something special. The kitchen will reopen shortly — check back soon.
-          </m.p>
-        </div>
       </m.div>
+
+      {/* Heading */}
+      <m.h1
+        className="relative z-10 font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold leading-tight tracking-tight text-[#F5EDD8]"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        Something sweet is{" "}
+        <span className="text-[#C4A05F]">coming.</span>
+      </m.h1>
+
+      {/* Subtitle */}
+      <m.p
+        className="relative z-10 mx-auto mt-4 max-w-sm font-sans text-[0.95rem] leading-relaxed text-[#9E8E78]"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.42 }}
+      >
+        We&apos;re baking up something special. The kitchen will reopen shortly — check back soon.
+      </m.p>
 
       {/* Animated dots */}
       <m.div
