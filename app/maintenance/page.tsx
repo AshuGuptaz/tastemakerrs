@@ -124,23 +124,6 @@ export default function MaintenancePage() {
         We&apos;re baking up something special. The kitchen will reopen shortly — check back soon.
       </m.p>
 
-      {/* Animated dots */}
-      <m.div
-        className="relative z-10 mt-8 flex items-center gap-2.5"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-      >
-        {[0, 1, 2].map((i) => (
-          <m.span
-            key={i}
-            className="h-2 w-2 rounded-full bg-[#C4A05F]"
-            animate={reduceMotion ? { opacity: 0.7 } : { scale: [1, 1.6, 1], opacity: [0.3, 1, 0.3] }}
-            transition={reduceMotion ? { duration: 0 } : { duration: 1.3, repeat: Infinity, delay: i * 0.22, ease: "easeInOut" }}
-          />
-        ))}
-      </m.div>
-
       {/* Footer */}
       <m.p
         className="absolute bottom-8 z-10 font-sans text-xs text-[#5A4F44]"
