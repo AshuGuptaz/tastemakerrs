@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { m, AnimatePresence } from "framer-motion";
-
-const DOTS = ["·", "·", "·"];
+import Image from "next/image";
+import { m } from "framer-motion";
 
 export default function MaintenancePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Floating sugar-dust particles
+  // Floating gold dust particles
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -22,13 +21,13 @@ export default function MaintenancePage() {
     resize();
     window.addEventListener("resize", resize);
 
-    const particles = Array.from({ length: 38 }, () => ({
+    const particles = Array.from({ length: 45 }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      r: Math.random() * 2.5 + 0.5,
-      dx: (Math.random() - 0.5) * 0.25,
-      dy: -(Math.random() * 0.4 + 0.15),
-      alpha: Math.random() * 0.4 + 0.1,
+      r: Math.random() * 2 + 0.4,
+      dx: (Math.random() - 0.5) * 0.2,
+      dy: -(Math.random() * 0.35 + 0.1),
+      alpha: Math.random() * 0.35 + 0.08,
     }));
 
     let raf: number;
@@ -37,7 +36,7 @@ export default function MaintenancePage() {
       particles.forEach((p) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(214,122,71,${p.alpha})`;
+        ctx.fillStyle = `rgba(196,160,95,${p.alpha})`;
         ctx.fill();
         p.x += p.dx;
         p.y += p.dy;
@@ -51,90 +50,90 @@ export default function MaintenancePage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden bg-canvas px-6 text-center">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden bg-ink px-6 text-center">
       <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" />
 
-      {/* Pulsing ring */}
+      {/* Pulsing gold rings */}
       <m.div
-        className="absolute rounded-full border border-flame/20"
-        initial={{ width: 160, height: 160, opacity: 0.6 }}
-        animate={{ width: 340, height: 340, opacity: 0 }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
+        className="absolute rounded-full border border-[#C4A05F]/20"
+        initial={{ width: 180, height: 180, opacity: 0.7 }}
+        animate={{ width: 380, height: 380, opacity: 0 }}
+        transition={{ duration: 3.2, repeat: Infinity, ease: "easeOut" }}
       />
       <m.div
-        className="absolute rounded-full border border-flame/15"
-        initial={{ width: 160, height: 160, opacity: 0.5 }}
-        animate={{ width: 440, height: 440, opacity: 0 }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeOut", delay: 0.9 }}
+        className="absolute rounded-full border border-[#C4A05F]/15"
+        initial={{ width: 180, height: 180, opacity: 0.5 }}
+        animate={{ width: 500, height: 500, opacity: 0 }}
+        transition={{ duration: 3.2, repeat: Infinity, ease: "easeOut", delay: 1 }}
       />
 
-      {/* Icon */}
+      {/* Logo */}
       <m.div
-        className="relative z-10 mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-flame/10"
-        initial={{ scale: 0, opacity: 0 }}
+        className="relative z-10 mb-10"
+        initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.1 }}
       >
-        <span className="text-4xl">🎂</span>
+        <Image
+          src="/brand/logo-redesign-primary.png"
+          alt="The Taste Makerrs"
+          width={380}
+          height={220}
+          priority
+          className="w-[260px] md:w-[340px]"
+        />
       </m.div>
-
-      {/* Wordmark */}
-      <m.p
-        className="relative z-10 mb-3 font-sans text-xs font-semibold uppercase tracking-widest text-flame"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.25 }}
-      >
-        The Taste Makerrs
-      </m.p>
 
       {/* Heading */}
       <m.h1
-        className="font-display relative z-10 text-[clamp(2.2rem,6vw,4rem)] font-semibold leading-tight tracking-tight text-ink"
-        initial={{ opacity: 0, y: 18 }}
+        className="relative z-10 font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold leading-tight tracking-tight text-[#F5EDD8]"
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
+        transition={{ delay: 0.3 }}
       >
         Something sweet is{" "}
-        <span className="text-flame">coming.</span>
+        <span className="text-[#C4A05F]">coming.</span>
       </m.h1>
 
       {/* Subtitle */}
       <m.p
-        className="relative z-10 mt-4 max-w-sm font-sans text-base leading-relaxed text-ink-mut"
-        initial={{ opacity: 0, y: 14 }}
+        className="relative z-10 mt-4 max-w-sm font-sans text-[0.95rem] leading-relaxed text-[#9E8E78]"
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45 }}
+        transition={{ delay: 0.42 }}
       >
         We&apos;re baking up something special. The kitchen will reopen shortly — check back soon.
       </m.p>
 
       {/* Animated dots */}
       <m.div
-        className="relative z-10 mt-10 flex items-center gap-2"
+        className="relative z-10 mt-10 flex items-center gap-2.5"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
-        {DOTS.map((_, i) => (
+        {[0, 1, 2].map((i) => (
           <m.span
             key={i}
-            className="h-2 w-2 rounded-full bg-flame"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+            className="h-2 w-2 rounded-full bg-[#C4A05F]"
+            animate={{ scale: [1, 1.6, 1], opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1.3, repeat: Infinity, delay: i * 0.22, ease: "easeInOut" }}
           />
         ))}
       </m.div>
 
-      {/* Footer note */}
+      {/* Footer */}
       <m.p
-        className="absolute bottom-8 z-10 font-sans text-xs text-ink-mut/50"
+        className="absolute bottom-8 z-10 font-sans text-xs text-[#5A4F44]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.9 }}
       >
-        Questions? Write to us at{" "}
-        <a href="mailto:tastemakerrs@gmail.com" className="underline underline-offset-2 hover:text-flame transition-colors">
+        Questions?{" "}
+        <a
+          href="mailto:tastemakerrs@gmail.com"
+          className="text-[#7A6A58] underline underline-offset-2 transition-colors hover:text-[#C4A05F]"
+        >
           tastemakerrs@gmail.com
         </a>
       </m.p>
