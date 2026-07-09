@@ -68,7 +68,7 @@ export default function MaintenancePage() {
 
       {/* Logo */}
       <m.div
-        className="relative z-10 mb-10"
+        className="relative z-10 mb-2"
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.1 }}
@@ -77,34 +77,49 @@ export default function MaintenancePage() {
         <img
           src="/brand/logo-redesign-primary.png"
           alt="The Taste Makerrs"
-          className="w-[260px] md:w-[340px]"
+          className="w-[200px] md:w-[240px]"
         />
       </m.div>
 
-      {/* Heading */}
-      <m.h1
-        className="relative z-10 font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold leading-tight tracking-tight text-[#F5EDD8]"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+      {/* Animated GIF hero, heading pulled up over it (21st.dev minhxthanh/404-page-not-found technique) */}
+      <m.div
+        className="relative z-10 w-full max-w-sm"
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
       >
-        Something sweet is{" "}
-        <span className="text-[#C4A05F]">coming.</span>
-      </m.h1>
+        <div
+          className="bg-[url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif)] h-[170px] sm:h-[210px] md:h-[240px] bg-center bg-no-repeat bg-contain"
+          aria-hidden="true"
+        />
 
-      {/* Subtitle */}
-      <m.p
-        className="relative z-10 mt-4 max-w-sm font-sans text-[0.95rem] leading-relaxed text-[#9E8E78]"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.42 }}
-      >
-        We&apos;re baking up something special. The kitchen will reopen shortly — check back soon.
-      </m.p>
+        <div className="mt-[-30px] sm:mt-[-38px]">
+          {/* Heading */}
+          <m.h1
+            className="font-display text-[clamp(1.8rem,5vw,3.2rem)] font-semibold leading-tight tracking-tight text-[#F5EDD8]"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            Something sweet is{" "}
+            <span className="text-[#C4A05F]">coming.</span>
+          </m.h1>
+
+          {/* Subtitle */}
+          <m.p
+            className="mx-auto mt-4 max-w-sm font-sans text-[0.95rem] leading-relaxed text-[#9E8E78]"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.42 }}
+          >
+            We&apos;re baking up something special. The kitchen will reopen shortly — check back soon.
+          </m.p>
+        </div>
+      </m.div>
 
       {/* Animated dots */}
       <m.div
-        className="relative z-10 mt-10 flex items-center gap-2.5"
+        className="relative z-10 mt-8 flex items-center gap-2.5"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
