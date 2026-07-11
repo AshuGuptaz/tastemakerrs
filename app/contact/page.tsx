@@ -47,7 +47,7 @@ export default function ContactPage() {
       <section className="section">
         <div className="container-x grid gap-10 md:grid-cols-2 md:items-start">
           <div>
-            <h2 className="t-h2">Reach us directly</h2>
+            <h2 className="t-h2 text-3xl md:text-4xl">Reach us <span className="text-flame">directly</span></h2>
             <p className="mt-3 text-ink-mut">Prefer to talk? We&apos;re quickest on WhatsApp.</p>
 
             {/* TODO: replace with your real shop address, phone and email before launch */}
