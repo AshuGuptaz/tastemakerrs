@@ -19,9 +19,9 @@ export default function Footer() {
           <div>
             <Link href="/" aria-label="The Taste Makerrs — home" className="group inline-flex items-center gap-2.5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/mark-solid-reversed.svg" alt="" aria-hidden className="h-9 w-9 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              <img src="/brand/logo-redesign-mark-reversed.png" alt="" aria-hidden className="h-9 w-9 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/wordmark-reversed.svg" alt="The Taste Makerrs" className="h-[1.35rem] w-auto select-none" />
+              <img src="/brand/logo-redesign-wordmark-reversed.png" alt="The Taste Makerrs" className="h-7 w-auto select-none" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
               Small-batch bakery in Lucknow. Baked fresh, delivered with love.

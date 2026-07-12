@@ -140,11 +140,11 @@ function shell(inner: string) {
     <div style="text-align:center;margin-bottom:24px;">
       <a href="${SITE_URL}" style="display:inline-block;">
         <img
-          src="${SITE_URL}/brand/logo-horizontal-full.png"
+          src="${SITE_URL}/brand/logo-redesign-wordmark-full.png"
           alt="The Taste Makerrs"
-          width="260"
-          height="71"
-          style="display:block;border:0;max-width:260px;height:auto;"
+          width="220"
+          height="36"
+          style="display:block;border:0;max-width:220px;height:auto;"
         />
       </a>
     </div>
