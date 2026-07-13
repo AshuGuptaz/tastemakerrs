@@ -88,16 +88,9 @@ export default function Navbar() {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/brand/logo-redesign-mark-full.png"
-              alt=""
-              aria-hidden
-              className="h-8 w-8 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
               src="/brand/logo-redesign-wordmark-full.png"
               alt="The Taste Makerrs"
-              className="h-6 w-auto select-none"
+              className="h-6 w-auto select-none transition-transform duration-300 group-hover:-translate-y-0.5"
             />
           </Link>
 
