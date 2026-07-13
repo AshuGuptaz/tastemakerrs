@@ -80,67 +80,69 @@ export default function Navbar() {
           className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-pill border border-line px-3.5 py-3 backdrop-blur-xl"
         >
 
-          {/* ── Logo ── */}
-          <Link
-            href="/"
-            aria-label="The Taste Makerrs — home"
-            className="group flex items-center gap-2 rounded-pill pl-1 pr-2 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/brand/logo-redesign-wordmark-full.png"
-              alt="The Taste Makerrs"
-              className="h-6 w-auto select-none transition-transform duration-300 group-hover:-translate-y-0.5"
-            />
-          </Link>
+          {/* ── Logo + desktop nav, grouped so they sit close together ── */}
+          <div className="flex items-center gap-8">
+            <Link
+              href="/"
+              aria-label="The Taste Makerrs — home"
+              className="group flex items-center gap-2 rounded-pill pl-1 pr-2 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/brand/logo-redesign-wordmark-full.png"
+                alt="The Taste Makerrs"
+                className="h-6 w-auto select-none transition-transform duration-300 group-hover:-translate-y-0.5"
+              />
+            </Link>
 
-          {/* ── Desktop nav with magic hover indicator ────────────────── */}
-          <nav
-            ref={navEl}
-            className="relative hidden items-center gap-0.5 md:flex"
-            onMouseLeave={() => setHovered(null)}
-          >
-            {/* Sliding ghost pill — tracks the hovered item */}
-            <m.span
-              aria-hidden
-              className="pointer-events-none absolute inset-y-[3px] rounded-pill bg-ink/[0.055]"
-              style={{ willChange: "transform, width, opacity" }}
-              initial={false}
-              animate={{
-                x:       indicator.x,
-                width:   indicator.w,
-                opacity: hovered ? 1 : 0,
-              }}
-              transition={{ type: "spring", stiffness: 500, damping: 36, mass: 0.28 }}
-            />
+            {/* ── Desktop nav with magic hover indicator ────────────────── */}
+            <nav
+              ref={navEl}
+              className="relative hidden items-center gap-0.5 md:flex"
+              onMouseLeave={() => setHovered(null)}
+            >
+              {/* Sliding ghost pill — tracks the hovered item */}
+              <m.span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-[3px] rounded-pill bg-ink/[0.055]"
+                style={{ willChange: "transform, width, opacity" }}
+                initial={false}
+                animate={{
+                  x:       indicator.x,
+                  width:   indicator.w,
+                  opacity: hovered ? 1 : 0,
+                }}
+                transition={{ type: "spring", stiffness: 500, damping: 36, mass: 0.28 }}
+              />
 
-            {NAV.map((n) => {
-              const active = pathname === n.href;
-              return (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  aria-current={active ? "page" : undefined}
-                  onMouseEnter={(e) => { setHovered(n.href); track(e); }}
-                  className={`relative z-10 rounded-pill px-3.5 py-2 text-sm tracking-tight transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
-                    active
-                      ? "font-semibold text-flame-700"
-                      : "font-medium text-ink-mut hover:text-ink"
-                  }`}
-                >
-                  {n.label}
-                  {/* Active-page underline pill — separate from hover ghost */}
-                  {active && (
-                    <m.span
-                      layoutId="nav-active"
-                      className="absolute inset-0 -z-10 rounded-pill bg-flame/10 ring-1 ring-flame/20"
-                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+              {NAV.map((n) => {
+                const active = pathname === n.href;
+                return (
+                  <Link
+                    key={n.href}
+                    href={n.href}
+                    aria-current={active ? "page" : undefined}
+                    onMouseEnter={(e) => { setHovered(n.href); track(e); }}
+                    className={`relative z-10 rounded-pill px-3.5 py-2 text-sm tracking-tight transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
+                      active
+                        ? "font-semibold text-flame-700"
+                        : "font-medium text-ink-mut hover:text-ink"
+                    }`}
+                  >
+                    {n.label}
+                    {/* Active-page underline pill — separate from hover ghost */}
+                    {active && (
+                      <m.span
+                        layoutId="nav-active"
+                        className="absolute inset-0 -z-10 rounded-pill bg-flame/10 ring-1 ring-flame/20"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
 
           {/* ── Actions ───────────────────────────────────────────────── */}
           <div className="flex items-center gap-2">
