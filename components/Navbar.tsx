@@ -77,7 +77,7 @@ export default function Navbar() {
             transformOrigin: "center top",
             willChange:      "transform",
           }}
-          className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-pill border border-line px-3.5 py-3 backdrop-blur-xl"
+          className="mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-pill border border-line px-3.5 py-3 backdrop-blur-xl"
         >
 
           {/* ── Logo + desktop nav, grouped so they sit close together ── */}
