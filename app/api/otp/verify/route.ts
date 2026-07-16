@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "This code is no longer valid. Request a new one." }, { status: 400 });
     }
 
-    const token = await signCheckout(doc.email, doc.phone);
+    const token = await signCheckout(doc.channel === "phone" ? { phone: doc.phone } : { email: doc.email });
     const res = NextResponse.json({ ok: true });
     res.cookies.set(CHECKOUT_COOKIE, token, {
       httpOnly: true,

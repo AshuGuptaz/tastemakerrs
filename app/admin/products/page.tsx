@@ -99,6 +99,14 @@ export default function AdminProducts() {
         <Link href="/admin" className="text-sm text-cocoa/60 hover:text-flame">← Back</Link>
         <h1 className="display text-[clamp(2rem,5vw,3.5rem)]">PRODUCTS</h1>
 
+        <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-cocoa">
+          <strong className="text-rose-600">Not live yet:</strong> changes saved here don&apos;t
+          affect the live menu or checkout prices. The site currently reads its catalog from{" "}
+          <code className="rounded bg-white/60 px-1">lib/products.ts</code> in the codebase, which
+          needs a code change and deploy to update — this dashboard writes to a separate database
+          that isn&apos;t connected to it yet.
+        </div>
+
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_400px]">
           <div className="card overflow-hidden">
             <table className="w-full text-sm">

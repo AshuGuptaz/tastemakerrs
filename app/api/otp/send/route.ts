@@ -81,32 +81,40 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: `Please wait ${wait}s before requesting another code.`, retryAfter: wait }, { status: 429 });
     }
 
+    // Deliver to exactly ONE channel, never both — knowing the code only
+    // proves whichever channel it was actually sent to, and binding both
+    // fields into the checkout token from delivery-to-either would let
+    // someone attach a victim's untouched channel to their own order (see
+    // lib/checkout-token.ts). Phone is preferred: it's the channel Footer.tsx
+    // already calls "preferred" contact, and the billed/primary channel per
+    // the rate-limit comments above.
+    const channel: "phone" | "email" = smsConfigured() ? "phone" : "email";
+
     const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
     const doc = await Otp.create({
       email: emailLc,
       phone,
+      channel,
       codeHash: hashCode(code),
       codeExpiresAt: new Date(now + CODE_TTL_MS),
       expiresAt: new Date(now + RATE_WINDOW_MS),
     });
 
-    // deliver on configured channels (graceful no-op otherwise)
-    const [emailRes, smsRes] = await Promise.all([
-      emailConfigured()
-        ? sendEmail({ to: emailLc, subject: `${code} is your Taste Makerrs code`, html: otpEmailTemplate(code, name) })
-        : Promise.resolve({ skipped: true as const }),
-      smsConfigured() ? sendSMS({ to: phone, body: otpSmsTemplate(code) }) : Promise.resolve({ skipped: true as const }),
-    ]);
+    const deliveryRes =
+      channel === "phone"
+        ? await sendSMS({ to: phone, body: otpSmsTemplate(code) })
+        : await sendEmail({ to: emailLc, subject: `${code} is your Taste Makerrs code`, html: otpEmailTemplate(code, name) });
 
-    const emailSent = "ok" in emailRes && emailRes.ok;
-    const smsSent = "ok" in smsRes && smsRes.ok;
+    const delivered = "ok" in deliveryRes && deliveryRes.ok === true;
+    const emailSent = channel === "email" && delivered;
+    const smsSent = channel === "phone" && delivered;
 
     return NextResponse.json({
       enabled: true,
       otpId: doc._id.toString(),
       emailSent,
       smsSent,
-      channels: { email: emailConfigured(), sms: smsConfigured() },
+      channels: { email: channel === "email", sms: channel === "phone" },
       // Dev convenience only — never returned in production.
       ...(process.env.NODE_ENV !== "production" ? { devCode: code } : {}),
     });

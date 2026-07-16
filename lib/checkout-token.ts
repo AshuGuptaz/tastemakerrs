@@ -36,8 +36,16 @@ export function hashCode(code: string) {
   return crypto.createHmac("sha256", getHashSecret()).update(code).digest("hex");
 }
 
-export async function signCheckout(email: string, phone: string) {
-  return new SignJWT({ email: norm(email), phone: normPhone(phone) })
+/**
+ * Binds exactly ONE verified channel — whichever one the code was actually
+ * delivered to and read from. The OTP is sent to a single channel per
+ * request (see app/api/otp/send/route.ts), so proving knowledge of the code
+ * only ever proves that one channel, never both at once.
+ */
+export async function signCheckout(verified: { email: string } | { phone: string }) {
+  const claim =
+    "phone" in verified ? { phone: normPhone(verified.phone) } : { email: norm(verified.email) };
+  return new SignJWT(claim)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("20m")
@@ -50,17 +58,23 @@ export async function verifyCheckout(token: string | undefined) {
   if (!secret && process.env.NODE_ENV === "production") return null;
   try {
     const { payload } = await jwtVerify(token, ENC.encode(secret || "dev-only-otp-secret-change-me"));
-    return payload as { email: string; phone: string };
+    return payload as { email?: string; phone?: string };
   } catch {
     return null;
   }
 }
 
-/** True when the verified token's contact matches the order's address. */
+/**
+ * True when the verified channel in the token matches the order's address.
+ * The token only ever contains ONE proven channel — the other field on the
+ * order address is accepted as contact info but isn't independently proven.
+ */
 export function contactMatches(
-  token: { email: string; phone: string } | null,
+  token: { email?: string; phone?: string } | null,
   address: { email: string; phone: string }
 ) {
   if (!token) return false;
-  return token.email === norm(address.email) && normPhone(token.phone) === normPhone(address.phone);
+  if (token.phone) return normPhone(token.phone) === normPhone(address.phone);
+  if (token.email) return token.email === norm(address.email);
+  return false;
 }
