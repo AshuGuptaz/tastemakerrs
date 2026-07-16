@@ -54,23 +54,30 @@ export async function POST(req: Request) {
     const emailLc = email.trim().toLowerCase();
     const now = Date.now();
 
-    // Hourly cap, keyed on phone OR email. Phone is the primary throttle because
-    // it's the billed SMS channel — keying on email alone let an attacker rotate
-    // a throwaway email while pinning the victim's phone to bomb it with SMS and
-    // burn Fast2SMS credit. (Rows now live 1 h, so this window is enforceable.)
-    const recent = await Otp.countDocuments({
-      $or: [{ phone }, { email: emailLc }],
-      createdAt: { $gte: new Date(now - RATE_WINDOW_MS) },
-    });
-    if (recent >= MAX_PER_HOUR) {
+    // Hourly cap, atomic per identifier — phone AND email are each checked
+    // independently via rateLimit()'s single atomic increment, so concurrent
+    // requests can't all read a stale count before any of them commits (the
+    // way a plain countDocuments-then-create would). Phone is the primary
+    // throttle because it's the billed SMS channel — an attacker rotating a
+    // throwaway email while pinning the victim's phone still hits the phone
+    // bucket every time and gets capped, same as keying on "phone OR email"
+    // did, just race-free.
+    const [phoneHourly, emailHourly] = await Promise.all([
+      rateLimit(`otp-hr:phone:${phone}`, { limit: MAX_PER_HOUR, windowMs: RATE_WINDOW_MS }),
+      rateLimit(`otp-hr:email:${emailLc}`, { limit: MAX_PER_HOUR, windowMs: RATE_WINDOW_MS }),
+    ]);
+    if (!phoneHourly.allowed || !emailHourly.allowed) {
       return NextResponse.json({ error: "Too many codes requested. Try again later." }, { status: 429 });
     }
 
-    // Per-request cooldown, also keyed on phone OR email (narrow TOCTOU window —
-    // acceptable for OTP use-case).
-    const last = await Otp.findOne({ $or: [{ phone }, { email: emailLc }] }).sort({ createdAt: -1 }).lean();
-    if (last && now - new Date(last.createdAt).getTime() < COOLDOWN_MS) {
-      const wait = Math.ceil((COOLDOWN_MS - (now - new Date(last.createdAt).getTime())) / 1000);
+    // Per-request cooldown, same atomic mechanism with a short window instead
+    // of a separate findOne-based check.
+    const [phoneCooldown, emailCooldown] = await Promise.all([
+      rateLimit(`otp-cd:phone:${phone}`, { limit: 1, windowMs: COOLDOWN_MS }),
+      rateLimit(`otp-cd:email:${emailLc}`, { limit: 1, windowMs: COOLDOWN_MS }),
+    ]);
+    if (!phoneCooldown.allowed || !emailCooldown.allowed) {
+      const wait = Math.max(phoneCooldown.retryAfter, emailCooldown.retryAfter);
       return NextResponse.json({ error: `Please wait ${wait}s before requesting another code.`, retryAfter: wait }, { status: 429 });
     }
 

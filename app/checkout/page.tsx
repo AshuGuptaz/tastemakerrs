@@ -206,6 +206,19 @@ export default function CheckoutPage() {
     if (submittingRef.current) return;
     submittingRef.current = true;
     setLoading(true);
+
+    // Deliberately not a try/finally: while the Razorpay modal is open, the
+    // guard must stay engaged until one of ITS callbacks (handler/ondismiss/
+    // payment.failed) fires — not the instant r.open() returns. A finally
+    // here would release the guard as soon as the modal opens, letting a
+    // second Pay tap create a second order and a second stacked modal while
+    // the first is still live and payable. Every real exit path below calls
+    // release() explicitly instead.
+    const release = () => {
+      setLoading(false);
+      submittingRef.current = false;
+    };
+
     try {
       const orderRes = await fetch("/api/orders", {
         method: "POST",
@@ -225,8 +238,7 @@ export default function CheckoutPage() {
       // rather than silently charging a different number.
       if (typeof order.total === "number" && Math.round(order.total) !== Math.round(total)) {
         toast.error(`Prices have changed — the total is now ${formatINR(order.total)}. Please review your cart and place the order again.`);
-        submittingRef.current = false;
-        setLoading(false);
+        release();
         return;
       }
 
@@ -257,18 +269,19 @@ export default function CheckoutPage() {
                 body: JSON.stringify({ ...resp, orderId: order.id }),
               }).then((r) => r.json());
               if (verify.ok) { clear(); router.push(`/order-success?id=${order.id}`); }
-              else toast.error("Payment verification failed. Contact us if amount was deducted.");
-            } catch { toast.error("Verification error. Please contact support."); }
+              else { toast.error("Payment verification failed. Contact us if amount was deducted."); release(); }
+            } catch { toast.error("Verification error. Please contact support."); release(); }
           },
-          modal: { ondismiss: () => { toast("Payment cancelled"); setLoading(false); } },
+          modal: { ondismiss: () => { toast("Payment cancelled"); release(); } },
         };
         // @ts-ignore
         const r = new window.Razorpay(options);
         r.on("payment.failed", (resp: any) => {
           toast.error(resp?.error?.description || "Payment failed. Please try again.");
-          setLoading(false);
+          release();
         });
         r.open();
+        // No release() here — stays engaged until a Razorpay callback above fires.
         return;
       } else {
         const s = await fetch("/api/stripe/create-checkout", {
@@ -278,12 +291,11 @@ export default function CheckoutPage() {
         }).then((r) => r.json());
         if (s.url) window.location.href = s.url;
         else throw new Error(s.error || "Stripe checkout failed");
+        // No release() on the success path either — the page is navigating away.
       }
     } catch (e: any) {
       toast.error(e.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-      submittingRef.current = false;
+      release();
     }
   };
 

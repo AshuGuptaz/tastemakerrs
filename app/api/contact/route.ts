@@ -13,10 +13,10 @@ const CONTACT_MAX = 5;
 const CONTACT_WINDOW_MS = 10 * 60_000;
 
 const Body = z.object({
-  name: z.string().min(1),
+  name: z.string().min(1).max(100),
   email: z.string().email(),
-  phone: z.string().optional().default(""),
-  message: z.string().min(1),
+  phone: z.string().max(20).optional().default(""),
+  message: z.string().min(1).max(2000),
 });
 
 const esc = (s: string) =>

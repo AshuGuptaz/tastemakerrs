@@ -36,6 +36,11 @@ export async function verifyAdmin(token: string | undefined) {
   if (!secret && process.env.NODE_ENV === "production") return null;
   try {
     const { payload } = await jwtVerify(token, ENC.encode(secret || "dev-only-secret-change-me"));
+    // Belt-and-suspenders: a checkout token ({email, phone}, no role) must
+    // never verify as admin even if ADMIN_JWT_SECRET and OTP_JWT_SECRET were
+    // ever misconfigured to the same value — check the claim, not just the
+    // signature.
+    if (payload.role !== "admin") return null;
     return payload as { email: string; role: string };
   } catch {
     return null;

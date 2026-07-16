@@ -2,9 +2,10 @@
  * Tiny structured logger. Emits single-line JSON so Vercel/Datadog/etc. can
  * parse levels and scopes instead of grepping free-form strings.
  *
- * Sentry-ready: when a SENTRY_DSN is configured and @sentry/nextjs is wired up,
- * forward errors from `logError` (see the marked hook below). Kept dependency-
- * free until then so it works everywhere with no setup.
+ * Also forwards errors from `logError` to Sentry, which is always initialized
+ * (DSN is set directly in sentry.server.config.ts / sentry.edge.config.ts /
+ * instrumentation-client.ts, not via a SENTRY_DSN env var) — so this call is
+ * unconditional, not gated on an env var that's never actually read at init.
  *
  * NEVER pass secrets or full PII payloads in `meta` — log identifiers, not
  * card/OTP/token values.
@@ -24,7 +25,7 @@ function emit(level: "error" | "warn" | "info", scope: string, message: string, 
 export function logError(scope: string, err: unknown, meta?: Meta) {
   const message = err instanceof Error ? err.message : String(err);
   emit("error", scope, message, meta);
-  if (process.env.SENTRY_DSN) Sentry.captureException(err, { tags: { scope }, extra: meta });
+  Sentry.captureException(err, { tags: { scope }, extra: meta });
 }
 
 export function logWarn(scope: string, message: string, meta?: Meta) {
