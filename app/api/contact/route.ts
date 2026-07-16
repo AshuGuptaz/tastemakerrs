@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { connectDB } from "@/lib/mongodb";
+import { ContactMessage } from "@/models/ContactMessage";
 import { emailConfigured, sendEmail } from "@/lib/notify";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { logError, logInfo } from "@/lib/logger";
@@ -40,6 +42,19 @@ export async function POST(req: Request) {
 
   const to = process.env.CONTACT_TO || "tastemakerrs@gmail.com";
 
+  // Persist first so a submission is never lost even if email isn't
+  // configured or fails to send — previously an unconfigured RESEND_API_KEY
+  // silently discarded every enquiry while still reporting success.
+  let saved = false;
+  try {
+    await connectDB();
+    await ContactMessage.create({ name: data.name, email: data.email, phone: data.phone, message: data.message });
+    saved = true;
+  } catch (e) {
+    logError("contact/POST", e, { note: "DB write failed" });
+  }
+
+  let emailed = false;
   if (emailConfigured()) {
     const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#0B0B0C;">
       <h2 style="margin:0 0 12px;">New enquiry — The Taste Makerrs</h2>
@@ -56,14 +71,17 @@ export async function POST(req: Request) {
       html,
       text: `${data.name} <${data.email}> ${data.phone}\n\n${data.message}`,
     });
-    if ("ok" in r && !r.ok) {
-      logError("contact/POST", new Error("email send failed"), { to });
-      return NextResponse.json({ error: "We couldn't send that right now — please WhatsApp us." }, { status: 502 });
-    }
+    emailed = "ok" in r && r.ok === true;
+    if (!emailed) logError("contact/POST", new Error("email send failed"), { to });
   } else {
-    // No email provider configured — log so the message isn't silently lost in dev.
-    logInfo("contact/POST", "no email provider configured; enquiry not delivered", { from: data.email });
+    // No email provider configured — fine as long as it's saved (see above).
+    logInfo("contact/POST", "no email provider configured; enquiry saved only", { from: data.email });
   }
 
+  // Only a genuine total failure (neither a durable copy nor an email) should
+  // tell the visitor it didn't go through.
+  if (!saved && !emailed) {
+    return NextResponse.json({ error: "We couldn't send that right now — please WhatsApp us." }, { status: 502 });
+  }
   return NextResponse.json({ ok: true });
 }
