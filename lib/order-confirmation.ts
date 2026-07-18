@@ -1,5 +1,6 @@
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
+import { logError } from "@/lib/logger";
 import {
   emailConfigured,
   smsConfigured,
@@ -14,6 +15,7 @@ import {
  * `confirmationSentAt`) and best-effort — never throws into the payment flow.
  */
 export async function sendOrderConfirmation(orderId: string) {
+  let claimed = false;
   try {
     await connectDB();
 
@@ -26,6 +28,7 @@ export async function sendOrderConfirmation(orderId: string) {
       { new: true }
     );
     if (!order) return;
+    claimed = true;
 
     const a = order.address || {};
     const payload = {
@@ -39,7 +42,7 @@ export async function sendOrderConfirmation(orderId: string) {
       address: { street: a.street || "", city: a.city || "", state: a.state || "", pincode: a.pincode || "" },
     };
 
-    await Promise.all([
+    const [emailRes, smsRes] = await Promise.all([
       emailConfigured() && a.email
         ? sendEmail({ to: a.email, subject: "Your order is confirmed! 🎂", html: orderEmailTemplate(payload) })
         : Promise.resolve(null),
@@ -47,7 +50,21 @@ export async function sendOrderConfirmation(orderId: string) {
         ? sendSMS({ to: a.phone, body: orderSmsTemplate(order._id.toString(), order.total) })
         : Promise.resolve(null),
     ]);
-  } catch (e: any) {
-    console.error("[order-confirmation] failed:", e?.message);
+
+    // sendEmail/sendSMS catch their own errors and resolve {ok:false} rather
+    // than rejecting, so a bare try/catch here never actually saw a failed
+    // delivery — confirmationSentAt was already committed above, silently
+    // and permanently marking a confirmation "sent" when it never went out.
+    const failed = (r: unknown) => !!r && typeof r === "object" && "ok" in r && (r as { ok: boolean }).ok === false;
+    if (failed(emailRes) || failed(smsRes)) {
+      // Un-claim so this stays retry-eligible instead of permanently lost.
+      await Order.updateOne({ _id: orderId }, { $unset: { confirmationSentAt: "" } });
+      logError("order-confirmation", new Error("delivery failed"), { orderId, emailRes, smsRes });
+    }
+  } catch (e) {
+    if (claimed) {
+      await Order.updateOne({ _id: orderId }, { $unset: { confirmationSentAt: "" } }).catch(() => {});
+    }
+    logError("order-confirmation", e, { orderId });
   }
 }
