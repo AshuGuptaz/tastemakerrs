@@ -62,11 +62,17 @@ function CustomCakeContent() {
     [flavor, weight, shape, eggless, imageData, baseSlug]
   );
 
+  // Base64 inflates raw bytes by ~4/3, and the server caps the encoded data
+  // URL at 2,000,000 chars (app/api/custom-orders/route.ts) — so the raw
+  // file cap here MUST stay well under 1.5MB, not 4MB, or a passing preview
+  // here still gets a silent 400 on submit. Keep these two in sync.
+  const MAX_IMAGE_BYTES = 1.4 * 1024 * 1024;
+
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (f.size > 4 * 1024 * 1024) {
-      toast.error("Image must be under 4 MB");
+    if (f.size > MAX_IMAGE_BYTES) {
+      toast.error("Image must be under 1.4 MB — try a smaller photo or a screenshot of it");
       return;
     }
     const reader = new FileReader();
