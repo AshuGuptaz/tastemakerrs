@@ -35,8 +35,8 @@ Coupon codes: `FIRSTBITE` (10%), `BDAY150` (≥₹999 → ₹150), `HAMPER20` (2
 `/api/orders` reprices every item from `lib/products.ts` PRODUCTS catalog. Client-sent `price`/`total` are ignored. Non-catalog items need a `custom` payload or are rejected.
 
 ### Payment flow
-Razorpay: `/api/razorpay/create-order` (loads total from DB) → Razorpay modal → `/api/razorpay/verify` (HMAC check, idempotent)
-Stripe: `/api/stripe/create-checkout` → redirect → `/api/stripe/webhook` (idempotent via `findOneAndUpdate { paymentStatus: { $ne: "paid" } }`)
+Razorpay: `/api/razorpay/create-order` (loads total from DB) → Razorpay modal → `/api/razorpay/verify` (client-side, HMAC check) AND `/api/razorpay/webhook` (server-to-server, independent of the browser — catches the case where the customer closes the tab right after paying). Both idempotent via `findOneAndUpdate { paymentStatus: { $in: ["unpaid", "failed"] } }` — deliberately not `{ $ne: "paid" }`, which would also match `"refunded"` and let a redelivered webhook resurrect a refund.
+Stripe: `/api/stripe/create-checkout` → redirect → `/api/stripe/webhook` (same idempotency rule as above)
 
 ### Admin JWT
 `ADMIN_JWT_SECRET` checked lazily inside `getSecret()` per-request, NEVER at module load (build-safe on Vercel Edge).
@@ -49,6 +49,7 @@ Stripe: `/api/stripe/create-checkout` → redirect → `/api/stripe/webhook` (id
 | `OTP_JWT_SECRET` | Yes | MUST differ from ADMIN_JWT_SECRET; otp/send returns 500 without it |
 | `RAZORPAY_KEY_ID` | Yes | Live key (`rzp_live_...`) |
 | `RAZORPAY_KEY_SECRET` | Yes | Live secret |
+| `RAZORPAY_WEBHOOK_SECRET` | Yes | Separate secret from Razorpay Dashboard → Settings → Webhooks (URL: `/api/razorpay/webhook`, events: `payment.captured`, `payment.failed`, `payment.refunded`); `/api/razorpay/webhook` 400s without it |
 | `NEXT_PUBLIC_RAZORPAY_KEY_ID` | Yes | Same as KEY_ID, needed by browser widget |
 | `RESEND_API_KEY` | For email OTP/confirmations | |
 | `FAST2SMS_API_KEY` | For SMS OTP | Needs ₹100 top-up before API works |
