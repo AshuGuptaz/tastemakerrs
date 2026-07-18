@@ -84,7 +84,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         next[idx] = { ...next[idx], qty: Math.min(MAX_QTY, next[idx].qty + qty) };
         return next;
       }
-      return [...prev, { ...item, qty: Math.min(MAX_QTY, qty) }];
+      return [...prev, { ...item, qty: Math.min(MAX_QTY, Math.max(1, qty)) }];
     });
     // NOTE: no toast here — callers own the "added" feedback (ProductCard /
     // ProductDetail fire the branded CartToast; custom-cake shows its own toast).
