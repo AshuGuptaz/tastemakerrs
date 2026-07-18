@@ -20,7 +20,7 @@ export async function GET() {
       .limit(500)
       .lean();
     if (docs.length > 0) return NextResponse.json(docs);
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Fall back to the static seed so the menu still renders, but log it —
     // otherwise a real DB outage looks identical to an empty catalog and admin
     // writes silently target a DB that's actually down.
@@ -37,11 +37,11 @@ export async function POST(req: Request) {
     await connectDB();
     const created = await Product.create(data);
     return NextResponse.json(created);
-  } catch (e: any) {
-    if (e?.name === "ZodError") {
+  } catch (e: unknown) {
+    if (e instanceof Error && e.name === "ZodError") {
       return NextResponse.json({ error: "Invalid product data" }, { status: 400 });
     }
-    if (e?.code === 11000) {
+    if ((e as { code?: number }).code === 11000) {
       return NextResponse.json({ error: "A product with this slug already exists" }, { status: 409 });
     }
     logError("products/POST", e);

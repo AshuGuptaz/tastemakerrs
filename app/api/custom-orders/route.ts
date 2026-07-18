@@ -100,7 +100,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true, id: doc._id.toString() });
-  } catch (e: any) {
+  } catch (e: unknown) {
     // A DB failure must NOT report success — otherwise the customer thinks the
     // request was received while it's silently lost. Log without the PII payload.
     logError("custom-orders/POST", e);

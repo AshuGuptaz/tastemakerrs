@@ -24,11 +24,11 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     const updated = await Product.findByIdAndUpdate(params.id, { $set: data }, { new: true });
     if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(updated);
-  } catch (e: any) {
-    if (e?.name === "ZodError") {
+  } catch (e: unknown) {
+    if (e instanceof Error && e.name === "ZodError") {
       return NextResponse.json({ error: "Invalid product data" }, { status: 400 });
     }
-    if (e?.code === 11000) {
+    if ((e as { code?: number }).code === 11000) {
       return NextResponse.json({ error: "A product with this slug already exists" }, { status: 409 });
     }
     logError("products/PATCH", e);
@@ -47,7 +47,7 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
     const updated = await Product.findByIdAndUpdate(params.id, { active: false }, { new: true });
     if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true, updated });
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError("products/DELETE", e);
     return NextResponse.json({ error: "Could not remove product" }, { status: 400 });
   }

@@ -25,8 +25,8 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, sig, whSecret);
-  } catch (e: any) {
-    return NextResponse.json({ error: `Webhook error: ${e.message}` }, { status: 400 });
+  } catch (e: unknown) {
+    return NextResponse.json({ error: `Webhook error: ${e instanceof Error ? e.message : String(e)}` }, { status: 400 });
   }
 
   await connectDB();

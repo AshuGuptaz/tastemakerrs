@@ -71,10 +71,10 @@ export async function POST(req: Request) {
       maxAge: 20 * 60,
     });
     return res;
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Malformed payload (missing otpId / non-6-digit code) is a 400, not a
     // server fault — mirrors the other API routes and keeps real 500s meaningful.
-    if (e?.name === "ZodError") {
+    if (e instanceof Error && e.name === "ZodError") {
       return NextResponse.json({ ok: false, error: "Enter the 6-digit code." }, { status: 400 });
     }
     logError("otp/verify", e);

@@ -118,10 +118,10 @@ export async function POST(req: Request) {
       // Dev convenience only — never returned in production.
       ...(process.env.NODE_ENV !== "production" ? { devCode: code } : {}),
     });
-  } catch (e: any) {
+  } catch (e: unknown) {
     // Client validation failures (bad email/phone) are 400s, not server faults —
     // so callers can distinguish them and real 500s stay meaningful in logs.
-    if (e?.name === "ZodError") {
+    if (e instanceof Error && e.name === "ZodError") {
       return NextResponse.json({ error: "Enter a valid email and 10-digit mobile number." }, { status: 400 });
     }
     logError("otp/send", e);

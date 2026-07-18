@@ -79,7 +79,7 @@ export async function POST(req: Request) {
     await sendOrderConfirmation(orderId);
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
     logError("razorpay/verify", e);
     return NextResponse.json({ ok: false, error: "Verification failed" }, { status: 500 });
   }

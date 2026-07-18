@@ -6,6 +6,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+import { logError } from "@/lib/logger";
 
 /**
  * POST /api/stripe/create-checkout
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
     }
     if (otpEnabled()) {
       const token = await verifyCheckout(cookies().get(CHECKOUT_COOKIE)?.value);
-      if (!contactMatches(token, order.address)) {
+      if (!contactMatches(token, { email: order.address.email ?? "", phone: order.address.phone ?? "" })) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
     }
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
     const stripe = getStripe();
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
     const itemNames = (order.items || [])
-      .map((i: any) => `${i.name} × ${i.qty}`)
+      .map((i) => `${i.name} × ${i.qty}`)
       .join(", ")
       .slice(0, 500);
 
@@ -70,8 +71,8 @@ export async function POST(req: Request) {
     await Order.findByIdAndUpdate(orderId, { paymentIntentId: session.id });
 
     return NextResponse.json({ url: session.url });
-  } catch (e: any) {
-    console.error("[stripe/create-checkout]", e?.message);
+  } catch (e: unknown) {
+    logError("stripe/create-checkout", e);
     return NextResponse.json({ error: "Checkout session creation failed" }, { status: 500 });
   }
 }

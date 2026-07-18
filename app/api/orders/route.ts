@@ -119,14 +119,14 @@ export async function POST(req: Request) {
     // what it displayed (catches stale cart prices before opening the payment
     // modal) — see checkout/page.tsx.
     return NextResponse.json({ id: order._id.toString(), ok: true, subtotal, delivery, discount, total });
-  } catch (e: any) {
-    if (e?.name === "ZodError") {
+  } catch (e: unknown) {
+    if (e instanceof Error && e.name === "ZodError") {
       return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
     }
     // Client-caused rejections (bad/unknown item) are 400; anything else is an
     // infra failure (DB down, etc.) and must be 503 so a transient outage isn't
     // reported to the customer as a bad request.
-    if (e?.message === "Unknown item" || e?.message === "Invalid item price") {
+    if (e instanceof Error && (e.message === "Unknown item" || e.message === "Invalid item price")) {
       return NextResponse.json({ error: "One or more items are no longer available." }, { status: 400 });
     }
     logError("orders/POST", e);
