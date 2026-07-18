@@ -7,10 +7,13 @@ import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
 import { formatINR } from "@/lib/format";
+import { deliveryFee } from "@/lib/pricing";
 
 export default function CartPage() {
   const { items, setQty, remove, subtotal, hydrated } = useCart();
-  const delivery = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 79;
+  // Don't show a delivery charge on an empty cart display — deliveryFee(0)
+  // would return the flat fee since 0 is under the free-delivery threshold.
+  const delivery = subtotal === 0 ? 0 : deliveryFee(subtotal);
   const total = subtotal + delivery;
 
   // Avoid flashing the empty-cart state before localStorage rehydrates.
