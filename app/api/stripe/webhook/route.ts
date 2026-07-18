@@ -40,10 +40,14 @@ export async function POST(req: Request) {
       if (s.payment_status !== "paid") break;
       const orderId = s.metadata?.orderId;
       if (orderId) {
-        // Idempotent: only the first transition to "paid" matches, so a replayed
-        // webhook won't re-trigger confirmation side-effects.
+        // Idempotent: only a pre-paid order matches, so a replayed webhook
+        // won't re-trigger confirmation side-effects. Matching on
+        // `{ $ne: "paid" }` would also match "refunded" — a redelivered
+        // checkout.session.completed (Stripe's delivery is at-least-once;
+        // a dashboard "Resend" hits this too) arriving AFTER a refund would
+        // then flip the order straight back to "paid", erasing the refund.
         const updated = await Order.findOneAndUpdate(
-          { _id: orderId, paymentStatus: { $ne: "paid" } },
+          { _id: orderId, paymentStatus: { $in: ["unpaid", "failed"] } },
           { paymentStatus: "paid", status: "paid", paymentIntentId: s.payment_intent as string },
           { new: true }
         );
