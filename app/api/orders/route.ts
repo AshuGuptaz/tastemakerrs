@@ -134,19 +134,32 @@ export async function POST(req: Request) {
   }
 }
 
+// parseInt("abc") is NaN, and Math.max/min propagate NaN rather than
+// ignoring it — so a non-numeric ?page=/?limit= used to reach Mongo's
+// skip()/limit() as NaN instead of falling back to the default.
+function intParam(raw: string | null, fallback: number): number {
+  const n = raw ? parseInt(raw, 10) : NaN;
+  return Number.isFinite(n) ? n : fallback;
+}
+
 export async function GET(req: Request) {
   const admin = await getAdminFromCookies();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { searchParams } = new URL(req.url);
-  const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-  const limit = Math.min(50, Math.max(1, parseInt(searchParams.get("limit") || "50", 10)));
-  const skip = (page - 1) * limit;
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = Math.max(1, intParam(searchParams.get("page"), 1));
+    const limit = Math.min(50, Math.max(1, intParam(searchParams.get("limit"), 50)));
+    const skip = (page - 1) * limit;
 
-  await connectDB();
-  const [orders, total] = await Promise.all([
-    Order.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-    Order.countDocuments(),
-  ]);
-  return NextResponse.json({ orders, total, page, pages: Math.ceil(total / limit) });
+    await connectDB();
+    const [orders, total] = await Promise.all([
+      Order.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Order.countDocuments(),
+    ]);
+    return NextResponse.json({ orders, total, page, pages: Math.ceil(total / limit) });
+  } catch (e) {
+    logError("orders/GET", e);
+    return NextResponse.json({ error: "Could not load orders." }, { status: 500 });
+  }
 }
