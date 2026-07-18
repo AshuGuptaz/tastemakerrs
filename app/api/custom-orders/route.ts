@@ -12,13 +12,17 @@ const ContactSchema = z.object({
 });
 
 const Body = z.object({
+  base: z.string().max(100).nullable().optional(),
   flavor: z.string().min(1).max(100),
   weight: z.string().min(1).max(50),
   shape: z.string().min(1).max(50),
   eggless: z.boolean(),
   message: z.string().max(500).optional().default(""),
   date: z.string().min(1),
-  image: z.string().max(2_000_000).optional(), // data URL or upload URL
+  // Data URL, base64-encoded — the client (app/custom-cake/page.tsx) caps the
+  // raw file at 1.4MB for exactly this reason (base64 inflates ~4/3); keep
+  // the two in sync or a passing client-side preview 400s here silently.
+  image: z.string().max(2_000_000).optional(),
   contact: ContactSchema,
   price: z.number().nonnegative().optional().default(0),
 });

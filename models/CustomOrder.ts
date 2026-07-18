@@ -1,6 +1,7 @@
 import mongoose, { Schema, Model } from "mongoose";
 
 export interface ICustomOrder {
+  base?: string | null; // slug of the catalog product this was derived from, if any
   flavor: string;
   weight: string;
   shape: string;
@@ -16,6 +17,7 @@ export interface ICustomOrder {
 
 const CustomOrderSchema = new Schema<ICustomOrder>(
   {
+    base: String,
     flavor: String,
     weight: String,
     shape: String,
