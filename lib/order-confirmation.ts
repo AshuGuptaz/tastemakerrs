@@ -34,7 +34,7 @@ export async function sendOrderConfirmation(orderId: string) {
     const payload = {
       id: order._id.toString(),
       name: a.name || "there",
-      items: (order.items || []).map((i: any) => ({ name: i.name, qty: i.qty, price: i.price })),
+      items: (order.items || []).map((i) => ({ name: i.name ?? "", qty: i.qty ?? 0, price: i.price ?? 0 })),
       subtotal: order.subtotal,
       delivery: order.delivery,
       discount: order.discount,

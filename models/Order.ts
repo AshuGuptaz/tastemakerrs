@@ -30,9 +30,29 @@ const AddressSchema = new Schema(
   { _id: false }
 );
 
+export interface IOrderItem {
+  productId?: string;
+  name?: string;
+  price?: number;
+  qty?: number;
+  variant?: string;
+  custom?: unknown;
+}
+
+export interface IOrderAddress {
+  name?: string;
+  email?: string;
+  phone?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  notes?: string;
+}
+
 export interface IOrder {
-  items: any[];
-  address: any;
+  items: IOrderItem[];
+  address: IOrderAddress;
   subtotal: number;
   delivery: number;
   discount: number;
