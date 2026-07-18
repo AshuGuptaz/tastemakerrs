@@ -13,6 +13,8 @@
  *   SMS_COUNTRY_CODE                       — default "91"
  */
 
+import { logError, logWarn } from "@/lib/logger";
+
 const BRAND = "The Taste Makerrs";
 const ACCENT = "#F97316";
 const INK = "#0B0B0C";
@@ -37,7 +39,7 @@ export function otpEnabled() {
 export async function sendEmail(opts: { to: string; subject: string; html: string; text?: string; replyTo?: string }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
-    console.warn(`[notify] email skipped (no RESEND_API_KEY): "${opts.subject}" → ${opts.to}`);
+    logWarn("notify/email", `skipped (no RESEND_API_KEY): "${opts.subject}" → ${opts.to}`);
     return { skipped: true as const };
   }
   const from = process.env.RESEND_FROM || `${BRAND} <onboarding@resend.dev>`;
@@ -49,13 +51,13 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
     });
     if (!res.ok) {
       const body = await res.text();
-      console.error(`[notify] Resend failed (${res.status}): ${body}`);
+      logError("notify/email", new Error(`Resend failed (${res.status}): ${body}`));
       return { ok: false as const, error: body };
     }
     return { ok: true as const };
-  } catch (e: any) {
-    console.error("[notify] Resend error:", e.message);
-    return { ok: false as const, error: e.message };
+  } catch (e: unknown) {
+    logError("notify/email", e);
+    return { ok: false as const, error: e instanceof Error ? e.message : String(e) };
   }
 }
 
@@ -81,9 +83,9 @@ export async function sendSMS(opts: { to: string; body: string }) {
         headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ From: process.env.TWILIO_FROM!, To: to, Body: opts.body }),
       });
-      if (!res.ok) { console.error("[notify] Twilio failed:", await res.text()); return { ok: false as const }; }
+      if (!res.ok) { logError("notify/sms/twilio", new Error(await res.text())); return { ok: false as const }; }
       return { ok: true as const };
-    } catch (e: any) { console.error("[notify] Twilio error:", e.message); return { ok: false as const }; }
+    } catch (e: unknown) { logError("notify/sms/twilio", e); return { ok: false as const }; }
   }
 
   // Fast2SMS (India) — always returns HTTP 200; real success/failure is in body.return
@@ -101,11 +103,11 @@ export async function sendSMS(opts: { to: string; body: string }) {
       });
       const data = await res.json();
       if (!data.return) {
-        console.error("[notify] Fast2SMS failed:", JSON.stringify(data));
+        logError("notify/sms/fast2sms", new Error(JSON.stringify(data)));
         return { ok: false as const };
       }
       return { ok: true as const };
-    } catch (e: any) { console.error("[notify] Fast2SMS error:", e.message); return { ok: false as const }; }
+    } catch (e: unknown) { logError("notify/sms/fast2sms", e); return { ok: false as const }; }
   }
 
   // MSG91 (India) — generic SMS API
@@ -121,12 +123,12 @@ export async function sendSMS(opts: { to: string; body: string }) {
           message: opts.body,
         }),
       });
-      if (!res.ok) { console.error("[notify] MSG91 failed:", await res.text()); return { ok: false as const }; }
+      if (!res.ok) { logError("notify/sms/msg91", new Error(await res.text())); return { ok: false as const }; }
       return { ok: true as const };
-    } catch (e: any) { console.error("[notify] MSG91 error:", e.message); return { ok: false as const }; }
+    } catch (e: unknown) { logError("notify/sms/msg91", e); return { ok: false as const }; }
   }
 
-  console.warn(`[notify] SMS skipped (no provider configured) → ${to}: ${opts.body.slice(0, 40)}…`);
+  logWarn("notify/sms", `skipped (no provider) → ${to.slice(-4)}… : ${opts.body.slice(0, 40)}…`);
   return { skipped: true as const };
 }
 
