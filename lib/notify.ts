@@ -214,6 +214,44 @@ export function orderSmsTemplate(id: string, total: number) {
   return `Yay! Your ${BRAND} order #${id.slice(-8).toUpperCase()} is confirmed 🎂 Total ₹${total}. We're baking it fresh and will deliver soon. Thank you! 🧡`;
 }
 
+/** Staff-facing (not customer-facing) — a custom-cake quote request just came in. */
+export function customOrderAdminEmailTemplate(order: {
+  name: string;
+  phone: string;
+  email?: string;
+  flavor: string;
+  weight: string;
+  shape: string;
+  eggless: boolean;
+  message?: string;
+  date: string;
+  price: number;
+  hasImage: boolean;
+}) {
+  return shell(`
+    <h1 style="margin:0 0 6px;font-size:22px;">🎂 New custom cake request</h1>
+    <p style="margin:0 0 18px;color:#5b5b62;font-size:15px;">From <b>${escapeHtml(order.name)}</b> — call or WhatsApp to confirm details and quote.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:15px;">
+      <tr><td style="padding:6px 0;color:#9A7B57;">Flavor</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.flavor)}</td></tr>
+      <tr><td style="padding:6px 0;color:#9A7B57;">Weight</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.weight)}</td></tr>
+      <tr><td style="padding:6px 0;color:#9A7B57;">Shape</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.shape)}</td></tr>
+      <tr><td style="padding:6px 0;color:#9A7B57;">Eggless</td><td style="padding:6px 0;text-align:right;font-weight:600;">${order.eggless ? "Yes" : "No"}</td></tr>
+      <tr><td style="padding:6px 0;color:#9A7B57;">Delivery date</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.date)}</td></tr>
+      <tr><td style="padding:6px 0;color:#9A7B57;">Est. price</td><td style="padding:6px 0;text-align:right;font-weight:600;">₹${order.price}</td></tr>
+      ${order.hasImage ? `<tr><td style="padding:6px 0;color:#9A7B57;">Reference photo</td><td style="padding:6px 0;text-align:right;font-weight:600;">Attached ✓ (view in DB)</td></tr>` : ""}
+    </table>
+    ${order.message ? `<p style="margin:14px 0 0;padding:12px 14px;background:#FFF9F1;border-radius:12px;font-size:14px;color:${INK};">"${escapeHtml(order.message)}"</p>` : ""}
+    <div style="border-top:1px solid #F0E2CE;margin-top:16px;padding-top:14px;font-size:14px;color:#5b5b62;">
+      <p style="margin:0 0 4px;"><b>Phone:</b> <a href="tel:+91${escapeHtml(order.phone)}">${escapeHtml(order.phone)}</a></p>
+      ${order.email ? `<p style="margin:0;"><b>Email:</b> <a href="mailto:${escapeHtml(order.email)}">${escapeHtml(order.email)}</a></p>` : ""}
+    </div>
+  `);
+}
+
+export function customOrderAdminSmsTemplate(order: { name: string; phone: string; flavor: string; weight: string; date: string }) {
+  return `New custom cake request: ${order.name} (${order.phone}) wants ${order.flavor}, ${order.weight}, for ${order.date}. Check email for full details.`;
+}
+
 function escapeHtml(s: string) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 }

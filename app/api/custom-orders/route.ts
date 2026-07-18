@@ -4,6 +4,14 @@ import { connectDB } from "@/lib/mongodb";
 import { CustomOrder } from "@/models/CustomOrder";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { logError } from "@/lib/logger";
+import {
+  emailConfigured,
+  smsConfigured,
+  sendEmail,
+  sendSMS,
+  customOrderAdminEmailTemplate,
+  customOrderAdminSmsTemplate,
+} from "@/lib/notify";
 
 const ContactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -46,6 +54,51 @@ export async function POST(req: Request) {
   try {
     await connectDB();
     const doc = await CustomOrder.create({ ...data, status: "new" });
+
+    // Notify staff a request came in — best-effort, must not fail the
+    // customer's submission if delivery fails. Previously nothing alerted
+    // anyone; requests were only discoverable via a direct DB query, despite
+    // the page telling customers "we'll call you within 2 hours."
+    const adminEmail = process.env.CONTACT_TO || "tastemakerrs@gmail.com";
+    const adminPhone = process.env.CONTACT_PHONE || "8881661177";
+    try {
+      await Promise.all([
+        emailConfigured()
+          ? sendEmail({
+              to: adminEmail,
+              subject: `New custom cake request from ${data.contact.name}`,
+              html: customOrderAdminEmailTemplate({
+                name: data.contact.name,
+                phone: data.contact.phone,
+                email: data.contact.email || undefined,
+                flavor: data.flavor,
+                weight: data.weight,
+                shape: data.shape,
+                eggless: data.eggless,
+                message: data.message,
+                date: data.date,
+                price: data.price,
+                hasImage: !!data.image,
+              }),
+            })
+          : Promise.resolve(null),
+        smsConfigured()
+          ? sendSMS({
+              to: adminPhone,
+              body: customOrderAdminSmsTemplate({
+                name: data.contact.name,
+                phone: data.contact.phone,
+                flavor: data.flavor,
+                weight: data.weight,
+                date: data.date,
+              }),
+            })
+          : Promise.resolve(null),
+      ]);
+    } catch (e) {
+      logError("custom-orders/notify", e);
+    }
+
     return NextResponse.json({ ok: true, id: doc._id.toString() });
   } catch (e: any) {
     // A DB failure must NOT report success — otherwise the customer thinks the
