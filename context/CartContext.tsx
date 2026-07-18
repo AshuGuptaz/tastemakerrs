@@ -36,14 +36,45 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setItems(JSON.parse(raw));
+      // Only trust valid JSON that's actually an array — a bare JSON.parse
+      // guard catches syntax errors, but "null"/"{}" parse fine and would
+      // otherwise reach items.reduce() below and crash the whole app (there's
+      // no scoped error boundary, only the root layout's global-error.tsx).
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setItems(parsed);
+      }
     } catch {}
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (hydrated) localStorage.setItem(KEY, JSON.stringify(items));
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(items));
+    } catch {
+      // Quota exceeded (a custom-cake reference photo can push a cart item
+      // over localStorage's per-origin limit) or storage disabled — the cart
+      // still works in-memory for this session, it just won't survive a
+      // reload. Must not throw here: this runs inside a useEffect with no
+      // scoped error boundary, so an uncaught throw blanks the entire site.
+    }
   }, [items, hydrated]);
+
+  // Cross-tab sync: the storage event fires in OTHER tabs when this tab
+  // writes to localStorage, so without this, two tabs open at once silently
+  // clobber each other's cart edits (last save wins).
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== KEY || !e.newValue) return;
+      try {
+        const parsed = JSON.parse(e.newValue);
+        if (Array.isArray(parsed)) setItems(parsed);
+      } catch {}
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   const add: CartCtx["add"] = (item, qty = 1) => {
     setItems((prev) => {
