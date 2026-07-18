@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { Product } from "@/models/Product";
 import { formatINR } from "@/lib/format";
+import { getAdminFromCookies } from "@/lib/auth-server";
 
 // Stats come from the DB at request time — never prerender this at build.
 export const dynamic = "force-dynamic";
@@ -25,6 +27,11 @@ async function getStats() {
 }
 
 export default async function AdminDashboard() {
+  // Defense-in-depth: every other admin page/route re-verifies independently
+  // rather than trusting middleware.ts alone. This was the one that didn't.
+  const admin = await getAdminFromCookies();
+  if (!admin) redirect("/admin/login");
+
   const stats = await getStats();
   return (
     <section className="bg-cream-50 py-12">
