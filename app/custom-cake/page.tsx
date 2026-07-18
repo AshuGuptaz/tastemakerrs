@@ -229,7 +229,7 @@ function CustomCakeContent() {
               <h3 className="t-h3">6 · Your details</h3>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <div><label className="label" htmlFor="cake-name">Name</label><input id="cake-name" required aria-required="true" value={name} onChange={(e) => setName(e.target.value)} className="input" /></div>
-                <div><label className="label" htmlFor="cake-phone">Phone</label><input id="cake-phone" required aria-required="true" value={phone} onChange={(e) => setPhone(e.target.value)} className="input" placeholder="+91 ..." /></div>
+                <div><label className="label" htmlFor="cake-phone">Phone</label><input id="cake-phone" required aria-required="true" value={phone} onChange={(e) => setPhone(e.target.value)} className="input" placeholder="98765 43210" /></div>
               </div>
             </div>
           </m.div>
