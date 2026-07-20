@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     const stripe = getStripe();
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
     const itemNames = (order.items || [])
-      .map((i) => `${i.name} × ${i.qty}`)
+      .map((i) => `${i.name ?? "Item"} × ${i.qty ?? 1}`)
       .join(", ")
       .slice(0, 500);
 
