@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Instagram, Facebook, Send, Mail, MapPin, Phone } from "lucide-react";
 
 const linkCls =
-  "text-sm text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-md";
+  "text-sm text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 rounded-md whitespace-nowrap";
 const headingCls = "text-xs font-semibold uppercase tracking-[0.16em] text-white/45";
 
 export default function Footer() {
