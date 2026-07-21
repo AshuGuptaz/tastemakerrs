@@ -7,6 +7,7 @@ import { m, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Magnetic from "@/components/ui/Magnetic";
 import Typewriter from "@/components/ui/Typewriter";
+import BlurText from "@/components/ui/BlurText";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 // easeOutExpo — the signature "expensive" reveal curve (Locomotive / SOTD).
@@ -107,20 +108,24 @@ export default function Hero() {
                 Cakes worth <em className="italic text-flame-400">remembering</em>.
               </m.span>
             </span>
-            <span className="mt-1 block overflow-hidden pb-[0.1em]">
-              <m.span
-                {...line(0.27)}
-                className="block font-display text-[0.42em] font-normal leading-snug tracking-wide text-white/75"
-              >
-                Baked fresh, made for{" "}
-                <Typewriter
-                  words={["birthdays", "weddings", "anniversaries", "you"]}
-                  className="font-semibold text-flame-400"
-                  startDelay={1200}
-                />
-              </m.span>
-            </span>
           </h1>
+
+          {/* subtitle — blur-in word by word, then typewriter follows inline */}
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 font-display text-[clamp(1.15rem,2.7vw,2.3rem)] font-normal leading-snug tracking-wide text-white/75">
+            <BlurText
+              text="Baked fresh, made for"
+              delay={90}
+              animateBy="words"
+              direction="bottom"
+              stepDuration={0.3}
+              threshold={0}
+            />
+            <Typewriter
+              words={["birthdays", "weddings", "anniversaries", "you"]}
+              className="font-semibold text-flame-400"
+              startDelay={1200}
+            />
+          </div>
 
           {/* CTAs — single primary + quiet text link (rating lives in the TrustStrip below) */}
           <m.div
