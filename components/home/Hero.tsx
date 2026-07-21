@@ -10,8 +10,6 @@ import Typewriter from "@/components/ui/Typewriter";
 import BlurText from "@/components/ui/BlurText";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-// easeOutExpo — the signature "expensive" reveal curve (Locomotive / SOTD).
-const REVEAL = [0.16, 1, 0.3, 1] as const;
 
 const HERO_VIDEO = "/signature-cake.mp4";
 const HERO_POSTER = "/signature-cake-poster.jpg";
@@ -27,13 +25,6 @@ export default function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["0%", "-16%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
-  // Masked per-line reveal: each line is clipped by an overflow-hidden wrapper and
-  // slides up from below. The mask IS the reveal — no opacity fade on the lines.
-  const line = (delay: number) => ({
-    initial: reduce ? false : { y: "110%" },
-    animate: { y: 0 },
-    transition: { duration: 1, ease: REVEAL, delay },
-  });
   const fadeUp = (delay: number) => ({
     initial: reduce ? false : { opacity: 0, y: 16 },
     animate: { opacity: 1, y: 0 },
@@ -101,35 +92,46 @@ export default function Hero() {
             Small-batch · Eggless options
           </m.div>
 
-          {/* headline — Fraunces, one italic accent word, masked-line entrance */}
+          {/* headline — Fraunces, one italic accent word; slow per-word blur-in
+              (React Bits BlurText). Segments keep the flame accent on the last
+              word while everything reveals as a group. */}
           <h1 className="t-display text-white">
-            <span className="block overflow-hidden pb-[0.1em]">
-              <m.span {...line(0.15)} className="block">
-                Cakes worth <em className="italic text-flame-400">remembering</em>.
-              </m.span>
-            </span>
+            <BlurText
+              as="span"
+              segments={[
+                { text: "Cakes worth" },
+                { text: "remembering.", className: "italic text-flame-400" },
+              ]}
+              animateBy="words"
+              direction="bottom"
+              delay={300}
+              stepDuration={0.7}
+              initialDelay={150}
+              threshold={0}
+            />
           </h1>
 
           {/* subtitle — blur-in word by word, then typewriter follows inline */}
           <div className="mt-2 flex flex-wrap items-center gap-x-2 font-display text-[clamp(1.15rem,2.7vw,2.3rem)] font-normal leading-snug tracking-wide text-white/75">
             <BlurText
               text="Baked fresh, made for"
-              delay={90}
+              delay={130}
               animateBy="words"
               direction="bottom"
-              stepDuration={0.3}
+              stepDuration={0.45}
+              initialDelay={950}
               threshold={0}
             />
             <Typewriter
               words={["birthdays", "weddings", "anniversaries", "you"]}
               className="font-semibold text-flame-400"
-              startDelay={1200}
+              startDelay={2200}
             />
           </div>
 
           {/* CTAs — single primary + quiet text link (rating lives in the TrustStrip below) */}
           <m.div
-            {...fadeUp(0.6)}
+            {...fadeUp(1.5)}
             className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center"
           >
             <Magnetic className="block w-full sm:inline-block sm:w-auto">
@@ -153,7 +155,7 @@ export default function Hero() {
       <m.div
         initial={reduce ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.1, duration: 0.8 }}
+        transition={{ delay: 2.2, duration: 0.8 }}
         className="absolute inset-x-0 bottom-5 z-10 hidden justify-center sm:flex"
       >
         <span className="flex items-center gap-2 text-[0.7rem] font-medium uppercase tracking-[0.18em] text-white/55">
