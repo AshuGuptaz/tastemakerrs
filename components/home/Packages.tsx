@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
+import SpotlightCard from "@/components/ui/SpotlightCard";
 
 type Pkg = {
   name: string;
@@ -67,8 +68,8 @@ export default function Packages() {
         <div className="mt-14 grid items-start gap-6 md:grid-cols-3">
           {PACKAGES.map((p, i) => (
             <Reveal key={p.name} delay={i * 0.08}>
-              <div
-                className={`relative flex h-full flex-col transition-all duration-300 ${
+              <SpotlightCard
+                className={`flex h-full flex-col transition-all duration-300 ${
                   p.popular
                     ? "rounded-[2rem] border-2 border-flame bg-wheat-50 p-8 shadow-e3 ring-4 ring-flame/10 hover:-translate-y-1"
                     : "rounded-[1.5rem] border border-line bg-surface p-8 shadow-e1 hover:-translate-y-1 hover:shadow-e3"
@@ -102,7 +103,7 @@ export default function Packages() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </SpotlightCard>
             </Reveal>
           ))}
         </div>
