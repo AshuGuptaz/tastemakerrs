@@ -95,7 +95,7 @@ export default function Hero() {
           {/* headline — Fraunces, one italic accent word; slow per-word blur-in
               (React Bits BlurText). Segments keep the flame accent on the last
               word while everything reveals as a group. */}
-          <h1 className="t-display text-white">
+          <h1 className="t-display text-white tracking-[-0.015em]">
             <BlurText
               as="span"
               segments={[
@@ -112,7 +112,7 @@ export default function Hero() {
           </h1>
 
           {/* subtitle — blur-in word by word, then typewriter follows inline */}
-          <div className="mt-2 flex flex-wrap items-center gap-x-2 font-display text-[clamp(1.15rem,2.7vw,2.3rem)] font-normal leading-snug tracking-wide text-white/75">
+          <div className="mt-3 flex flex-wrap items-center gap-x-2 font-sans text-[clamp(1.05rem,2.2vw,1.9rem)] font-normal leading-snug tracking-tight text-white/75">
             <BlurText
               text="Baked fresh, made for"
               delay={130}
