@@ -58,7 +58,7 @@ function MenuContent() {
         subtitle="Filter by category, flavour or price. Eggless options for every cake — just ask."
       />
       <section className="section bg-transparent">
-        <div className="container-x grid gap-8 md:grid-cols-[280px_1fr]">
+        <div className="container-x grid items-start gap-8 md:grid-cols-[280px_1fr]">
           <Filters cat={cat} flavor={flavor} bestseller={bestseller} max={max} />
 
           <div>
