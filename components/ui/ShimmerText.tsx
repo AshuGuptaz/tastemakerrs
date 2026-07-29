@@ -40,7 +40,12 @@ export default function ShimmerText({
   return (
     <m.span
       className={cn(
-        "inline-block bg-[length:200%_100%] bg-gradient-to-r from-flame-400 via-wheat-50 to-flame-400 bg-clip-text italic text-transparent will-change-[filter,transform,opacity]",
+        // leading-[1.35] (vs. the headline's tight leading-[1.04]) is deliberate:
+        // background-clip:text confines the gradient paint to the element's OWN
+        // box (derived from line-height), unlike solid `color` text where glyphs
+        // freely paint outside a tight line box. At leading-[1.04] the descender
+        // on "g" had no gradient left to reveal through — it just vanished.
+        "inline-block bg-[length:200%_100%] bg-gradient-to-r from-flame-400 via-wheat-50 to-flame-400 bg-clip-text italic leading-[1.35] text-transparent will-change-[filter,transform,opacity]",
         className
       )}
       initial={{ filter: "blur(10px)", opacity: 0, y: 50, backgroundPosition: "200% center" }}
