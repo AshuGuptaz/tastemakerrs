@@ -8,6 +8,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import Magnetic from "@/components/ui/Magnetic";
 import Typewriter from "@/components/ui/Typewriter";
 import BlurText from "@/components/ui/BlurText";
+import ShimmerText from "@/components/ui/ShimmerText";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -92,16 +93,16 @@ export default function Hero() {
             Small-batch · Eggless options
           </m.div>
 
-          {/* headline — Fraunces, one italic accent word; slow per-word blur-in
-              (React Bits BlurText). Segments keep the flame accent on the last
-              word while everything reveals as a group. */}
-          <h1 className="t-display text-white tracking-[-0.015em]">
+          {/* headline — Fraunces, one shimmering accent word (kokonutui Shimmer
+              Text, adapted to `m`/domMax + flame tones). "remembering." continues
+              the exact same per-word stagger rhythm BlurText uses for "Cakes
+              worth" (150ms initial + 300ms/word → its turn lands at 750ms) so the
+              hand-off from blur-in to shimmer-in reads as one continuous cascade,
+              not two separate animations. */}
+          <h1 className="t-display flex flex-wrap items-baseline text-white tracking-[-0.015em]">
             <BlurText
               as="span"
-              segments={[
-                { text: "Cakes worth" },
-                { text: "remembering.", className: "italic text-flame-400" },
-              ]}
+              text="Cakes worth"
               animateBy="words"
               direction="bottom"
               delay={300}
@@ -109,6 +110,7 @@ export default function Hero() {
               initialDelay={150}
               threshold={0}
             />
+            <ShimmerText text="remembering." delay={0.75} className="ml-[0.3em]" />
           </h1>
 
           {/* subtitle — blur-in word by word, then typewriter follows inline */}
