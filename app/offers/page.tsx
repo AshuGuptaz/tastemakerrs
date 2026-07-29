@@ -38,9 +38,12 @@ export default function OffersPage() {
       />
 
       <section className="section bg-canvas">
-        <div className="container-x grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="container-x flex flex-wrap justify-center gap-5">
           {OFFERS.map((o) => (
-            <div key={o.t} className="card flex flex-col overflow-hidden">
+            <div
+              key={o.t}
+              className="card flex w-full flex-col overflow-hidden sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)]"
+            >
               <div className={`relative aspect-[4/3] overflow-hidden ${o.bg}`}>
                 <Image src={o.img} alt={o.t} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-wine/20 to-transparent" />
