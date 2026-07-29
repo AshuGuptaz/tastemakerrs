@@ -318,7 +318,7 @@ export default function CheckoutPage() {
       <div className="container-x">
         <h1 className="t-display">Checkout</h1>
 
-        <div className="mt-8 grid gap-8 pb-28 lg:grid-cols-[1fr_380px] lg:pb-0">
+        <div className="mt-8 grid gap-8 pb-8 lg:grid-cols-[1fr_380px] lg:pb-0">
           <div className="space-y-6">
             <div className="card p-6">
               <h3 className="t-h3">Delivery details</h3>
