@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { m, useReducedMotion, useScroll, useTransform } from "framer-motion";
@@ -18,7 +18,26 @@ const HERO_POSTER = "/signature-cake-poster.jpg";
 export default function Hero() {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+
+  // PERF: pause the autoplaying hero video once it scrolls out of view — an
+  // offscreen <video> still decodes/composites every frame, which showed up in
+  // profiling as steady dropped frames for the entire rest of the page. Play
+  // only while the hero is actually visible.
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) vid.play().catch(() => {});
+        else vid.pause();
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(vid);
+    return () => io.disconnect();
+  }, []);
 
   // Slow Ken-Burns push + parallax on the cake; content drifts up & fades out.
   const imgY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["0%", "12%"]);
@@ -50,6 +69,7 @@ export default function Hero() {
           />
         ) : (
           <video
+            ref={videoRef}
             className="h-full w-full object-cover object-center"
             autoPlay
             muted

@@ -79,24 +79,31 @@ const config: Config = {
         "float-slow": { "0%,100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-10px)" } },
         marquee: { "0%": { transform: "translateX(0)" }, "100%": { transform: "translateX(-33.333%)" } },
         "marquee-x": { "0%": { transform: "translateX(0)" }, "100%": { transform: "translateX(-50%)" } },
-        // Stripe-style slow drifting gradient mesh
+        // Stripe-style slow drifting gradient mesh.
+        // PERF: translate-ONLY (no scale). These animate on large blur-2xl
+        // elements; scaling a blurred layer forces the browser to re-rasterize
+        // the (expensive) blur every frame. Translate of a pre-blurred layer is
+        // a cheap GPU composite, so the drift stays buttery. Same reasoning for
+        // the blob-drift keyframes below — border-radius is held constant
+        // (morphing it repaints the blur each frame) so the organic shape is
+        // static while the blob still drifts.
         aurora: {
-          "0%,100%": { transform: "translate3d(0,0,0) scale(1)" },
-          "33%": { transform: "translate3d(3%,-4%,0) scale(1.08)" },
-          "66%": { transform: "translate3d(-3%,3%,0) scale(0.96)" },
+          "0%,100%": { transform: "translate3d(0,0,0)" },
+          "33%": { transform: "translate3d(3%,-4%,0)" },
+          "66%": { transform: "translate3d(-3%,3%,0)" },
         },
         // Linear-style sheen sweep
         shine: { "0%": { backgroundPosition: "200% center" }, "100%": { backgroundPosition: "-200% center" } },
         rise: { "0%": { opacity: "0", transform: "translateY(16px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
         "blob-drift": {
-          "0%,100%": { transform: "translate(0,0) scale(1)", borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
-          "33%": { transform: "translate(28px,-20px) scale(1.06)", borderRadius: "30% 60% 70% 40% / 50% 60% 30% 60%" },
-          "66%": { transform: "translate(-18px,14px) scale(0.97)", borderRadius: "50% 50% 30% 70% / 30% 50% 70% 50%" },
+          "0%,100%": { transform: "translate(0,0)", borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
+          "33%": { transform: "translate(28px,-20px)", borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
+          "66%": { transform: "translate(-18px,14px)", borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
         },
         "blob-drift-alt": {
-          "0%,100%": { transform: "translate(0,0) scale(1)", borderRadius: "40% 60% 60% 40% / 40% 50% 60% 50%" },
-          "40%": { transform: "translate(-22px,18px) scale(1.04)", borderRadius: "60% 40% 40% 60% / 60% 40% 40% 60%" },
-          "75%": { transform: "translate(20px,-12px) scale(0.96)", borderRadius: "30% 70% 50% 50% / 50% 30% 70% 50%" },
+          "0%,100%": { transform: "translate(0,0)", borderRadius: "40% 60% 60% 40% / 40% 50% 60% 50%" },
+          "40%": { transform: "translate(-22px,18px)", borderRadius: "40% 60% 60% 40% / 40% 50% 60% 50%" },
+          "75%": { transform: "translate(20px,-12px)", borderRadius: "40% 60% 60% 40% / 40% 50% 60% 50%" },
         },
       },
       animation: {
