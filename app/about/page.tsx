@@ -15,7 +15,10 @@ export default function AboutPage() {
     <>
       <PageHeader
         eyebrow="Our Story"
-        title={<>Made in a kitchen, shared with <span className="text-gradient">love</span>.</>}
+        titleSegments={[
+          { text: "Made in a kitchen, shared with" },
+          { text: "love.", className: "text-gradient" },
+        ]}
         subtitle="A small-batch home bakery where every layer is whisked, every buttercream piped, and every box packed by hand."
       />
 
