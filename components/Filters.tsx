@@ -4,6 +4,7 @@ import { CATEGORIES, CATEGORY_META, ALL_FLAVORS } from "@/lib/products";
 import type { Category } from "@/types/product";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { m } from "framer-motion";
 import { formatINR } from "@/lib/format";
 
 type Props = {
@@ -46,16 +47,26 @@ export default function Filters({ cat, flavor, bestseller, max }: Props) {
       <div className="mt-4">
         <p id="filter-cat-label" className="label">Category</p>
         <div role="group" aria-labelledby="filter-cat-label" className="flex flex-wrap gap-2">
-          <button onClick={() => update("cat", null)} aria-pressed={cat === "all"}
-            className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition focus-ring ${cat === "all" ? "bg-flame text-white" : "border border-line bg-surface hover:border-ink/20"}`}>
-            All
-          </button>
-          {CATEGORIES.map((c) => (
-            <button key={c} onClick={() => update("cat", c)} aria-pressed={cat === c}
-              className={`rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition focus-ring ${cat === c ? "bg-flame text-white" : "border border-line bg-surface hover:border-ink/20"}`}>
-              {CATEGORY_META[c].label}
-            </button>
-          ))}
+          {([{ key: "all", label: "All", value: null as Category | null }, ...CATEGORIES.map((c) => ({ key: c, label: CATEGORY_META[c].label, value: c }))]).map((opt) => {
+            const active = opt.value === null ? cat === "all" : cat === opt.value;
+            return (
+              <button
+                key={opt.key}
+                onClick={() => update("cat", opt.value)}
+                aria-pressed={active}
+                className={`relative rounded-pill px-3 py-1.5 text-xs font-semibold uppercase transition focus-ring ${active ? "text-white" : "border border-line bg-surface hover:border-ink/20"}`}
+              >
+                {active && (
+                  <m.span
+                    layoutId="menu-cat-pill"
+                    className="absolute inset-0 rounded-pill bg-flame"
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                  />
+                )}
+                <span className="relative z-10">{opt.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

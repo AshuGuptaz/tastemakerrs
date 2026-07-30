@@ -2,6 +2,7 @@
 
 import { Suspense, useMemo } from "react";
 import Link from "next/link";
+import { m, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PRODUCTS, CATEGORY_META } from "@/lib/products";
 import type { Category } from "@/types/product";
@@ -56,6 +57,7 @@ function MenuContent() {
         eyebrow="The menu"
         title={<>Cakes &amp; treats for <span className="text-gradient">every craving</span>.</>}
         subtitle="Filter by category, flavour or price. Eggless options for every cake — just ask."
+        scrollFx
       />
       <section className="section bg-transparent">
         <div className="container-x grid items-start gap-8 md:grid-cols-[280px_1fr]">
@@ -64,7 +66,19 @@ function MenuContent() {
           <div>
             <div className="mb-5 flex items-center justify-between gap-3">
               <p className="text-sm text-ink-mut">
-                <span className="font-semibold text-ink">{filtered.length}</span> {filtered.length === 1 ? "treat" : "treats"}
+                <AnimatePresence mode="wait">
+                  <m.span
+                    key={filtered.length}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.22 }}
+                    className="inline-block font-semibold text-ink"
+                  >
+                    {filtered.length}
+                  </m.span>
+                </AnimatePresence>{" "}
+                {filtered.length === 1 ? "treat" : "treats"}
                 {cat !== "all" && <> in {CATEGORY_META[cat as Category].label}</>}
               </p>
               <label className="sr-only" htmlFor="menu-sort">Sort treats</label>
@@ -87,11 +101,13 @@ function MenuContent() {
                 <Link href="/menu" className="btn-line mt-5">Clear all filters</Link>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-                {sorted.map((p, i) => (
-                  <ProductCard key={p.id} product={p} index={i} />
-                ))}
-              </div>
+              <m.div layout className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+                <AnimatePresence mode="popLayout">
+                  {sorted.map((p, i) => (
+                    <ProductCard key={p.id} product={p} index={i} />
+                  ))}
+                </AnimatePresence>
+              </m.div>
             )}
           </div>
         </div>

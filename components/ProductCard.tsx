@@ -60,9 +60,11 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
   return (
     <m.div
       ref={cardRef}
+      layout="position"
       initial={reduce ? false : { y: 24 }}
       whileInView={{ y: 0 }}
       whileHover={reduce ? undefined : { y: -6 }}
+      exit={reduce ? undefined : { opacity: 0, scale: 0.85, transition: { duration: 0.22 } }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: (index % 3) * 0.08 }}
       style={{ rotateX, rotateY, transformPerspective: "1000px" }}

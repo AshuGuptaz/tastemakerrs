@@ -1,4 +1,7 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useRef, type ReactNode } from "react";
+import { m, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
 
 /**
@@ -11,13 +14,28 @@ export default function PageHeader({
   eyebrow,
   title,
   subtitle,
+  scrollFx = false,
 }: {
   eyebrow: string;
   title: ReactNode;
   subtitle?: string;
+  /**
+   * Opt-in scroll-linked drift + fade on the headline text as the panel scrolls
+   * past. Gated per-page (not a global default) since this component is shared
+   * verbatim across Menu/Kitchen/Offers/About/Contact/Custom-cake/404, and only
+   * Menu has been tuned/verified for it so far.
+   */
+  scrollFx?: boolean;
 }) {
+  const reduce = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const active = scrollFx && !reduce;
+  const textY = useTransform(scrollYProgress, [0, 1], active ? [0, -26] : [0, 0]);
+  const textOpacity = useTransform(scrollYProgress, [0, 1], active ? [1, 0.4] : [1, 1]);
+
   return (
-    <section className="container-x pt-4 md:pt-6">
+    <section ref={sectionRef} className="container-x pt-4 md:pt-6">
       <Reveal>
         <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-20">
           {/* orange glow mesh */}
@@ -28,7 +46,7 @@ export default function PageHeader({
             <div className="absolute inset-0 bg-grid opacity-[0.06]" />
           </div>
 
-          <div className="relative z-10">
+          <m.div className="relative z-10" style={active ? { y: textY, opacity: textOpacity } : undefined}>
             <span className="gradient-ring relative inline-flex items-center gap-2.5 overflow-hidden rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm">
               {/* shine sweep */}
               <span
@@ -49,7 +67,7 @@ export default function PageHeader({
             {subtitle && (
               <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 md:text-lg">{subtitle}</p>
             )}
-          </div>
+          </m.div>
         </div>
       </Reveal>
     </section>
