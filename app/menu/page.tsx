@@ -55,7 +55,10 @@ function MenuContent() {
       {/* Header */}
       <PageHeader
         eyebrow="The menu"
-        title={<>Cakes &amp; treats for <span className="text-gradient">every craving</span>.</>}
+        titleSegments={[
+          { text: "Cakes & treats for" },
+          { text: "every craving.", className: "text-gradient" },
+        ]}
         subtitle="Filter by category, flavour or price. Eggless options for every cake — just ask."
         scrollFx
       />

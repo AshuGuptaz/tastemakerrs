@@ -40,7 +40,11 @@ export default function ContactPage() {
     <>
       <PageHeader
         eyebrow="Say hello"
-        title={<>Let&apos;s make <span className="text-gradient">sweet</span> plans</>}
+        titleSegments={[
+          { text: "Let's make" },
+          { text: "sweet", className: "text-gradient" },
+          { text: "plans" },
+        ]}
         subtitle="For custom cakes, bulk orders, weddings and corporate gifting — drop us a note and we'll be back in 2 hours."
       />
 

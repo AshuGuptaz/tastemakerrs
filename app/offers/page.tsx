@@ -33,7 +33,10 @@ export default function OffersPage() {
     <>
       <PageHeader
         eyebrow="Sweet deals"
-        title={<>Offers you <span className="text-gradient">can&apos;t resist</span>.</>}
+        titleSegments={[
+          { text: "Offers you" },
+          { text: "can't resist.", className: "text-gradient" },
+        ]}
         subtitle="Copy a code and paste it at checkout — one code per order."
       />
 
