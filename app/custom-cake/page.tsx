@@ -120,7 +120,11 @@ function CustomCakeContent() {
     <>
       <PageHeader
         eyebrow="Customize"
-        title={<>Design your <span className="text-gradient">dream</span> cake.</>}
+        titleSegments={[
+          { text: "Design your" },
+          { text: "dream", className: "text-gradient" },
+          { text: "cake." },
+        ]}
         subtitle="Pick a flavour, weight and shape. Add a message, upload a photo for an edible print, and choose your delivery date — we'll call to confirm."
       />
 

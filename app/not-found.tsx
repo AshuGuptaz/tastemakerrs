@@ -7,7 +7,10 @@ export default function NotFound() {
     <>
       <PageHeader
         eyebrow="404"
-        title={<>This page has <span className="text-gradient">crumbled</span>.</>}
+        titleSegments={[
+          { text: "This page has" },
+          { text: "crumbled.", className: "text-gradient" },
+        ]}
         subtitle="The link may be old or the treat may have sold out. Let's get you back to something sweet."
       />
 

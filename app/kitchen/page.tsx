@@ -13,7 +13,11 @@ export default function KitchenPage() {
     <>
       <PageHeader
         eyebrow="Behind the scenes"
-        title={<>From our <span className="text-gradient">kitchen</span> to your door.</>}
+        titleSegments={[
+          { text: "From our" },
+          { text: "kitchen", className: "text-gradient" },
+          { text: "to your door." },
+        ]}
         subtitle="Watch your cake come to life — mixed, baked, frosted and delivered, all by hand."
       />
 

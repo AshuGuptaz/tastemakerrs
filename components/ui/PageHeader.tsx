@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { m, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
+import TextReveal, { type RevealSegment } from "@/components/ui/TextReveal";
 
 /**
  * Dark premium page header (matches the home CTA panel): a near-black rounded
@@ -10,14 +11,28 @@ import Reveal from "@/components/ui/Reveal";
  * (orange-gradient accent words), and a muted subtitle. Used across every inner
  * page so the whole site shares the same premium dark moment.
  */
+// Choreography for the animated (titleSegments) path — eyebrow lands first,
+// words cascade, subtitle settles in after the last word starts.
+const EYEBROW_MS = 60;
+const HEADLINE_START_MS = 240;
+const WORD_STAGGER_MS = 78;
+
 export default function PageHeader({
   eyebrow,
   title,
+  titleSegments,
   subtitle,
   scrollFx = false,
 }: {
   eyebrow: string;
-  title: ReactNode;
+  /** Static headline (all pages). Ignored when `titleSegments` is provided. */
+  title?: ReactNode;
+  /**
+   * Opt-in premium path: headline as styled word runs, animated with a masked
+   * word-by-word rise (TextReveal). When set, the eyebrow + subtitle also
+   * choreograph in around it. Gated per-page like scrollFx.
+   */
+  titleSegments?: RevealSegment[];
   subtitle?: string;
   /**
    * Opt-in scroll-linked drift + fade on the headline text as the panel scrolls
@@ -34,6 +49,11 @@ export default function PageHeader({
   const textY = useTransform(scrollYProgress, [0, 1], active ? [0, -26] : [0, 0]);
   const textOpacity = useTransform(scrollYProgress, [0, 1], active ? [1, 0.4] : [1, 1]);
 
+  const animated = !!titleSegments?.length;
+  const wordCount = titleSegments?.reduce((n, s) => n + s.text.trim().split(/\s+/).length, 0) ?? 0;
+  // Subtitle waits until the last headline word has begun its rise.
+  const subtitleDelay = (HEADLINE_START_MS + wordCount * WORD_STAGGER_MS) / 1000;
+
   return (
     <section ref={sectionRef} className="container-x pt-4 md:pt-6">
       <Reveal>
@@ -47,7 +67,12 @@ export default function PageHeader({
           </div>
 
           <m.div className="relative z-10" style={active ? { y: textY, opacity: textOpacity } : undefined}>
-            <span className="gradient-ring relative inline-flex items-center gap-2.5 overflow-hidden rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm">
+            <m.span
+              className="gradient-ring relative inline-flex items-center gap-2.5 overflow-hidden rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm"
+              initial={animated && !reduce ? { opacity: 0, y: 10 } : false}
+              animate={animated && !reduce ? { opacity: 1, y: 0 } : undefined}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: EYEBROW_MS / 1000 }}
+            >
               {/* shine sweep */}
               <span
                 aria-hidden
@@ -60,13 +85,32 @@ export default function PageHeader({
                 <span className="relative h-[5px] w-[5px] rounded-full bg-flame-400 shadow-[0_0_5px_2px_rgba(249,115,22,0.65)]" />
               </span>
               {eyebrow}
-            </span>
-            <h1 className="font-display mx-auto mt-6 max-w-3xl text-balance text-[clamp(2.2rem,5vw,3.8rem)] font-semibold leading-[1.05] tracking-tighter2 text-white">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 md:text-lg">{subtitle}</p>
+            </m.span>
+            {animated ? (
+              <TextReveal
+                segments={titleSegments!}
+                className="font-display mx-auto mt-6 max-w-3xl text-balance text-[clamp(2.2rem,5vw,3.8rem)] font-semibold leading-[1.05] tracking-tighter2 text-white"
+                startDelay={HEADLINE_START_MS}
+                stagger={WORD_STAGGER_MS}
+              />
+            ) : (
+              <h1 className="font-display mx-auto mt-6 max-w-3xl text-balance text-[clamp(2.2rem,5vw,3.8rem)] font-semibold leading-[1.05] tracking-tighter2 text-white">
+                {title}
+              </h1>
             )}
+            {subtitle &&
+              (animated && !reduce ? (
+                <m.p
+                  className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
+                  initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: subtitleDelay }}
+                >
+                  {subtitle}
+                </m.p>
+              ) : (
+                <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 md:text-lg">{subtitle}</p>
+              ))}
           </m.div>
         </div>
       </Reveal>
