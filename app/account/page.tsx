@@ -24,11 +24,7 @@ export default function AccountPage() {
   }
 
   if (!signedIn || !customer) {
-    return (
-      <div className="container-x py-14 md:py-20">
-        <SignInCard onSignedIn={refresh} />
-      </div>
-    );
+    return <SignInCard onSignedIn={refresh} />;
   }
 
   const saveName = async () => {
