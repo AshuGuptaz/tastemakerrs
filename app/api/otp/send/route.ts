@@ -94,6 +94,7 @@ export async function POST(req: Request) {
     const doc = await Otp.create({
       email: emailLc,
       phone,
+      name: name?.trim() || undefined,
       channel,
       codeHash: hashCode(code),
       codeExpiresAt: new Date(now + CODE_TTL_MS),

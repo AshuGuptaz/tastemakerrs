@@ -76,6 +76,7 @@ export async function POST(req: Request) {
         channel: doc.channel,
         phone: doc.phone,
         email: doc.email,
+        name: doc.name,
       });
       customerToken = await signCustomer({
         cid: customer._id.toString(),

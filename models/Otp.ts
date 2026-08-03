@@ -3,6 +3,9 @@ import mongoose, { Schema, Model } from "mongoose";
 export interface IOtp {
   email: string;
   phone: string;
+  // Optional display name the user entered — carried through to the customer
+  // account on verify so the greeting and review authorship show a real name.
+  name?: string;
   // Which channel the code was actually delivered to — the only one that
   // gets bound into the checkout token on verify. Both email and phone are
   // still stored (and required) since the order form collects both, but
@@ -21,6 +24,7 @@ const OtpSchema = new Schema<IOtp>(
   {
     email: { type: String, required: true, lowercase: true, trim: true, index: true },
     phone: { type: String, required: true, trim: true, index: true },
+    name: { type: String, trim: true },
     channel: { type: String, enum: ["email", "phone"], required: true },
     codeHash: { type: String, required: true },
     // When the CODE stops being usable (~10 min) — checked by /api/otp/verify.
