@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { Otp } from "@/models/Otp";
 import { hashCode, signCheckout, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+import { signCustomer, CUSTOMER_COOKIE, CUSTOMER_MAX_AGE } from "@/lib/customer-auth";
+import { upsertVerifiedCustomer } from "@/lib/customer";
 import { logError } from "@/lib/logger";
 
 export const runtime = "nodejs";
@@ -62,7 +64,31 @@ export async function POST(req: Request) {
     }
 
     const token = await signCheckout(doc.channel === "phone" ? { phone: doc.phone } : { email: doc.email });
-    const res = NextResponse.json({ ok: true });
+
+    // Verifying a code also signs the customer in: upsert the passwordless
+    // account (keyed on the proven channel) and issue a long-lived session, so
+    // checkout doubles as account creation and returning-customer sign-in.
+    // Best-effort — an account hiccup must never block a valid checkout.
+    let signedIn = false;
+    let customerToken: string | undefined;
+    try {
+      const customer = await upsertVerifiedCustomer({
+        channel: doc.channel,
+        phone: doc.phone,
+        email: doc.email,
+        name: doc.name,
+      });
+      customerToken = await signCustomer({
+        cid: customer._id.toString(),
+        phone: customer.phone,
+        email: customer.email,
+      });
+      signedIn = true;
+    } catch (e) {
+      logError("otp/verify:account", e);
+    }
+
+    const res = NextResponse.json({ ok: true, signedIn });
     res.cookies.set(CHECKOUT_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -70,6 +96,15 @@ export async function POST(req: Request) {
       path: "/",
       maxAge: 20 * 60,
     });
+    if (signedIn && customerToken) {
+      res.cookies.set(CUSTOMER_COOKIE, customerToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: CUSTOMER_MAX_AGE,
+      });
+    }
     return res;
   } catch (e: unknown) {
     // Malformed payload (missing otpId / non-6-digit code) is a 400, not a

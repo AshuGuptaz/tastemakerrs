@@ -9,6 +9,7 @@ import {
   orderEmailTemplate,
   orderSmsTemplate,
 } from "@/lib/notify";
+import { slotLabel, formatDeliveryDate } from "@/lib/fulfillment";
 
 /**
  * Send the order confirmation email + SMS. Idempotent (guarded atomically by
@@ -31,6 +32,10 @@ export async function sendOrderConfirmation(orderId: string) {
     claimed = true;
 
     const a = order.address || {};
+    const f = order.fulfillment;
+    const schedule = f?.date
+      ? `${formatDeliveryDate(f.date)}${f.slot ? ` · ${slotLabel(f.slot)}` : ""}`
+      : undefined;
     const payload = {
       id: order._id.toString(),
       name: a.name || "there",
@@ -40,6 +45,8 @@ export async function sendOrderConfirmation(orderId: string) {
       discount: order.discount,
       total: order.total,
       address: { street: a.street || "", city: a.city || "", state: a.state || "", pincode: a.pincode || "" },
+      schedule,
+      gift: order.gift?.isGift ? { recipientName: order.gift.recipientName } : undefined,
     };
 
     const [emailRes, smsRes] = await Promise.all([

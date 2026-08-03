@@ -30,6 +30,25 @@ const AddressSchema = new Schema(
   { _id: false }
 );
 
+const GiftSchema = new Schema(
+  {
+    isGift: { type: Boolean, default: false },
+    recipientName: String,
+    recipientPhone: String,
+    message: String,
+    hidePrices: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
+const FulfillmentSchema = new Schema(
+  {
+    date: String, // YYYY-MM-DD
+    slot: String, // DELIVERY_SLOTS id
+  },
+  { _id: false }
+);
+
 export interface IOrderItem {
   productId?: string;
   name?: string;
@@ -50,9 +69,25 @@ export interface IOrderAddress {
   notes?: string;
 }
 
+export interface IOrderGift {
+  isGift?: boolean;
+  recipientName?: string;
+  recipientPhone?: string;
+  message?: string;
+  hidePrices?: boolean;
+}
+
+export interface IOrderFulfillment {
+  date?: string; // YYYY-MM-DD
+  slot?: string; // DELIVERY_SLOTS id
+}
+
 export interface IOrder {
+  customerId?: string;
   items: IOrderItem[];
   address: IOrderAddress;
+  gift?: IOrderGift;
+  fulfillment?: IOrderFulfillment;
   subtotal: number;
   delivery: number;
   discount: number;
@@ -64,6 +99,7 @@ export interface IOrder {
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   status: OrderStatus;
+  statusHistory?: { status: OrderStatus; at: Date }[];
   confirmationSentAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -71,8 +107,13 @@ export interface IOrder {
 
 const OrderSchema = new Schema(
   {
+    // Set when the order is placed while signed in — links it to the customer
+    // for order history / reorder. Guest orders (no session) leave this null.
+    customerId: { type: String, index: true, default: null },
     items: { type: [ItemSchema], required: true },
     address: { type: AddressSchema, required: true },
+    gift: { type: GiftSchema, default: undefined },
+    fulfillment: { type: FulfillmentSchema, default: undefined },
     subtotal: Number,
     delivery: Number,
     discount: Number,
@@ -87,6 +128,12 @@ const OrderSchema = new Schema(
       type: String,
       enum: ["pending", "paid", "in_kitchen", "out_for_delivery", "delivered", "cancelled", "refunded"],
       default: "pending",
+    },
+    // Append-only timeline of status transitions, powering the tracking page's
+    // per-step timestamps.
+    statusHistory: {
+      type: [new Schema({ status: String, at: { type: Date, default: Date.now } }, { _id: false })],
+      default: [],
     },
     confirmationSentAt: Date,
   },

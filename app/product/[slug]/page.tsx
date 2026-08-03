@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getBySlug, PRODUCTS } from "@/lib/products";
 import { CATEGORY_META } from "@/lib/products";
 import ProductDetail from "./ProductDetail";
+import ProductReviews from "@/components/reviews/ProductReviews";
 import { formatINR } from "@/lib/format";
 
 export async function generateStaticParams() {
@@ -39,6 +40,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const related = PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return (
-    <ProductDetail product={product} related={related} categoryLabel={CATEGORY_META[product.category].label} />
+    <>
+      <ProductDetail product={product} related={related} categoryLabel={CATEGORY_META[product.category].label} />
+      <ProductReviews productId={product.id} productName={product.name} />
+    </>
   );
 }

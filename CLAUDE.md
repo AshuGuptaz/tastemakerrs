@@ -41,6 +41,21 @@ Stripe: `/api/stripe/create-checkout` → redirect → `/api/stripe/webhook` (sa
 ### Admin JWT
 `ADMIN_JWT_SECRET` checked lazily inside `getSecret()` per-request, NEVER at module load (build-safe on Vercel Edge).
 
+### Customer accounts (passwordless, OTP-based)
+Accounts reuse the OTP infra — there are NO passwords. `/api/otp/verify` upserts a `Customer` (`models/Customer.ts`) and sets a 30-day session cookie (`ttm_customer_token`, `lib/customer-auth.ts`, `role: "customer"`, signed with `OTP_JWT_SECRET`). Identity is keyed STRICTLY on the **proven** channel (phone OR email); the unproven counterpart is stored as un-indexed `contactEmail`/`contactPhone` and is NEVER used for lookup — this prevents cross-channel account hijack. `verifyAdmin` rejects any non-`admin` role, so a customer token can't authenticate as admin. A valid customer session doubles as checkout proof (`/api/orders` accepts session OR checkout token via `contactMatches`) → one-tap reorder. `/account` (client, `CustomerProvider`) shows sign-in (`SignInCard`) or the dashboard (order history + reorder, address book, occasions). Account routes live under `app/api/account/*`.
+
+### Gifting + delivery scheduling
+`Order.gift` (recipient, message, hidePrices) and `Order.fulfillment` (date, slot) are set at checkout. `lib/fulfillment.ts` is the single source of truth for delivery slots + date validity — `/api/orders` re-validates the slot/date server-side. Gift/schedule are display-only and NEVER affect price.
+
+### Reviews (verified-buyer, moderated)
+`models/Review.ts` — one review per customer per product, defaults to `pending`. `/api/reviews` POST requires a signed-in customer with a **paid** order containing the product; photos are image data URLs, size-capped. Only `approved` reviews are public. Moderate at `/admin/reviews` (`/api/admin/reviews`).
+
+### Live order tracking
+`Order.statusHistory` records each transition. `updateOrderStatus` (`lib/order-status-update.ts`) is the ONLY path that should change status — it appends history and notifies the customer (email/SMS with a tracking link) for customer-facing transitions. Admin advances status via the dropdown on `/admin/orders` (`PATCH /api/admin/orders/:id`). `/track/:id` is a public capability link (`/api/track/:id` returns ONLY non-sensitive fields — no email/phone/address/totals; unpaid orders 404). `lib/order-status.ts` holds shared `STATUS_META`/`TRACK_STEPS`.
+
+### Occasion reminders (cron)
+Customers save birthdays/anniversaries (`Customer.occasions`, month+day). `/api/cron/reminders` (daily Vercel Cron, `vercel.json`, protected by `CRON_SECRET`) emails/SMSes ~7 days before; `lastRemindedYear` guarantees at-most-once-per-year even on a daily schedule, and it only marks reminded when a channel actually delivered.
+
 ## Vercel env vars (production)
 | Var | Required | Notes |
 |-----|----------|-------|
@@ -54,7 +69,8 @@ Stripe: `/api/stripe/create-checkout` → redirect → `/api/stripe/webhook` (sa
 | `RESEND_API_KEY` | For email OTP/confirmations | |
 | `FAST2SMS_API_KEY` | For SMS OTP | Needs ₹100 top-up before API works |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | For address autocomplete | Optional; checkout degrades gracefully |
-| `NEXT_PUBLIC_SITE_URL` | For OG metadata | e.g. `https://www.thetastemakerrs.com` |
+| `NEXT_PUBLIC_SITE_URL` | For OG metadata + email/SMS tracking links | e.g. `https://www.thetastemakerrs.com` |
+| `CRON_SECRET` | For occasion reminders | Vercel sends it as `Authorization: Bearer …` to `/api/cron/reminders`; the job 401s without a match in production |
 
 **After adding/changing any env var in Vercel → always confirm all vars are still present for Production scope before redeploying.**
 
@@ -62,7 +78,11 @@ Stripe: `/api/stripe/create-checkout` → redirect → `/api/stripe/webhook` (sa
 - `lib/products.ts` — product catalog (source of truth for prices)
 - `lib/format.ts` — `formatINR(n)` currency formatter, use everywhere prices are displayed
 - `lib/checkout-token.ts` — OTP JWT sign/verify, `contactMatches`, `CHECKOUT_COOKIE`
-- `lib/notify.ts` — `otpEnabled()`, `emailConfigured()`, `smsConfigured()`, email/SMS templates
+- `lib/customer-auth.ts` / `lib/customer-server.ts` / `lib/customer.ts` — customer session JWT, cookie read, upsert helper
+- `lib/fulfillment.ts` — delivery slots + date validity (client + server authority)
+- `lib/order-status.ts` — shared status labels + tracking timeline; `lib/order-status-update.ts` — the status-change + notify path
+- `lib/notify.ts` — `otpEnabled()`, `emailConfigured()`, `smsConfigured()`, email/SMS templates (OTP, order, status, reminder)
+- `context/CustomerContext.tsx` — `useCustomer()` client sign-in state (wired into `app/layout.tsx`)
 - `components/SmoothScroll.tsx` — LazyMotion `domMax` provider + Lenis + MotionConfig
 - `components/ui/CartToast.tsx` — branded "Added to cart" toast (uses `m`, position top-right)
 - `components/checkout/OtpDialog.tsx` — OTP dialog with success animation (pulsing rings + spring checkmark, 1600ms then onVerified)

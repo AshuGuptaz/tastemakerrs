@@ -6,9 +6,11 @@ import { z } from "zod";
 import { getAdminFromCookies } from "@/lib/auth-server";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
 import { PRODUCTS } from "@/lib/products";
 import { priceCustomCake, customCakeName } from "@/lib/custom-cake";
 import { computeTotals } from "@/lib/pricing";
+import { isValidDeliveryDate, isSlotId } from "@/lib/fulfillment";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { logError } from "@/lib/logger";
 
@@ -34,10 +36,25 @@ const AddressSchema = z.object({
   notes: z.string().optional().default(""),
 });
 
+const GiftSchema = z.object({
+  isGift: z.boolean().optional().default(false),
+  recipientName: z.string().max(80).optional().default(""),
+  recipientPhone: z.string().max(20).optional().default(""),
+  message: z.string().max(500).optional().default(""),
+  hidePrices: z.boolean().optional().default(false),
+});
+
+const FulfillmentSchema = z.object({
+  date: z.string().optional().default(""),
+  slot: z.string().optional().default(""),
+});
+
 // Client no longer sends prices — server computes them from the catalog.
 const Body = z.object({
   items: z.array(ItemSchema).min(1),
   address: AddressSchema,
+  gift: GiftSchema.optional(),
+  fulfillment: FulfillmentSchema.optional(),
   coupon: z.string().nullable().optional(),
   paymentMethod: z.enum(["razorpay", "stripe"]),
 });
@@ -60,9 +77,22 @@ export async function POST(req: Request) {
 
     const body = Body.parse(await req.json());
 
+    // A signed-in customer's session doubles as checkout proof (they proved the
+    // channel via OTP at sign-in), so a returning customer checks out in one tap
+    // with no re-OTP. Fall back to the short-lived checkout token otherwise.
+    const jar = cookies();
+    const customer = await verifyCustomer(jar.get(CUSTOMER_COOKIE)?.value);
+
     if (otpEnabled()) {
-      const token = await verifyCheckout(cookies().get(CHECKOUT_COOKIE)?.value);
-      if (!contactMatches(token, body.address)) {
+      const checkoutOk = contactMatches(
+        await verifyCheckout(jar.get(CHECKOUT_COOKIE)?.value),
+        body.address
+      );
+      const sessionOk = contactMatches(
+        customer ? { phone: customer.phone, email: customer.email } : null,
+        body.address
+      );
+      if (!checkoutOk && !sessionOk) {
         return NextResponse.json({ error: "Please verify your contact with the OTP before ordering." }, { status: 401 });
       }
     }
@@ -102,10 +132,38 @@ export async function POST(req: Request) {
     // nor see a total different from what we charge.
     const { delivery, discount, total, coupon } = computeTotals(subtotal, body.coupon);
 
+    // Optional delivery schedule — validated against the shared authority so a
+    // forged slot / out-of-range date can't be stored. A partial/invalid
+    // schedule is a clean 400 (the UI only ever sends complete, valid values).
+    let fulfillment: { date: string; slot: string } | undefined;
+    if (body.fulfillment?.date || body.fulfillment?.slot) {
+      const { date, slot } = body.fulfillment;
+      if (!isValidDeliveryDate(date) || !isSlotId(slot)) {
+        return NextResponse.json({ error: "Please choose a valid delivery date and time slot." }, { status: 400 });
+      }
+      fulfillment = { date, slot };
+    }
+
+    // Gift metadata — persisted only when it's actually a gift; the fields are
+    // display-only (they don't affect price) so we just trim + cap them.
+    const gift =
+      body.gift?.isGift
+        ? {
+            isGift: true,
+            recipientName: (body.gift.recipientName || "").slice(0, 80),
+            recipientPhone: (body.gift.recipientPhone || "").replace(/\D/g, "").slice(0, 15),
+            message: (body.gift.message || "").slice(0, 500),
+            hidePrices: !!body.gift.hidePrices,
+          }
+        : undefined;
+
     await connectDB();
     const order = await Order.create({
+      customerId: customer?.cid ?? null,
       items: pricedItems,
       address: body.address,
+      gift,
+      fulfillment,
       coupon,
       paymentMethod: body.paymentMethod,
       subtotal,
