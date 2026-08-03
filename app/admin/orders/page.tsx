@@ -16,10 +16,31 @@ type Order = {
   items: { name: string; qty: number }[];
 };
 
+const STATUSES = ["pending", "paid", "in_kitchen", "out_for_delivery", "delivered", "cancelled", "refunded"];
+
 export default function AdminOrders() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<string | null>(null);
+
+  const updateStatus = async (id: string, status: string) => {
+    const prev = orders;
+    setSaving(id);
+    setOrders((os) => os.map((o) => (o._id === id ? { ...o, status } : o))); // optimistic
+    try {
+      const r = await fetch(`/api/admin/orders/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!r.ok) throw new Error();
+    } catch {
+      setOrders(prev); // rollback
+    } finally {
+      setSaving(null);
+    }
+  };
 
   useEffect(() => {
     // GET /api/orders returns { orders, total, page, pages } — NOT a bare array.
@@ -70,7 +91,19 @@ export default function AdminOrders() {
                     <td className="p-3 text-xs">{o.items.map((it) => `${it.name} ×${it.qty}`).join(", ")}</td>
                     <td className="p-3 font-display text-lg">{formatINR(o.total)}</td>
                     <td className="p-3"><span className={`rounded-pill px-2 py-0.5 text-xs ${o.paymentStatus === "paid" ? "bg-flame/10 text-flame" : "bg-cocoa-50 text-cocoa/60"}`}>{o.paymentStatus} · {o.paymentMethod}</span></td>
-                    <td className="p-3 capitalize">{o.status.replaceAll("_", " ")}</td>
+                    <td className="p-3">
+                      <select
+                        value={o.status}
+                        disabled={saving === o._id}
+                        onChange={(e) => updateStatus(o._id, e.target.value)}
+                        aria-label="Order status"
+                        className="rounded-lg border border-line bg-white px-2 py-1 text-xs capitalize focus:border-flame focus:outline-none disabled:opacity-50"
+                      >
+                        {STATUSES.map((s) => (
+                          <option key={s} value={s}>{s.replaceAll("_", " ")}</option>
+                        ))}
+                      </select>
+                    </td>
                     <td className="p-3 text-xs text-cocoa/60">{new Date(o.createdAt).toLocaleString()}</td>
                   </tr>
                 ))}

@@ -54,7 +54,8 @@ function OrderSuccessInner() {
         </p>
         <p className="mt-4 inline-flex items-center gap-2 rounded-pill border border-line bg-surface px-4 py-2 text-sm">Order ref <b className="tracking-wide text-ink">#{id.slice(-8).toUpperCase()}</b></p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/menu" className="btn-accent">Order more</Link>
+          <Link href={`/track/${id}`} className="btn-accent">Track your order</Link>
+          <Link href="/menu" className="btn-line">Order more</Link>
           <Link href="/" className="btn-line">Back to home</Link>
         </div>
       </div>

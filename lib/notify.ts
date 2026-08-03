@@ -252,6 +252,36 @@ export function orderSmsTemplate(id: string, total: number) {
   return `Yay! Your ${BRAND} order #${id.slice(-8).toUpperCase()} is confirmed 🎂 Total ₹${total}. We're baking it fresh and will deliver soon. Thank you! 🧡`;
 }
 
+/* ── Order status updates (live tracking) ── */
+
+export function orderStatusEmailTemplate(o: {
+  id: string;
+  name: string;
+  label: string;
+  blurb: string;
+  emoji: string;
+  trackUrl: string;
+}) {
+  return shell(`
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:40px;line-height:1;">${o.emoji}</div>
+      <h1 style="margin:12px 0 4px;font-size:23px;">${escapeHtml(o.label)}</h1>
+      <p style="margin:0;color:#5b5b62;font-size:15px;">Hi ${escapeHtml(o.name)} — ${escapeHtml(o.blurb)}</p>
+    </div>
+    <div style="background:#FFF9F1;border-radius:16px;padding:14px 16px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:12px;color:#9A7B57;text-transform:uppercase;letter-spacing:.12em;font-weight:700;">Order</div>
+      <div style="font-size:15px;font-weight:700;">#${o.id.slice(-8).toUpperCase()}</div>
+    </div>
+    <div style="text-align:center;">
+      <a href="${o.trackUrl}" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:13px 26px;">Track your order →</a>
+    </div>
+  `);
+}
+
+export function orderStatusSmsTemplate(o: { id: string; emoji: string; label: string; trackUrl: string }) {
+  return `${o.emoji} ${BRAND} order #${o.id.slice(-8).toUpperCase()}: ${o.label}. Track it: ${o.trackUrl}`;
+}
+
 /** Staff-facing (not customer-facing) — a custom-cake quote request just came in. */
 export function customOrderAdminEmailTemplate(order: {
   name: string;

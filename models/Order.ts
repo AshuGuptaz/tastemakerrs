@@ -99,6 +99,7 @@ export interface IOrder {
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   status: OrderStatus;
+  statusHistory?: { status: OrderStatus; at: Date }[];
   confirmationSentAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -127,6 +128,12 @@ const OrderSchema = new Schema(
       type: String,
       enum: ["pending", "paid", "in_kitchen", "out_for_delivery", "delivered", "cancelled", "refunded"],
       default: "pending",
+    },
+    // Append-only timeline of status transitions, powering the tracking page's
+    // per-step timestamps.
+    statusHistory: {
+      type: [new Schema({ status: String, at: { type: Date, default: Date.now } }, { _id: false })],
+      default: [],
     },
     confirmationSentAt: Date,
   },
