@@ -5,11 +5,15 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { CreditCard, Globe, MapPin } from "lucide-react";
+import { CreditCard, Globe, MapPin, Gift, CalendarDays, Clock, ChevronDown, Check } from "lucide-react";
+import { m, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
+import { useCustomer } from "@/context/CustomerContext";
 import OtpDialog from "@/components/checkout/OtpDialog";
+import DatePicker from "@/components/DatePicker";
 import { formatINR } from "@/lib/format";
 import { couponValue, deliveryFee } from "@/lib/pricing";
+import { DELIVERY_SLOTS, isoDateOffset, formatDeliveryDate } from "@/lib/fulfillment";
 
 type Address = {
   name: string;
@@ -38,6 +42,7 @@ const LABELS: Record<keyof Address, string> = {
 
 export default function CheckoutPage() {
   const { items, subtotal, clear, hydrated } = useCart();
+  const { customer } = useCustomer();
   const [addr, setAddr] = useState<Address>(EMPTY);
   const [razorpayReady, setRazorpayReady] = useState(false);
   const [coupon, setCoupon] = useState("");
@@ -46,6 +51,14 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
   const [errorField, setErrorField] = useState<keyof Address | null>(null);
+  // Delivery schedule (date defaults to today; slot must be chosen)
+  const [fulfillDate, setFulfillDate] = useState(isoDateOffset(0));
+  const [fulfillSlot, setFulfillSlot] = useState("");
+  const [showCalendar, setShowCalendar] = useState(false);
+  // Gifting
+  const [isGift, setIsGift] = useState(false);
+  const [gift, setGift] = useState({ recipientName: "", recipientPhone: "", message: "", hidePrices: false });
+  const prefilledRef = useRef(false);
   const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
   const streetRef = useRef<HTMLInputElement>(null);
   const submittingRef = useRef(false);
@@ -64,6 +77,39 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (hydrated && items.length === 0) router.replace("/cart");
   }, [hydrated, items.length, router]);
+
+  // Prefill contact + default address for a signed-in customer (once, and only
+  // into still-empty fields so it never clobbers something they've typed).
+  useEffect(() => {
+    if (!customer || prefilledRef.current) return;
+    prefilledRef.current = true;
+    const def = customer.addresses.find((a) => a.isDefault) || customer.addresses[0];
+    setAddr((prev) => ({
+      ...prev,
+      name: prev.name || customer.name || def?.name || "",
+      email: prev.email || customer.email || "",
+      phone: prev.phone || customer.phone || def?.phone || "",
+      street: prev.street || def?.street || "",
+      city: prev.city || def?.city || "",
+      state: prev.state || def?.state || "",
+      pincode: prev.pincode || def?.pincode || "",
+    }));
+  }, [customer]);
+
+  const applySavedAddress = (id: string) => {
+    const a = customer?.addresses.find((x) => x._id === id);
+    if (!a) return;
+    setErrorField(null);
+    setAddr((prev) => ({
+      ...prev,
+      name: a.name || prev.name,
+      phone: a.phone || prev.phone,
+      street: a.street || "",
+      city: a.city || "",
+      state: a.state || "",
+      pincode: a.pincode || "",
+    }));
+  };
 
   // Load Razorpay script once (dedup: StrictMode double-runs + remounts must not re-inject)
   useEffect(() => {
@@ -190,6 +236,14 @@ export default function CheckoutPage() {
       toast.error("Enter a valid 10-digit Indian mobile number");
       return false;
     }
+    if (!fulfillSlot) {
+      toast.error("Please choose a delivery time slot");
+      return false;
+    }
+    if (isGift && !gift.recipientName.trim()) {
+      toast.error("Please add the recipient's name for the gift");
+      return false;
+    }
     return true;
   };
 
@@ -226,6 +280,10 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items: items.map((i) => ({ productId: i.id, name: i.name, price: i.price, qty: i.qty, variant: i.variant, custom: i.custom })),
           address: addr, subtotal, delivery, discount, total,
+          fulfillment: { date: fulfillDate, slot: fulfillSlot },
+          gift: isGift
+            ? { isGift: true, recipientName: gift.recipientName, recipientPhone: gift.recipientPhone, message: gift.message, hidePrices: gift.hidePrices }
+            : { isGift: false },
           coupon: appliedCoupon || null, paymentMethod: method,
         }),
       });
@@ -322,6 +380,24 @@ export default function CheckoutPage() {
           <div className="space-y-6">
             <div className="card p-6">
               <h3 className="t-h3">Delivery details</h3>
+
+              {/* Saved-address picker for signed-in customers — one tap to fill */}
+              {customer && customer.addresses.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {customer.addresses.map((a) => (
+                    <button
+                      key={a._id}
+                      type="button"
+                      onClick={() => applySavedAddress(a._id)}
+                      className="flex items-center gap-1.5 rounded-pill border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-soft transition hover:border-flame hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/30"
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-flame" />
+                      {a.label || "Address"}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <div><label className="label" htmlFor="checkout-name">Full name</label><input id="checkout-name" required aria-required="true" aria-invalid={errorField === "name"} className={`input ${errorField === "name" ? "ring-2 ring-flame/50" : ""}`} value={addr.name} onChange={(e) => { setErrorField(null); setAddr({ ...addr, name: e.target.value }); }} /></div>
                 <div><label className="label" htmlFor="checkout-email">Email</label><input id="checkout-email" type="email" required aria-required="true" aria-invalid={errorField === "email"} className={`input ${errorField === "email" ? "ring-2 ring-flame/50" : ""}`} value={addr.email} onChange={(e) => { setErrorField(null); setAddr({ ...addr, email: e.target.value }); }} /></div>
@@ -360,6 +436,108 @@ export default function CheckoutPage() {
                   Start typing your street address above to see your delivery location on the map.
                 </div>
               )}
+            </div>
+
+            {/* ── Delivery schedule ─────────────────────────────────────── */}
+            <div className="card p-6">
+              <h3 className="t-h3 flex items-center gap-2"><CalendarDays className="h-5 w-5 text-flame" /> When should we deliver?</h3>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="label">Delivery date</label>
+                  <button
+                    type="button"
+                    onClick={() => setShowCalendar((s) => !s)}
+                    aria-expanded={showCalendar}
+                    className="flex w-full items-center justify-between rounded-2xl border border-line bg-white px-4 py-3 text-left text-sm font-medium text-ink transition hover:border-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/30"
+                  >
+                    <span>{formatDeliveryDate(fulfillDate)}</span>
+                    <ChevronDown className={`h-4 w-4 text-ink-mut transition-transform ${showCalendar ? "rotate-180" : ""}`} />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {showCalendar && (
+                      <m.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-3">
+                          <DatePicker
+                            value={fulfillDate}
+                            min={isoDateOffset(0)}
+                            onChange={(d) => { setFulfillDate(d); setShowCalendar(false); }}
+                          />
+                        </div>
+                      </m.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                <div>
+                  <label className="label flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-flame" /> Time slot</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {DELIVERY_SLOTS.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setFulfillSlot(s.id)}
+                        aria-pressed={fulfillSlot === s.id}
+                        className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/30 ${
+                          fulfillSlot === s.id ? "border-flame bg-flame/5 text-flame-700 ring-2 ring-flame/30" : "border-line bg-white text-ink-soft hover:border-flame/50"
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ── Send as a gift ────────────────────────────────────────── */}
+            <div className="card p-6">
+              <button
+                type="button"
+                onClick={() => setIsGift((g) => !g)}
+                aria-pressed={isGift}
+                className="flex w-full items-center justify-between text-left"
+              >
+                <span className="t-h3 flex items-center gap-2"><Gift className="h-5 w-5 text-flame" /> Send as a gift</span>
+                <span className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${isGift ? "bg-flame" : "bg-line"}`}>
+                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${isGift ? "left-[1.4rem]" : "left-0.5"}`} />
+                </span>
+              </button>
+              <AnimatePresence initial={false}>
+                {isGift && (
+                  <m.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-4 grid gap-4">
+                      <p className="text-sm text-ink-mut">We&apos;ll pack it beautifully with your note and, if you like, keep the price off the delivery slip.</p>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                          <label className="label" htmlFor="gift-name">Recipient&apos;s name</label>
+                          <input id="gift-name" className="input" value={gift.recipientName} onChange={(e) => setGift({ ...gift, recipientName: e.target.value })} placeholder="Who's it for?" />
+                        </div>
+                        <div>
+                          <label className="label" htmlFor="gift-phone">Recipient&apos;s phone <span className="font-normal text-ink-mut">(optional)</span></label>
+                          <input id="gift-phone" className="input" value={gift.recipientPhone} onChange={(e) => setGift({ ...gift, recipientPhone: e.target.value.replace(/\D/g, "").slice(0, 10) })} placeholder="For delivery coordination" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="label" htmlFor="gift-msg">Gift message</label>
+                        <textarea id="gift-msg" rows={3} maxLength={500} className="input" value={gift.message} onChange={(e) => setGift({ ...gift, message: e.target.value })} placeholder="Happy birthday! Hope your day is as sweet as this cake 🎂" />
+                      </div>
+                      <label className="flex items-center gap-2.5 text-sm text-ink-soft">
+                        <input type="checkbox" checked={gift.hidePrices} onChange={(e) => setGift({ ...gift, hidePrices: e.target.checked })} className="h-4 w-4 rounded border-line text-flame focus:ring-flame/30" />
+                        Hide prices on the delivery slip
+                      </label>
+                    </div>
+                  </m.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="card p-6">

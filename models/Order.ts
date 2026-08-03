@@ -30,6 +30,25 @@ const AddressSchema = new Schema(
   { _id: false }
 );
 
+const GiftSchema = new Schema(
+  {
+    isGift: { type: Boolean, default: false },
+    recipientName: String,
+    recipientPhone: String,
+    message: String,
+    hidePrices: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
+const FulfillmentSchema = new Schema(
+  {
+    date: String, // YYYY-MM-DD
+    slot: String, // DELIVERY_SLOTS id
+  },
+  { _id: false }
+);
+
 export interface IOrderItem {
   productId?: string;
   name?: string;
@@ -50,10 +69,25 @@ export interface IOrderAddress {
   notes?: string;
 }
 
+export interface IOrderGift {
+  isGift?: boolean;
+  recipientName?: string;
+  recipientPhone?: string;
+  message?: string;
+  hidePrices?: boolean;
+}
+
+export interface IOrderFulfillment {
+  date?: string; // YYYY-MM-DD
+  slot?: string; // DELIVERY_SLOTS id
+}
+
 export interface IOrder {
   customerId?: string;
   items: IOrderItem[];
   address: IOrderAddress;
+  gift?: IOrderGift;
+  fulfillment?: IOrderFulfillment;
   subtotal: number;
   delivery: number;
   discount: number;
@@ -77,6 +111,8 @@ const OrderSchema = new Schema(
     customerId: { type: String, index: true, default: null },
     items: { type: [ItemSchema], required: true },
     address: { type: AddressSchema, required: true },
+    gift: { type: GiftSchema, default: undefined },
+    fulfillment: { type: FulfillmentSchema, default: undefined },
     subtotal: Number,
     delivery: Number,
     discount: Number,

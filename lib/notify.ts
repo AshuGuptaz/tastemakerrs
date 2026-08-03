@@ -177,6 +177,8 @@ export function orderEmailTemplate(order: {
   discount: number;
   total: number;
   address: { street: string; city: string; state: string; pincode: string };
+  schedule?: string; // "Sat, 9 Aug 2026 · 3 – 6 PM"
+  gift?: { recipientName?: string };
 }) {
   const rows = order.items
     .map(
@@ -204,6 +206,8 @@ export function orderEmailTemplate(order: {
       <span style="font-weight:800;font-size:16px;">Total</span>
       <span style="font-weight:800;font-size:22px;color:${ACCENT};">₹${order.total}</span>
     </div>
+    ${order.schedule ? `<div style="margin:18px 0 0;padding:12px 14px;background:#FFF4E6;border-radius:12px;font-size:14px;color:${INK};">🗓️ <b>Scheduled delivery:</b> ${escapeHtml(order.schedule)}</div>` : ""}
+    ${order.gift?.recipientName ? `<p style="margin:12px 0 0;color:${ACCENT};font-size:14px;">🎁 This is a gift for ${escapeHtml(order.gift.recipientName)} — we'll pack it with your note.</p>` : ""}
     <p style="margin:18px 0 0;color:#5b5b62;font-size:14px;">Delivering to: ${escapeHtml(order.address.street)}, ${escapeHtml(order.address.city)}, ${escapeHtml(order.address.state)} ${escapeHtml(order.address.pincode)}.</p>
     <p style="margin:8px 0 0;color:#9A7B57;font-size:13px;">We'll be in touch on WhatsApp with delivery updates. Questions? Just reply to this email.</p>
   `);
