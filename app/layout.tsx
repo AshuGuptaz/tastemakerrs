@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { CartUIProvider } from "@/context/CartUIContext";
+import { CustomerProvider } from "@/context/CustomerContext";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollProgress from "@/components/ScrollProgress";
 import CartDrawer from "@/components/CartDrawer";
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="grain min-h-screen font-sans text-ink antialiased">
+        <CustomerProvider>
         <CartProvider>
           <CartUIProvider>
             <SmoothScroll>
@@ -105,6 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </SmoothScroll>
           </CartUIProvider>
         </CartProvider>
+        </CustomerProvider>
       </body>
     </html>
   );

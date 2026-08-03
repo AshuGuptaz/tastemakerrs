@@ -10,10 +10,11 @@ import {
   useSpring,
   useReducedMotion,
 } from "framer-motion";
-import { ShoppingBag, Menu as MenuIcon, X, ArrowRight } from "lucide-react";
+import { ShoppingBag, Menu as MenuIcon, X, ArrowRight, User } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
+import { useCustomer } from "@/context/CustomerContext";
 
 const NAV = [
   { href: "/menu",        label: "Menu"      },
@@ -32,6 +33,7 @@ export default function Navbar() {
   const reduce    = useReducedMotion();
   const { count } = useCart();
   const { openDrawer } = useCartUI();
+  const { signedIn } = useCustomer();
   const [open, setOpen] = useState(false);
 
   /* ── Scroll-linked squeeze ─────────────────────────────────────────────── */
@@ -147,6 +149,18 @@ export default function Navbar() {
           {/* ── Actions ───────────────────────────────────────────────── */}
           <div className="flex items-center gap-2">
 
+            {/* Account */}
+            <Link
+              href="/account"
+              aria-label={signedIn ? "Your account" : "Sign in"}
+              className="relative grid h-9 w-9 place-items-center rounded-pill text-ink transition-colors hover:bg-ink/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
+            >
+              <User className="h-[1.1rem] w-[1.1rem]" />
+              {signedIn && (
+                <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-flame ring-2 ring-surface" />
+              )}
+            </Link>
+
             {/* Cart */}
             <button
               id="cart-fab"
@@ -215,6 +229,18 @@ export default function Navbar() {
                   {n.label}
                 </Link>
               ))}
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                aria-current={pathname === "/account" ? "page" : undefined}
+                className={`flex items-center gap-2 rounded-xl px-4 py-3 text-base tracking-tight transition-colors ${
+                  pathname === "/account"
+                    ? "bg-flame/10 font-semibold text-flame-700"
+                    : "font-medium text-ink hover:bg-ink/[0.04]"
+                }`}
+              >
+                <User className="h-4 w-4" /> {signedIn ? "Your account" : "Sign in"}
+              </Link>
               <Link href="/menu" onClick={() => setOpen(false)} className="btn-ink mt-1 w-full">
                 Order now <ArrowRight className="h-4 w-4" />
               </Link>
