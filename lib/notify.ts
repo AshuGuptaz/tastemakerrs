@@ -216,6 +216,38 @@ export function orderEmailTemplate(order: {
 export function otpSmsTemplate(code: string) {
   return `${code} is your ${BRAND} verification code. Valid 10 min. Never share it. 🧁`;
 }
+
+/* ── Occasion reminders (birthdays / anniversaries) ── */
+
+export function occasionReminderEmailTemplate(o: {
+  greetingName?: string;
+  label: string;
+  recipientName?: string;
+  dateText: string; // "Sat, 9 Aug"
+  daysAway: number;
+  code?: string;
+}) {
+  const who = o.recipientName ? escapeHtml(o.recipientName) + "’s" : "a special";
+  const when = o.daysAway <= 0 ? "today" : o.daysAway === 1 ? "tomorrow" : `in ${o.daysAway} days`;
+  return shell(`
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:40px;line-height:1;">🎉</div>
+      <h1 style="margin:12px 0 4px;font-size:23px;">${who} ${escapeHtml(o.label)} is coming up!</h1>
+      <p style="margin:0;color:#5b5b62;font-size:15px;">Hi ${o.greetingName ? escapeHtml(o.greetingName) : "there"} — it&apos;s ${when} (${escapeHtml(o.dateText)}). Beat the rush and order a fresh, hand-finished cake now.</p>
+    </div>
+    ${o.code ? `<div style="text-align:center;margin:8px 0 18px;"><div style="display:inline-block;font-size:15px;font-weight:700;color:${ACCENT};background:#FFF4E6;border:1px dashed ${ACCENT};border-radius:12px;padding:10px 18px;">Use code ${escapeHtml(o.code)} at checkout</div></div>` : ""}
+    <div style="text-align:center;">
+      <a href="${SITE_URL}/menu" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:13px 26px;">Order a cake →</a>
+    </div>
+    <p style="margin:18px 0 0;color:#9A7B57;font-size:12px;text-align:center;">You&apos;re getting this because you saved this occasion in your account. Manage reminders anytime in your account.</p>
+  `);
+}
+
+export function occasionReminderSmsTemplate(o: { label: string; recipientName?: string; daysAway: number; code?: string }) {
+  const who = o.recipientName ? `${o.recipientName}'s` : "a special";
+  const when = o.daysAway <= 0 ? "today" : o.daysAway === 1 ? "tomorrow" : `in ${o.daysAway} days`;
+  return `🎉 ${who} ${o.label} is ${when}! Order a fresh ${BRAND} cake now${o.code ? ` — use ${o.code}` : ""}. ${SITE_URL}/menu 🎂`;
+}
 export function orderSmsTemplate(id: string, total: number) {
   return `Yay! Your ${BRAND} order #${id.slice(-8).toUpperCase()} is confirmed 🎂 Total ₹${total}. We're baking it fresh and will deliver soon. Thank you! 🧡`;
 }

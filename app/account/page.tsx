@@ -7,6 +7,7 @@ import { useCustomer } from "@/context/CustomerContext";
 import SignInCard from "@/components/account/SignInCard";
 import OrderHistory from "@/components/account/OrderHistory";
 import AddressBook from "@/components/account/AddressBook";
+import OccasionsManager from "@/components/account/OccasionsManager";
 
 export default function AccountPage() {
   const { customer, loading, signedIn, refresh, logout } = useCustomer();
@@ -102,10 +103,20 @@ export default function AccountPage() {
           <OrderHistory />
         </section>
 
-        <section>
-          <h2 className="t-h3 mb-4">Saved addresses</h2>
-          <AddressBook addresses={customer.addresses} onChanged={refresh} />
-        </section>
+        <div className="space-y-10">
+          <section>
+            <h2 className="t-h3 mb-4">Saved addresses</h2>
+            <AddressBook addresses={customer.addresses} onChanged={refresh} />
+          </section>
+
+          <section>
+            <div className="mb-4 flex items-center gap-2">
+              <h2 className="t-h3">Occasions</h2>
+              <span className="rounded-pill bg-flame/10 px-2.5 py-0.5 text-xs font-semibold text-flame-700">We&apos;ll remind you</span>
+            </div>
+            <OccasionsManager occasions={customer.occasions} onChanged={refresh} />
+          </section>
+        </div>
       </div>
     </div>
   );
