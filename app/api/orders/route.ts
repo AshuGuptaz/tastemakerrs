@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getAdminFromCookies } from "@/lib/auth-server";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
 import { PRODUCTS } from "@/lib/products";
 import { priceCustomCake, customCakeName } from "@/lib/custom-cake";
 import { computeTotals } from "@/lib/pricing";
@@ -60,9 +61,22 @@ export async function POST(req: Request) {
 
     const body = Body.parse(await req.json());
 
+    // A signed-in customer's session doubles as checkout proof (they proved the
+    // channel via OTP at sign-in), so a returning customer checks out in one tap
+    // with no re-OTP. Fall back to the short-lived checkout token otherwise.
+    const jar = cookies();
+    const customer = await verifyCustomer(jar.get(CUSTOMER_COOKIE)?.value);
+
     if (otpEnabled()) {
-      const token = await verifyCheckout(cookies().get(CHECKOUT_COOKIE)?.value);
-      if (!contactMatches(token, body.address)) {
+      const checkoutOk = contactMatches(
+        await verifyCheckout(jar.get(CHECKOUT_COOKIE)?.value),
+        body.address
+      );
+      const sessionOk = contactMatches(
+        customer ? { phone: customer.phone, email: customer.email } : null,
+        body.address
+      );
+      if (!checkoutOk && !sessionOk) {
         return NextResponse.json({ error: "Please verify your contact with the OTP before ordering." }, { status: 401 });
       }
     }
@@ -104,6 +118,7 @@ export async function POST(req: Request) {
 
     await connectDB();
     const order = await Order.create({
+      customerId: customer?.cid ?? null,
       items: pricedItems,
       address: body.address,
       coupon,

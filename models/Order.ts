@@ -51,6 +51,7 @@ export interface IOrderAddress {
 }
 
 export interface IOrder {
+  customerId?: string;
   items: IOrderItem[];
   address: IOrderAddress;
   subtotal: number;
@@ -71,6 +72,9 @@ export interface IOrder {
 
 const OrderSchema = new Schema(
   {
+    // Set when the order is placed while signed in — links it to the customer
+    // for order history / reorder. Guest orders (no session) leave this null.
+    customerId: { type: String, index: true, default: null },
     items: { type: [ItemSchema], required: true },
     address: { type: AddressSchema, required: true },
     subtotal: Number,
