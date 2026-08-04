@@ -391,8 +391,8 @@ export default function CheckoutPage() {
                       onClick={() => applySavedAddress(a._id)}
                       className="flex items-center gap-1.5 rounded-pill border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink-soft transition hover:border-flame hover:text-flame focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/30"
                     >
-                      <MapPin className="h-3.5 w-3.5 text-flame" />
-                      {a.label || "Address"}
+                      <MapPin className="h-3.5 w-3.5 shrink-0 text-flame" />
+                      <span className="max-w-[140px] truncate">{a.label || "Address"}</span>
                     </button>
                   ))}
                 </div>
@@ -605,7 +605,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* mobile sticky pay bar — keeps the total + Pay in reach without scrolling past the form */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 px-4 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] pt-3 backdrop-blur lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 pb-[calc(env(safe-area-inset-bottom)+0.7rem)] pt-3 backdrop-blur lg:hidden">
         <div className="container-x flex items-center justify-between gap-4">
           <div className="leading-tight">
             <div className="text-[0.7rem] font-medium uppercase tracking-wide text-ink-mut">Total</div>
@@ -617,16 +617,18 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {showOtp && (
-        <OtpDialog
-          email={addr.email}
-          phone={addr.phone}
-          name={addr.name}
-          onVerified={() => { setShowOtp(false); createOrderAndPay(); }}
-          onSkip={() => { setShowOtp(false); createOrderAndPay(); }}
-          onClose={() => setShowOtp(false)}
-        />
-      )}
+      <AnimatePresence>
+        {showOtp && (
+          <OtpDialog
+            email={addr.email}
+            phone={addr.phone}
+            name={addr.name}
+            onVerified={() => { setShowOtp(false); createOrderAndPay(); }}
+            onSkip={() => { setShowOtp(false); createOrderAndPay(); }}
+            onClose={() => setShowOtp(false)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }

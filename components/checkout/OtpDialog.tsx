@@ -126,9 +126,8 @@ export default function OtpDialog({
     channels.email && channels.sms ? "your email and phone" : channels.sms ? `your phone (••• ${phone.slice(-4)})` : "your email";
 
   return (
-    <AnimatePresence>
       <m.div
-        className="fixed inset-0 z-[100] grid place-items-center p-4"
+        className="fixed inset-0 z-[9996] grid place-items-center p-4"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       >
         <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={onClose} />
@@ -266,6 +265,5 @@ export default function OtpDialog({
           </AnimatePresence>
         </m.div>
       </m.div>
-    </AnimatePresence>
   );
 }
