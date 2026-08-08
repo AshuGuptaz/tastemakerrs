@@ -328,10 +328,18 @@ function CodeInput({
   };
 
   const handleChange = (i: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const digit = e.target.value.replace(/\D/g, "").slice(-1);
-    if (!digit) return;
+    const digits = e.target.value.replace(/\D/g, "");
+    if (!digits) return;
+    // Mobile SMS autofill (iOS QuickType, Android SMS Retriever) inserts the
+    // full code into whichever box is focused as one native input event —
+    // not six separate keystrokes. Treat that like a paste of the whole code.
+    if (digits.length > 1) {
+      commit(digits.slice(0, 6));
+      refs.current[Math.min(digits.length, 6) - 1]?.focus();
+      return;
+    }
     const arr = value.padEnd(6).split("");
-    arr[i] = digit;
+    arr[i] = digits;
     const next = arr.join("").trimEnd();
     commit(next);
     if (i < 5) refs.current[i + 1]?.focus();
