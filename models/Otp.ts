@@ -1,15 +1,15 @@
 import mongoose, { Schema, Model } from "mongoose";
 
 export interface IOtp {
-  email: string;
+  email?: string;
   phone: string;
   // Optional display name the user entered — carried through to the customer
   // account on verify so the greeting and review authorship show a real name.
   name?: string;
   // Which channel the code was actually delivered to — the only one that
-  // gets bound into the checkout token on verify. Both email and phone are
-  // still stored (and required) since the order form collects both, but
-  // only the delivered channel counts as proven.
+  // gets bound into the checkout token on verify. Checkout collects both
+  // email and phone, but the sign-in page allows email-less, phone-only
+  // sign-in — so email is stored when present but never required.
   channel: "email" | "phone";
   codeHash: string;
   codeExpiresAt: Date;
@@ -22,7 +22,7 @@ export interface IOtp {
 
 const OtpSchema = new Schema<IOtp>(
   {
-    email: { type: String, required: true, lowercase: true, trim: true, index: true },
+    email: { type: String, lowercase: true, trim: true, index: true },
     phone: { type: String, required: true, trim: true, index: true },
     name: { type: String, trim: true },
     channel: { type: String, enum: ["email", "phone"], required: true },

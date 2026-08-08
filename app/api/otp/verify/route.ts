@@ -63,7 +63,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "This code is no longer valid. Request a new one." }, { status: 400 });
     }
 
-    const token = await signCheckout(doc.channel === "phone" ? { phone: doc.phone } : { email: doc.email });
+    // doc.email is optional on the schema (phone-only sign-in never sets it),
+    // but the send route only ever picks channel "email" when one was given —
+    // this should never trip. Guard it anyway rather than trust that invariant blindly.
+    let channelClaim: { phone: string } | { email: string };
+    if (doc.channel === "phone") {
+      channelClaim = { phone: doc.phone };
+    } else if (doc.email) {
+      channelClaim = { email: doc.email };
+    } else {
+      logError("otp/verify", new Error(`Otp ${doc._id} has channel="email" but no email stored`));
+      return NextResponse.json({ ok: false, error: "This code is no longer valid. Request a new one." }, { status: 400 });
+    }
+    const token = await signCheckout(channelClaim);
 
     // Verifying a code also signs the customer in: upsert the passwordless
     // account (keyed on the proven channel) and issue a long-lived session, so

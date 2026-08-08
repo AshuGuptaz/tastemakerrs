@@ -20,7 +20,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const Body = z.object({
-  email: z.string().email(),
+  // Sign-in allows phone-only; checkout still always collects a real email.
+  // Blank/omitted means "not provided" — a malformed non-blank value still fails.
+  email: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? undefined : v),
+    z.string().email().optional()
+  ),
   phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
   name: z.string().optional(),
 });
@@ -29,6 +34,7 @@ const COOLDOWN_MS = 30_000;
 const MAX_PER_HOUR = 6;
 const CODE_TTL_MS = 10 * 60_000; // code validity
 const RATE_WINDOW_MS = 3600_000; // 1 h — also the row TTL, so counting works
+const NO_LIMIT = Promise.resolve({ allowed: true, remaining: Infinity, retryAfter: 0 });
 
 export async function POST(req: Request) {
   try {
@@ -51,8 +57,17 @@ export async function POST(req: Request) {
     }
 
     await connectDB();
-    const emailLc = email.trim().toLowerCase();
+    const emailLc = email ? email.trim().toLowerCase() : "";
     const now = Date.now();
+
+    // Email-less sign-in only works if SMS delivery is actually configured —
+    // otherwise there is no channel left to send the code through.
+    if (!emailLc && !smsConfigured()) {
+      return NextResponse.json(
+        { error: "Please add an email — SMS delivery isn't available right now." },
+        { status: 400 }
+      );
+    }
 
     // Hourly cap, atomic per identifier — phone AND email are each checked
     // independently via rateLimit()'s single atomic increment, so concurrent
@@ -62,9 +77,12 @@ export async function POST(req: Request) {
     // throwaway email while pinning the victim's phone still hits the phone
     // bucket every time and gets capped, same as keying on "phone OR email"
     // did, just race-free.
+    // No email on this request (phone-only sign-in) skips its checks entirely
+    // rather than keying on an empty string, which would put every email-less
+    // request in one shared bucket.
     const [phoneHourly, emailHourly] = await Promise.all([
       rateLimit(`otp-hr:phone:${phone}`, { limit: MAX_PER_HOUR, windowMs: RATE_WINDOW_MS }),
-      rateLimit(`otp-hr:email:${emailLc}`, { limit: MAX_PER_HOUR, windowMs: RATE_WINDOW_MS }),
+      emailLc ? rateLimit(`otp-hr:email:${emailLc}`, { limit: MAX_PER_HOUR, windowMs: RATE_WINDOW_MS }) : NO_LIMIT,
     ]);
     if (!phoneHourly.allowed || !emailHourly.allowed) {
       return NextResponse.json({ error: "Too many codes requested. Try again later." }, { status: 429 });
@@ -74,7 +92,7 @@ export async function POST(req: Request) {
     // of a separate findOne-based check.
     const [phoneCooldown, emailCooldown] = await Promise.all([
       rateLimit(`otp-cd:phone:${phone}`, { limit: 1, windowMs: COOLDOWN_MS }),
-      rateLimit(`otp-cd:email:${emailLc}`, { limit: 1, windowMs: COOLDOWN_MS }),
+      emailLc ? rateLimit(`otp-cd:email:${emailLc}`, { limit: 1, windowMs: COOLDOWN_MS }) : NO_LIMIT,
     ]);
     if (!phoneCooldown.allowed || !emailCooldown.allowed) {
       const wait = Math.max(phoneCooldown.retryAfter, emailCooldown.retryAfter);
@@ -92,7 +110,7 @@ export async function POST(req: Request) {
 
     const code = String(crypto.randomInt(0, 1_000_000)).padStart(6, "0");
     const doc = await Otp.create({
-      email: emailLc,
+      email: emailLc || undefined,
       phone,
       name: name?.trim() || undefined,
       channel,
@@ -123,7 +141,7 @@ export async function POST(req: Request) {
     // Client validation failures (bad email/phone) are 400s, not server faults —
     // so callers can distinguish them and real 500s stay meaningful in logs.
     if (e instanceof Error && e.name === "ZodError") {
-      return NextResponse.json({ error: "Enter a valid email and 10-digit mobile number." }, { status: 400 });
+      return NextResponse.json({ error: "Enter a valid 10-digit mobile number (and a valid email, if you added one)." }, { status: 400 });
     }
     logError("otp/send", e);
     return NextResponse.json({ error: "Could not send code" }, { status: 500 });

@@ -51,13 +51,14 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
 
   const send = async () => {
     if (!/^[6-9]\d{9}$/.test(phone)) return toast.error("Enter a valid 10-digit mobile number");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast.error("Enter a valid email address");
+    const emailTrimmed = email.trim();
+    if (emailTrimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) return toast.error("Enter a valid email address");
     setBusy(true);
     try {
       const res: SendRes = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, phone, name: name || undefined }),
+        body: JSON.stringify({ email: emailTrimmed || undefined, phone, name: name || undefined }),
       }).then((r) => r.json());
 
       if (res.enabled === false) {
@@ -233,7 +234,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
                   <Field icon={Phone} label="Mobile">
                     <input inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit mobile number" className={inputCls} />
                   </Field>
-                  <Field icon={Mail} label="Email">
+                  <Field icon={Mail} label="Email" hint="optional">
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="you@email.com" className={inputCls} />
                   </Field>
                 </div>
