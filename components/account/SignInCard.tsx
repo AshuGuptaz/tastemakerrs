@@ -50,6 +50,8 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
   }, [cooldown]);
 
   const send = async () => {
+    const nameTrimmed = name.trim();
+    if (!nameTrimmed) return toast.error("Enter your name");
     if (!/^[6-9]\d{9}$/.test(phone)) return toast.error("Enter a valid 10-digit mobile number");
     const emailTrimmed = email.trim();
     if (emailTrimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) return toast.error("Enter a valid email address");
@@ -58,7 +60,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
       const res: SendRes = await fetch("/api/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: emailTrimmed || undefined, phone, name: name || undefined }),
+        body: JSON.stringify({ email: emailTrimmed || undefined, phone, name: nameTrimmed }),
       }).then((r) => r.json());
 
       if (res.enabled === false) {
@@ -228,8 +230,8 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
                 </p>
 
                 <div className="mt-6 space-y-3.5">
-                  <Field icon={User} label="Name" hint="optional">
-                    <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" className={inputCls} />
+                  <Field icon={User} label="Name">
+                    <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="Your name" className={inputCls} />
                   </Field>
                   <Field icon={Phone} label="Mobile">
                     <input inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit mobile number" className={inputCls} />
