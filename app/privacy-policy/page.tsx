@@ -40,7 +40,7 @@ export default function PrivacyPage() {
         <p>We use a small set of essential and analytics cookies. You can disable cookies in your browser without affecting checkout.</p>
 
         <h2 className="mt-6 font-display text-2xl uppercase">7. Contact</h2>
-        <p>Questions? <a href="mailto:tastemakerrs@gmail.com" className="text-flame underline">tastemakerrs@gmail.com</a> · +91 88816 61177.</p>
+        <p>Questions? <a href="mailto:tastemakerrs@gmail.com" className="text-flame underline">tastemakerrs@gmail.com</a> · +91 79057 17007.</p>
       </article>
     </section>
   );

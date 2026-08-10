@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     // anyone; requests were only discoverable via a direct DB query, despite
     // the page telling customers "we'll call you within 2 hours."
     const adminEmail = process.env.CONTACT_TO || "tastemakerrs@gmail.com";
-    const adminPhone = process.env.CONTACT_PHONE || "8881661177";
+    const adminPhone = process.env.CONTACT_PHONE || "7905717007";
     try {
       await Promise.all([
         emailConfigured()

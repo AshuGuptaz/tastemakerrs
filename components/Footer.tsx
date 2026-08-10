@@ -30,7 +30,7 @@ export default function Footer() {
               {[
                 { href: "https://instagram.com/thetastemakerrs", label: "Instagram", Icon: Instagram },
                 { href: "https://facebook.com/thetastemakerrs", label: "Facebook", Icon: Facebook },
-                { href: "https://wa.me/918881661177", label: "WhatsApp", Icon: Send },
+                { href: "https://wa.me/917905717007", label: "WhatsApp", Icon: Send },
               ].map(({ href, label, Icon }) => (
                 <a
                   key={label}
@@ -77,7 +77,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-flame-400" />
-                <a href="tel:+918881661177" className={linkCls}>+91 88816 61177</a>
+                <a href="tel:+917905717007" className={linkCls}>+91 79057 17007</a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-flame-400" />
