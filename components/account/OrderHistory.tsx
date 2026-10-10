@@ -7,6 +7,7 @@ import { RotateCcw, Package, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
 import { PRODUCTS } from "@/lib/products";
+import { priceCustomCake, customCakeName, type CustomCakeSpec } from "@/lib/custom-cake";
 import { formatINR } from "@/lib/format";
 import { STATUS_META, isCancelledLike } from "@/lib/order-status";
 import type { OrderStatus } from "@/models/Order";
@@ -44,12 +45,25 @@ export default function OrderHistory() {
     let skipped = 0;
     order.items.forEach((i, idx) => {
       if (i.custom) {
+        // Re-derive from the live pricing formula, same as the catalog branch
+        // below — otherwise a reordered custom cake carries its historical
+        // price all the way to checkout and spuriously trips the "prices have
+        // changed" reconciliation at submit even when nothing actually did.
+        const c = i.custom as Record<string, unknown>;
+        const spec: CustomCakeSpec = {
+          base: typeof c.base === "string" ? c.base : null,
+          flavor: typeof c.flavor === "string" ? c.flavor : undefined,
+          weight: typeof c.weight === "string" ? c.weight : undefined,
+          shape: typeof c.shape === "string" ? c.shape : undefined,
+          eggless: c.eggless === true,
+          hasImage: Boolean(c.image),
+        };
         add(
           {
             id: `custom-${order.id}-${idx}`,
             slug: "custom-cake",
-            name: i.name,
-            price: i.price,
+            name: customCakeName(spec),
+            price: priceCustomCake(spec),
             image: CUSTOM_IMG,
             custom: i.custom as Record<string, unknown>,
           },
