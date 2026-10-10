@@ -14,6 +14,7 @@ type Order = {
   createdAt: string;
   address: { name: string; city: string; phone: string };
   items: { name: string; qty: number }[];
+  gift?: { isGift: boolean; recipientName?: string; hidePrices?: boolean };
 };
 
 const STATUSES = ["pending", "paid", "in_kitchen", "out_for_delivery", "delivered", "cancelled", "refunded"];
@@ -87,7 +88,16 @@ export default function AdminOrders() {
                 {orders.map((o, i) => (
                   <tr key={o._id} className={i % 2 ? "bg-cream-50" : ""}>
                     <td className="p-3 font-mono text-xs">{o._id.slice(-8)}</td>
-                    <td className="p-3"><div className="font-semibold">{o.address.name}</div><div className="text-xs text-cocoa/60">{o.address.phone} · {o.address.city}</div></td>
+                    <td className="p-3">
+                      <div className="font-semibold">{o.address.name}</div>
+                      <div className="text-xs text-cocoa/60">{o.address.phone} · {o.address.city}</div>
+                      {o.gift?.isGift && (
+                        <div className="mt-1 text-xs font-semibold text-flame">
+                          🎁 Gift{o.gift.recipientName ? ` for ${o.gift.recipientName}` : ""}
+                          {o.gift.hidePrices && <span className="ml-1 rounded-pill bg-flame/10 px-1.5 py-0.5">hide price on slip</span>}
+                        </div>
+                      )}
+                    </td>
                     <td className="p-3 text-xs">{o.items.map((it) => `${it.name} ×${it.qty}`).join(", ")}</td>
                     <td className="p-3 font-display text-lg">{formatINR(o.total)}</td>
                     <td className="p-3"><span className={`rounded-pill px-2 py-0.5 text-xs ${o.paymentStatus === "paid" ? "bg-flame/10 text-flame" : "bg-cocoa-50 text-cocoa/60"}`}>{o.paymentStatus} · {o.paymentMethod}</span></td>
