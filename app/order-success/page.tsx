@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { m, useReducedMotion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
 
@@ -14,18 +14,55 @@ function OrderSuccessInner() {
   const { clear } = useCart();
   const cleared = useRef(false);
   const reduce = useReducedMotion();
+  // null = checking, true = really paid, false = not found / not actually paid.
+  const [verified, setVerified] = useState<boolean | null>(null);
 
-  // Clear the cart once an order is confirmed. The Razorpay flow clears in its
-  // success handler; the Stripe redirect does not, so this covers that path too.
+  // This page used to trust the URL alone — a stale bookmark, a shared link,
+  // or even just a back-button visit to a cancelled checkout could show a
+  // false "confirmed" message AND silently wipe whatever is in the cart right
+  // now. /api/track/:id only ever 200s for an order that's actually paid (or
+  // paid-then-refunded), so use it as a real verification gate before doing
+  // either. The Razorpay flow clears in its own success handler too; the
+  // Stripe redirect does not, so this is what covers that path.
+  //
+  // Stripe's redirect can beat its own webhook here by a second or two, so a
+  // single immediate check could flash "not found" for a payment that did
+  // succeed — retry briefly before concluding it's genuinely unverified.
   useEffect(() => {
-    if (id && !cleared.current) {
+    if (!id) { setVerified(false); return; }
+    let cancelled = false;
+    let attempt = 0;
+    const MAX_ATTEMPTS = 5;
+    const check = () => {
+      fetch(`/api/track/${id}`, { cache: "no-store" })
+        .then((r) => {
+          if (cancelled) return;
+          if (r.ok) { setVerified(true); return; }
+          attempt++;
+          if (attempt < MAX_ATTEMPTS) setTimeout(check, 1500);
+          else setVerified(false);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          attempt++;
+          if (attempt < MAX_ATTEMPTS) setTimeout(check, 1500);
+          else setVerified(false);
+        });
+    };
+    check();
+    return () => { cancelled = true; };
+  }, [id]);
+
+  useEffect(() => {
+    if (verified && !cleared.current) {
       cleared.current = true;
       clear();
     }
-  }, [id, clear]);
+  }, [verified, clear]);
 
-  // No order id → don't fake a confirmation (and don't clear the cart).
-  if (!id) {
+  // No id, or the id doesn't correspond to an actually-paid order → don't
+  // fake a confirmation (and don't clear the cart).
+  if (!id || verified === false) {
     return (
       <section className="bg-transparent py-20 md:py-32 min-h-[70vh]">
         <div className="container-x max-w-xl text-center">
@@ -37,6 +74,18 @@ function OrderSuccessInner() {
             <Link href="/cart" className="btn-accent">Back to cart</Link>
             <Link href="/contact" className="btn-line">Contact support</Link>
           </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (verified === null) {
+    return (
+      <section className="bg-transparent py-20 md:py-32 min-h-[70vh]">
+        <div className="container-x grid place-items-center text-center">
+          <div className="skeleton h-24 w-24 rounded-full" />
+          <div className="skeleton mt-6 h-12 w-72 max-w-full rounded-xl" />
+          <div className="skeleton mt-4 h-4 w-96 max-w-full rounded" />
         </div>
       </section>
     );
