@@ -24,8 +24,11 @@ export function isSlotId(id: unknown): id is SlotId {
 }
 
 // How far ahead a customer may schedule. Same-day is allowed (the brand
-// promises same-day delivery across Lucknow), out to ~4 months.
-const MAX_LEAD_DAYS = 120;
+// promises same-day delivery across Lucknow), out to ~4 months. Exported so
+// the date picker can disable out-of-range days instead of only enforcing
+// this on the server — otherwise a selectable-looking date 150 days out
+// 400s at submit with no warning in the UI.
+export const MAX_LEAD_DAYS = 120;
 
 /** Local YYYY-MM-DD `offset` days from today (used for the picker's min date). */
 export function isoDateOffset(offset = 0): string {

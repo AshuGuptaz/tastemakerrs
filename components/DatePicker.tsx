@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { MAX_LEAD_DAYS } from "@/lib/fulfillment";
 
 interface DatePickerProps {
   value: string;
@@ -18,6 +19,8 @@ const MONTHS = [
 export default function DatePicker({ value, onChange, min }: DatePickerProps) {
   const today = new Date();
   const minDate = min ? new Date(min + "T00:00:00") : today;
+  const maxDate = new Date(today);
+  maxDate.setDate(maxDate.getDate() + MAX_LEAD_DAYS);
 
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -46,7 +49,9 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
     date.setHours(0, 0, 0, 0);
     const m = new Date(minDate);
     m.setHours(0, 0, 0, 0);
-    return date < m;
+    const x = new Date(maxDate);
+    x.setHours(0, 0, 0, 0);
+    return date < m || date > x;
   };
 
   const prevMonth = () => {
@@ -62,6 +67,11 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
   const canGoPrev = () => {
     return viewYear > minDate.getFullYear() ||
       (viewYear === minDate.getFullYear() && viewMonth > minDate.getMonth());
+  };
+
+  const canGoNext = () => {
+    return viewYear < maxDate.getFullYear() ||
+      (viewYear === maxDate.getFullYear() && viewMonth < maxDate.getMonth());
   };
 
   const cells: (number | null)[] = [
@@ -88,8 +98,9 @@ export default function DatePicker({ value, onChange, min }: DatePickerProps) {
         <button
           type="button"
           onClick={nextMonth}
+          disabled={!canGoNext()}
           aria-label="Next month"
-          className="rounded-full p-1.5 text-white transition hover:bg-white/20"
+          className="rounded-full p-1.5 text-white transition hover:bg-white/20 disabled:opacity-30"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
