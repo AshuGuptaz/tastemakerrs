@@ -13,8 +13,11 @@ export const dynamic = "force-dynamic";
  *
  * The order id acts as a capability token, so we return ONLY non-sensitive
  * fields: status + timeline, schedule, item names, and a first-name/city. No
- * email, full phone, full address, payment ids or totals. Unpaid orders return
- * 404 so abandoned/pending carts are never exposed.
+ * email, full phone, full address, payment ids or totals. Only orders that
+ * actually went through (paid, or paid-then-refunded) are exposed — an
+ * unpaid cart or a failed payment attempt never completed a real purchase,
+ * so its tracking link 404s the same way, even though the customer already
+ * holds that order id from checkout.
  */
 export async function GET(_req: Request, { params }: { params: { id: string } }) {
   try {
@@ -23,7 +26,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     }
     await connectDB();
     const o = await Order.findById(params.id).lean();
-    if (!o || o.paymentStatus === "unpaid") {
+    if (!o || !["paid", "refunded"].includes(o.paymentStatus)) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
