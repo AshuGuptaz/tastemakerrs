@@ -56,11 +56,13 @@ export async function POST(req: Request) {
     // Single atomic transition: cross-check that razorpay_order_id matches the
     // one we created for this DB order (prevents reusing a valid signature from
     // a different/cheaper Razorpay order) AND that the order hasn't already been
-    // paid. The `paymentStatus: { $ne: "paid" }` guard makes this idempotent —
-    // the signature triple is client-visible and long-lived, so without it a
-    // replayed verify payload could revert a refunded/fulfilled order to "paid".
+    // paid. `{ $in: ["unpaid", "failed"] }` — deliberately not `{ $ne: "paid" }`,
+    // which would also match "refunded" — the signature triple is client-visible
+    // and long-lived (HMAC never expires), so without this a replayed verify
+    // payload could revert a refunded order back to "paid" (the same bug already
+    // fixed on both webhook handlers).
     const updated = await Order.findOneAndUpdate(
-      { _id: orderId, razorpayOrderId: razorpay_order_id, paymentStatus: { $ne: "paid" } },
+      { _id: orderId, razorpayOrderId: razorpay_order_id, paymentStatus: { $in: ["unpaid", "failed"] } },
       { paymentStatus: "paid", status: "paid", razorpayPaymentId: razorpay_payment_id },
       { new: true }
     );
