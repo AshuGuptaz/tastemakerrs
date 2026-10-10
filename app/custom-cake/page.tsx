@@ -207,7 +207,7 @@ function CustomCakeContent() {
                   <label className="label">Reference image (optional, +₹150 for edible print)</label>
                   <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-line bg-surface px-5 py-6 hover:border-flame">
                     <UploadCloud className="h-6 w-6 text-flame" />
-                    <span className="text-sm text-ink-soft">{imageData ? "Image uploaded — click to change" : "Click to upload (max 4 MB)"}</span>
+                    <span className="text-sm text-ink-soft">{imageData ? "Image uploaded — click to change" : "Click to upload (max 1.4 MB)"}</span>
                     <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
                   </label>
                   {imageData && (
