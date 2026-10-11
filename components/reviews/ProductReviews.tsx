@@ -176,9 +176,16 @@ function ReviewForm({
 
   const addPhotos = (files: FileList | null) => {
     if (!files) return;
+    // Track remaining slots locally — `photos.length` from the closure is a
+    // snapshot from when this call started, so selecting several files at
+    // once (the common case with a multi-select file picker) never updates
+    // it mid-loop. Without this, excess files past the cap were silently
+    // dropped by the setPhotos guard below with no toast ever firing.
+    let remaining = MAX_PHOTOS - photos.length;
     for (const f of Array.from(files)) {
-      if (photos.length >= MAX_PHOTOS) { toast.error(`Up to ${MAX_PHOTOS} photos`); break; }
+      if (remaining <= 0) { toast.error(`Up to ${MAX_PHOTOS} photos`); break; }
       if (f.size > MAX_PHOTO_BYTES) { toast.error("Each photo must be under ~650KB"); continue; }
+      remaining--;
       const reader = new FileReader();
       reader.onload = () => setPhotos((p) => (p.length < MAX_PHOTOS ? [...p, reader.result as string] : p));
       reader.readAsDataURL(f);
