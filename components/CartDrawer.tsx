@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { m, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
-import { useCart } from "@/context/CartContext";
+import { useCart, MAX_QTY } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
 import { formatINR } from "@/lib/format";
 
@@ -101,16 +101,18 @@ export default function CartDrawer() {
                             <div className="flex items-center gap-1 rounded-pill border border-line bg-white">
                               <button
                                 onClick={() => setQty(it.id, it.variant, it.qty - 1)}
+                                disabled={it.qty <= 1}
                                 aria-label="Decrease quantity"
-                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame focus-ring"
+                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame focus-ring disabled:opacity-40 disabled:hover:text-current"
                               >
                                 <Minus className="h-3.5 w-3.5" />
                               </button>
                               <span className="w-6 text-center text-sm font-semibold">{it.qty}</span>
                               <button
                                 onClick={() => setQty(it.id, it.variant, it.qty + 1)}
+                                disabled={it.qty >= MAX_QTY}
                                 aria-label="Increase quantity"
-                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame focus-ring"
+                                className="grid h-8 w-8 place-items-center rounded-pill hover:text-flame focus-ring disabled:opacity-40 disabled:hover:text-current"
                               >
                                 <Plus className="h-3.5 w-3.5" />
                               </button>

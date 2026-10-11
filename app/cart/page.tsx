@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { m } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
-import { useCart } from "@/context/CartContext";
+import { useCart, MAX_QTY } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
 import { formatINR } from "@/lib/format";
 import { deliveryFee } from "@/lib/pricing";
@@ -70,7 +70,7 @@ export default function CartPage() {
                     <div className="flex items-center gap-1 rounded-pill border border-line bg-white">
                       <button onClick={() => setQty(it.id, it.variant, it.qty - 1)} disabled={it.qty <= 1} aria-label="Decrease quantity" className="grid h-11 w-11 place-items-center rounded-pill hover:text-flame focus-ring disabled:opacity-40 disabled:hover:text-current"><Minus className="h-4 w-4" /></button>
                       <span className="w-8 text-center font-semibold">{it.qty}</span>
-                      <button onClick={() => setQty(it.id, it.variant, it.qty + 1)} aria-label="Increase quantity" className="grid h-11 w-11 place-items-center rounded-pill hover:text-flame focus-ring"><Plus className="h-4 w-4" /></button>
+                      <button onClick={() => setQty(it.id, it.variant, it.qty + 1)} disabled={it.qty >= MAX_QTY} aria-label="Increase quantity" className="grid h-11 w-11 place-items-center rounded-pill hover:text-flame focus-ring disabled:opacity-40 disabled:hover:text-current"><Plus className="h-4 w-4" /></button>
                     </div>
                     <p className="font-display text-lg md:w-20 md:text-right">{formatINR(it.qty * it.price)}</p>
                     <button onClick={() => remove(it.id, it.variant)} className="grid h-11 w-11 place-items-center rounded-pill text-ink-mut transition-colors hover:bg-red-50 hover:text-red-600 focus-ring" aria-label={`Remove ${it.name}`}>

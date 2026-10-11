@@ -27,7 +27,10 @@ type CartCtx = {
 const CartContext = createContext<CartCtx | null>(null);
 
 const KEY = "ttm_cart_v1";
-const MAX_QTY = 50;
+// Exported so qty-stepper UIs (cart page, cart drawer) can disable their "+"
+// button at the same ceiling this context already clamps to, instead of
+// silently no-op'ing the click with no feedback.
+export const MAX_QTY = 50;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
