@@ -19,11 +19,14 @@ type Offer = {
 };
 
 // NOTE: `code` values here must stay in sync with the coupon map in
-// app/checkout/page.tsx. Offers without a checkout code are redeemed manually.
+// lib/pricing.ts (couponValue) — it only ever looks at the cart subtotal, with
+// no order-history or cart-contents check, so the copy below describes
+// exactly that: a subtotal-based discount, not a first-order/product-specific
+// restriction the code doesn't actually enforce.
 const OFFERS: Offer[] = [
-  { t: "First Bite",  desc: "10% off your first order",        code: "FIRSTBITE", bg: "bg-peach-100",  img: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80" },
-  { t: "Birthday",    desc: "₹150 off birthday cakes ≥ ₹999",  code: "BDAY150",   bg: "bg-cream-200",  img: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=900&q=80" },
-  { t: "Hamper Love", desc: "20% off any hamper",              code: "HAMPER20",  bg: "bg-sky-100",    img: "https://images.unsplash.com/photo-1687795097254-f019f9d7fd17?auto=format&fit=crop&w=900&q=80" },
+  { t: "First Bite",  desc: "10% off your order",               code: "FIRSTBITE", bg: "bg-peach-100",  img: "https://images.unsplash.com/photo-1559553156-2e97137af16f?auto=format&fit=crop&w=900&q=80" },
+  { t: "Birthday",    desc: "₹150 off orders ≥ ₹999",           code: "BDAY150",   bg: "bg-cream-200",  img: "https://images.unsplash.com/photo-1517427294546-5aa121f68e8a?auto=format&fit=crop&w=900&q=80" },
+  { t: "Hamper Love", desc: "20% off your order",                code: "HAMPER20",  bg: "bg-sky-100",    img: "https://images.unsplash.com/photo-1687795097254-f019f9d7fd17?auto=format&fit=crop&w=900&q=80" },
   { t: "Bulk Treats", desc: "10% off orders ≥ ₹3,000",         code: "BULK10",    bg: "bg-peach-200",  img: "https://images.unsplash.com/photo-1569896254409-ac66c17041d2?auto=format&fit=crop&w=900&q=80" },
   { t: "Sweet Combo", desc: "Cake + 6 cupcakes for ₹999",      note: "Add both to your cart and mention “Sweet Combo” in your delivery notes.", bg: "bg-cocoa-50", img: "https://images.unsplash.com/photo-1551404973-7dec6ee9bba7?auto=format&fit=crop&w=900&q=80" },
 ];
