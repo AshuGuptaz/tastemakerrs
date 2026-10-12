@@ -47,13 +47,18 @@ export default function AdminReviews() {
   const moderate = async (id: string, status: "approved" | "rejected") => {
     setReviews((rs) => rs.filter((r) => r.id !== id)); // optimistic remove from current tab
     try {
-      await fetch("/api/admin/reviews", {
+      const res = await fetch("/api/admin/reviews", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
       });
+      // fetch only rejects on a network failure, never on a non-2xx status —
+      // without this check, a failed PATCH (expired session, already-moderated
+      // review, server error) left the review optimistically removed from the
+      // list forever with no rollback and no indication anything went wrong.
+      if (!res.ok) throw new Error("Moderation failed");
     } catch {
-      load(tab); // rollback by reloading
+      load(tab); // rollback by reloading (also redirects to login on a 401)
     }
   };
 
