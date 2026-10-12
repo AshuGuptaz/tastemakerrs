@@ -110,9 +110,9 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       </Link>
 
       <div className="flex flex-1 flex-col p-5">
-        <div className="mb-1 flex items-center justify-between gap-2">
-          <h3 className="font-display text-xl leading-tight tracking-tight">{product.name}</h3>
-          <span className="font-display text-lg text-flame-700">{formatINR(product.price)}</span>
+        <div className="mb-1 flex items-start justify-between gap-2">
+          <h3 className="min-h-[2.5em] font-display text-xl leading-tight tracking-tight">{product.name}</h3>
+          <span className="shrink-0 font-display text-lg text-flame-700">{formatINR(product.price)}</span>
         </div>
         {product.unit && <p className="mb-2 text-xs uppercase tracking-wider text-ink-mut">{product.unit}</p>}
         <p className="mb-4 line-clamp-2 text-sm text-ink-soft">{product.description}</p>
