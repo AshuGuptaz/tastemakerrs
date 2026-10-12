@@ -6,6 +6,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
+import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
 import { logError } from "@/lib/logger";
 
 /**
@@ -14,7 +15,10 @@ import { logError } from "@/lib/logger";
  *
  * Amount is loaded from the DB (never trusted from the client). When OTP is
  * enabled the caller must present a verified checkout token whose contact
- * matches the order, binding the session to its owner.
+ * matches the order, binding the session to its owner. A signed-in
+ * customer's session is accepted the same way /api/orders accepts it —
+ * otherwise a returning customer's one-tap checkout (no re-OTP) would create
+ * the order fine and then 401 right here at the payment step.
  */
 export async function POST(req: Request) {
   try {
@@ -30,8 +34,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
     if (otpEnabled()) {
-      const token = await verifyCheckout(cookies().get(CHECKOUT_COOKIE)?.value);
-      if (!contactMatches(token, { email: order.address.email ?? "", phone: order.address.phone ?? "" })) {
+      const jar = cookies();
+      const address = { email: order.address.email ?? "", phone: order.address.phone ?? "" };
+      const checkoutOk = contactMatches(await verifyCheckout(jar.get(CHECKOUT_COOKIE)?.value), address);
+      const customer = await verifyCustomer(jar.get(CUSTOMER_COOKIE)?.value);
+      const sessionOk = contactMatches(customer ? { phone: customer.phone, email: customer.email } : null, address);
+      if (!checkoutOk && !sessionOk) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
     }
