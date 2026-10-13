@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { m, AnimatePresence, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import Image from "next/image";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, Heart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useCartUI } from "@/context/CartUIContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { fireSugarBurst } from "@/components/ui/SugarBurst";
 import { CartToast } from "@/components/ui/CartToast";
 import type { Product } from "@/types/product";
@@ -16,13 +17,22 @@ import toast from "react-hot-toast";
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { add } = useCart();
   const { flyToCart } = useCartUI();
+  const { has, toggle } = useWishlist();
   const cardRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  const saved = has(product.id);
 
   const [added, setAdded] = useState(false);
   const addedTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => () => clearTimeout(addedTimeout.current), []);
+
+  function handleToggleWishlist(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+    const on = toggle(product.id);
+    toast.success(on ? "Saved to your wishlist ♥" : "Removed from wishlist");
+  }
 
   function handleAdd(e: React.MouseEvent<HTMLButtonElement>) {
     const r = e.currentTarget.getBoundingClientRect();
@@ -72,6 +82,7 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
       onMouseLeave={handleMouseLeave}
       className="group flex flex-col overflow-hidden rounded-[1.5rem] border border-line bg-surface shadow-e1 transition-shadow duration-300 ease-out hover:shadow-e3 will-change-transform"
     >
+      <div className="relative">
       <Link href={`/product/${product.slug}`} className={`relative grid aspect-[4/3] place-items-center ${product.bg} overflow-hidden`}>
         {product.image.startsWith("/") || product.image.startsWith("http") ? (
           <m.div
@@ -108,6 +119,16 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           </span>
         )}
       </Link>
+
+      <button
+        onClick={handleToggleWishlist}
+        aria-pressed={saved}
+        aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name} to wishlist`}
+        className={`absolute bottom-3 right-3 z-10 grid h-9 w-9 place-items-center rounded-pill bg-white/90 shadow backdrop-blur-sm transition-colors ${saved ? "text-flame" : "text-ink-mut hover:text-flame"}`}
+      >
+        <Heart className={`h-4 w-4 ${saved ? "fill-flame" : ""}`} />
+      </button>
+      </div>
 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-1 flex items-start justify-between gap-2">

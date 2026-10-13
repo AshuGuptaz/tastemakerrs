@@ -8,6 +8,7 @@ import { Minus, Plus, Heart, Truck, Shield, Sparkles, Leaf, Check } from "lucide
 import toast from "react-hot-toast";
 import { CartToast } from "@/components/ui/CartToast";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import ProductCard from "@/components/ProductCard";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import Underlined from "@/components/Underlined";
@@ -25,13 +26,10 @@ export default function ProductDetail({
   categoryLabel: string;
 }) {
   const { add } = useCart();
+  const { has, toggle } = useWishlist();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    try { setSaved(JSON.parse(localStorage.getItem("ttm_wishlist") || "[]").includes(product.id)); } catch {}
-  }, [product.id]);
+  const saved = has(product.id);
 
   useEffect(() => {
     recordView(product.id);
@@ -48,14 +46,8 @@ export default function ProductDetail({
   }
 
   function toggleWishlist() {
-    try {
-      const list: string[] = JSON.parse(localStorage.getItem("ttm_wishlist") || "[]");
-      const next = list.includes(product.id) ? list.filter((x) => x !== product.id) : [...list, product.id];
-      localStorage.setItem("ttm_wishlist", JSON.stringify(next));
-      const on = next.includes(product.id);
-      setSaved(on);
-      toast.success(on ? "Saved to your wishlist ♥" : "Removed from wishlist");
-    } catch {}
+    const on = toggle(product.id);
+    toast.success(on ? "Saved to your wishlist ♥" : "Removed from wishlist");
   }
 
   return (
