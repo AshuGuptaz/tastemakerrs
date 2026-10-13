@@ -4,8 +4,6 @@ Official website of **The Taste Makerrs** — a premium home bakery based in Luc
 
 🔗 [thetastemakerrs.com](https://thetastemakerrs.com)
 
----
-
 ## ⚠️ Copyright Notice
 
 This is a **private, proprietary codebase**. All rights reserved.
