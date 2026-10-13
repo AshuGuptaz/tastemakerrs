@@ -10,6 +10,7 @@ import Packages from "@/components/home/Packages";
 import Testimonials from "@/components/home/Testimonials";
 import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 export default function HomePage() {
   return (
@@ -20,6 +21,7 @@ export default function HomePage() {
       {/* Act 1 — Desire: trust signals, stats, then real cake */}
       <TrustStrip />
       <Stats />
+      <RecentlyViewed />
       <SignatureGallery />
 
       {/* Act 2 — Craft & proof (warm band) */}

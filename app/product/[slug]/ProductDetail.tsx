@@ -9,9 +9,11 @@ import toast from "react-hot-toast";
 import { CartToast } from "@/components/ui/CartToast";
 import { useCart } from "@/context/CartContext";
 import ProductCard from "@/components/ProductCard";
+import RecentlyViewed from "@/components/RecentlyViewed";
 import Underlined from "@/components/Underlined";
 import type { Product } from "@/types/product";
 import { formatINR } from "@/lib/format";
+import { recordView } from "@/lib/recently-viewed";
 
 export default function ProductDetail({
   product,
@@ -29,6 +31,10 @@ export default function ProductDetail({
 
   useEffect(() => {
     try { setSaved(JSON.parse(localStorage.getItem("ttm_wishlist") || "[]").includes(product.id)); } catch {}
+  }, [product.id]);
+
+  useEffect(() => {
+    recordView(product.id);
   }, [product.id]);
 
   function handleAdd() {
@@ -175,6 +181,8 @@ export default function ProductDetail({
           </div>
         </section>
       )}
+
+      <RecentlyViewed excludeId={product.id} />
     </>
   );
 }
