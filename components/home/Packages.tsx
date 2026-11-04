@@ -65,7 +65,7 @@ export default function Packages() {
           </p>
         </Reveal>
 
-        <div className="mt-14 grid items-start gap-6 md:grid-cols-3">
+        <div className="mt-14 grid items-stretch gap-6 md:grid-cols-3">
           {PACKAGES.map((p, i) => (
             <Reveal key={p.name} delay={i * 0.08}>
               <SpotlightCard
@@ -75,9 +75,6 @@ export default function Packages() {
                     : "rounded-[1.5rem] border border-line bg-surface p-8 shadow-e1 hover:-translate-y-1 hover:shadow-e3"
                 }`}
               >
-                {p.popular && (
-                  <span className="absolute left-1/2 top-5 h-1.5 w-12 -translate-x-1/2 rounded-full bg-ink/15" />
-                )}
                 {p.popular && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-pill bg-flame px-4 py-1 text-xs font-semibold text-white shadow-glow">
                     Most popular
