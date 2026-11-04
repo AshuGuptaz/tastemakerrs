@@ -95,6 +95,11 @@ const config: Config = {
         // Linear-style sheen sweep
         shine: { "0%": { backgroundPosition: "200% center" }, "100%": { backgroundPosition: "-200% center" } },
         rise: { "0%": { opacity: "0", transform: "translateY(16px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
+        // Soft expanding glow ring (box-shadow only — stays tight around the button)
+        "pulse-ring": {
+          "0%": { boxShadow: "0 0 0 0 rgba(214,122,71,0.45)" },
+          "70%,100%": { boxShadow: "0 0 0 14px rgba(214,122,71,0)" },
+        },
         "blob-drift": {
           "0%,100%": { transform: "translate(0,0)", borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
           "33%": { transform: "translate(28px,-20px)", borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },
@@ -114,6 +119,7 @@ const config: Config = {
         aurora: "aurora 22s ease-in-out infinite",
         shine: "shine 6s linear infinite",
         rise: "rise 0.8s cubic-bezier(0.22,1,0.36,1) both",
+        "pulse-ring": "pulse-ring 2.2s ease-out infinite",
         "blob-drift": "blob-drift 14s ease-in-out infinite",
         "blob-drift-alt": "blob-drift-alt 18s ease-in-out infinite",
       },
