@@ -20,12 +20,16 @@ export default function HomePage() {
 
       {/* Act 1 — Desire: trust signals, stats, then real cake */}
       <TrustStrip />
-      <Stats />
+      {/* phones: skip — it repeats the rating strip above and adds scroll */}
+      <div className="hidden md:block">
+        <Stats />
+      </div>
       <RecentlyViewed />
       <SignatureGallery />
 
       {/* Act 2 — Craft & proof (warm band) */}
-      <div className="band-warm">
+      {/* phones: skip — decorative feature cards are ~1,800px of scroll */}
+      <div className="band-warm hidden md:block">
         <Bento />
       </div>
 

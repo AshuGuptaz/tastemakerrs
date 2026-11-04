@@ -52,7 +52,7 @@ function Item({ q, a, open, onToggle }: { q: string; a: string; open: boolean; o
 export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="section">
+    <section className="section max-md:py-12">
       <div className="container-tight">
         <div className="grid gap-10 md:grid-cols-[0.8fr_1.2fr] md:gap-16">
           <Reveal>

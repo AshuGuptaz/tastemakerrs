@@ -22,12 +22,14 @@ export default function RecentlyViewed({ excludeId, limit = 4 }: { excludeId?: s
   if (items.length === 0) return null;
 
   return (
-    <section className="section bg-transparent">
+    <section className="section bg-transparent max-md:py-10">
       <div className="container-x">
         <h2 className="t-h2">Recently <Underlined>viewed</Underlined></h2>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 md:grid-cols-4">
+        <div className="mt-6 no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 scroll-px-5 md:mx-0 md:grid md:gap-5 md:overflow-visible md:px-0 md:pb-0 md:mt-8 md:grid-cols-4">
           {items.map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
+            <div key={p.id} className="w-[72vw] max-w-[18rem] shrink-0 snap-start md:w-auto md:max-w-none">
+              <ProductCard product={p} index={i} />
+            </div>
           ))}
         </div>
       </div>

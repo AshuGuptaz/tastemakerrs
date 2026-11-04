@@ -55,7 +55,7 @@ const PACKAGES: Pkg[] = [
 
 export default function Packages() {
   return (
-    <section className="section">
+    <section className="section max-md:py-12">
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">Celebration packages</span>
@@ -65,9 +65,9 @@ export default function Packages() {
           </p>
         </Reveal>
 
-        <div className="mt-14 grid items-stretch gap-6 md:grid-cols-3">
+        <div className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 scroll-px-5 md:mx-0 md:grid md:gap-5 md:overflow-visible md:px-0 md:pb-0 mt-8 pt-5 md:mt-14 md:grid-cols-3 md:items-stretch md:gap-6 md:pt-0">
           {PACKAGES.map((p, i) => (
-            <Reveal key={p.name} delay={i * 0.08}>
+            <Reveal key={p.name} delay={i * 0.08} className="w-[82vw] max-w-[22rem] shrink-0 snap-center md:w-auto md:max-w-none">
               <SpotlightCard
                 className={`flex h-full flex-col transition-all duration-300 ${
                   p.popular

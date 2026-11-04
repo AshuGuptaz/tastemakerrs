@@ -11,16 +11,16 @@ const OCCASIONS = [
 
 export default function Occasions() {
   return (
-    <section className="section">
+    <section className="section max-md:py-12">
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">For every occasion</span>
           <h2 className="t-h2 mt-4">A cake for <span className="text-gradient">every reason</span> to gather.</h2>
         </Reveal>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
+        <div className="mt-8 no-scrollbar -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-3 scroll-px-5 md:mx-0 md:grid md:gap-5 md:overflow-visible md:px-0 md:pb-0 md:mt-12 md:grid-cols-3">
           {OCCASIONS.map((o, i) => (
-            <Reveal key={o.title} delay={i * 0.08}>
+            <Reveal key={o.title} delay={i * 0.08} className="w-[72vw] max-w-[20rem] shrink-0 snap-start md:w-auto md:max-w-none">
               <Link
                 href={o.href}
                 className="group relative block aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-line shadow-e1 transition-all duration-300 hover:-translate-y-1 hover:shadow-e3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40"

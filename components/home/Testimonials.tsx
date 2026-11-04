@@ -81,7 +81,7 @@ function Row({ items, reverse = false, duration = 42 }: { items: Review[]; rever
 
 export default function Testimonials() {
   return (
-    <section className="section">
+    <section className="section max-md:py-12">
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="t-eyebrow justify-center">In their words</span>
@@ -89,10 +89,12 @@ export default function Testimonials() {
         </Reveal>
       </div>
 
-      <div className="relative mt-12">
+      <div className="relative mt-8 md:mt-12">
         <div className="space-y-5">
           <Row items={REVIEWS.slice(0, 5)} duration={40} />
-          <Row items={REVIEWS.slice(5, 10)} reverse duration={46} />
+          <div className="hidden md:block">
+            <Row items={REVIEWS.slice(5, 10)} reverse duration={46} />
+          </div>
         </div>
         {/* edge fades to the warm canvas */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#EFE7DB] to-transparent md:w-40" />

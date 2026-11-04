@@ -27,7 +27,7 @@ export default function SignatureGallery() {
   };
 
   return (
-    <section className="section pt-8 md:pt-10 overflow-hidden">
+    <section className="section overflow-hidden pt-8 max-md:pb-12 md:pt-10">
       <div className="container-x flex flex-wrap items-end justify-between gap-4">
         <Reveal className="max-w-2xl">
           <span className="t-eyebrow">Signature flavours</span>
@@ -44,7 +44,7 @@ export default function SignatureGallery() {
         </div>
       </div>
 
-      <div className="relative mt-10">
+      <div className="relative mt-6 md:mt-10">
         {/* edge fades */}
         <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-canvas to-transparent md:w-12" />
         <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-canvas to-transparent md:w-12" />
