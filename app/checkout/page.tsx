@@ -9,6 +9,7 @@ import { CreditCard, Globe, MapPin, Gift, CalendarDays, Clock, ChevronDown, Chec
 import { m, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import { useCustomer } from "@/context/CustomerContext";
+import { loadSavedContact, saveContact, clearSavedContact } from "@/lib/saved-contact";
 import OtpDialog from "@/components/checkout/OtpDialog";
 import DatePicker from "@/components/DatePicker";
 import { formatINR } from "@/lib/format";
@@ -42,7 +43,7 @@ const LABELS: Record<keyof Address, string> = {
 
 export default function CheckoutPage() {
   const { items, subtotal, clear, hydrated } = useCart();
-  const { customer } = useCustomer();
+  const { customer, loading: customerLoading } = useCustomer();
   const [addr, setAddr] = useState<Address>(EMPTY);
   const [razorpayReady, setRazorpayReady] = useState(false);
   const [coupon, setCoupon] = useState("");
@@ -59,6 +60,8 @@ export default function CheckoutPage() {
   const [isGift, setIsGift] = useState(false);
   const [gift, setGift] = useState({ recipientName: "", recipientPhone: "", message: "", hidePrices: false });
   const prefilledRef = useRef(false);
+  const guestPrefilledRef = useRef(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(null);
   const streetRef = useRef<HTMLInputElement>(null);
   const submittingRef = useRef(false);
@@ -95,6 +98,29 @@ export default function CheckoutPage() {
       pincode: prev.pincode || def?.pincode || "",
     }));
   }, [customer]);
+
+  // Guests: prefill from details remembered on this device (only into still-empty
+  // fields, and only once we know nobody is signed in — signed-in customers get
+  // their account details above instead). Pincode falls back to the one they
+  // entered in the product-page delivery check.
+  useEffect(() => {
+    if (customerLoading || customer || guestPrefilledRef.current) return;
+    guestPrefilledRef.current = true;
+    const saved = loadSavedContact();
+    let pin = "";
+    try { pin = localStorage.getItem("ttm_pincode") || ""; } catch {}
+    if (!saved && !pin) return;
+    setAddr((prev) => ({
+      ...prev,
+      name: prev.name || saved?.name || "",
+      email: prev.email || saved?.email || "",
+      phone: prev.phone || saved?.phone || "",
+      street: prev.street || saved?.street || "",
+      city: prev.city || saved?.city || "",
+      state: prev.state || saved?.state || "",
+      pincode: prev.pincode || saved?.pincode || pin,
+    }));
+  }, [customer, customerLoading]);
 
   const applySavedAddress = (id: string) => {
     const a = customer?.addresses.find((x) => x._id === id);
@@ -300,6 +326,12 @@ export default function CheckoutPage() {
         return;
       }
 
+      // Order exists and prices reconcile → remember (or forget) a guest's details.
+      if (!customer) {
+        if (rememberMe) saveContact(addr);
+        else clearSavedContact();
+      }
+
       if (method === "razorpay") {
         if (!razorpayReady) throw new Error("Payment is loading, please wait and try again.");
 
@@ -420,6 +452,12 @@ export default function CheckoutPage() {
                 <div><label className="label" htmlFor="checkout-city">City</label><input id="checkout-city" required aria-required="true" aria-invalid={errorField === "city"} className={`input ${errorField === "city" ? "ring-2 ring-flame/50" : ""}`} value={addr.city} onChange={(e) => { setErrorField(null); setAddr({ ...addr, city: e.target.value }); }} /></div>
                 <div><label className="label" htmlFor="checkout-state">State</label><input id="checkout-state" required aria-required="true" aria-invalid={errorField === "state"} className={`input ${errorField === "state" ? "ring-2 ring-flame/50" : ""}`} value={addr.state} onChange={(e) => { setErrorField(null); setAddr({ ...addr, state: e.target.value }); }} /></div>
                 <div className="md:col-span-2"><label className="label" htmlFor="checkout-notes">Delivery notes</label><textarea id="checkout-notes" rows={3} className="input" value={addr.notes} onChange={(e) => setAddr({ ...addr, notes: e.target.value })} /></div>
+                {!customer && (
+                  <label className="md:col-span-2 flex cursor-pointer items-center gap-3 text-sm text-ink-soft">
+                    <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="h-5 w-5 accent-flame" />
+                    Remember my details on this device for next time
+                  </label>
+                )}
               </div>
 
               {/* Map preview */}
