@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { m } from "framer-motion";
-import { Check, PackageX, MapPin, CalendarClock } from "lucide-react";
+import { Check, PackageX, MapPin, CalendarClock, MessageCircle } from "lucide-react";
+import { whatsappLink } from "@/lib/site";
 import { STATUS_META, TRACK_STEPS, trackIndex, isCancelledLike } from "@/lib/order-status";
 import type { OrderStatus } from "@/models/Order";
 
@@ -143,8 +144,18 @@ export default function TrackPage({ params }: { params: { id: string } }) {
       </div>
 
       <p className="mt-6 text-center text-sm text-ink-mut">
-        Questions about your order? <Link href="/contact" className="font-semibold text-flame hover:underline">Reach us here</Link>.
+        Questions about your order?
       </p>
+      <div className="mt-3 flex justify-center">
+        <a
+          href={whatsappLink(`Hi, I have a question about my order #${data.id.slice(-8).toUpperCase()}`)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-line"
+        >
+          <MessageCircle className="h-4 w-4 text-flame" /> Message us on WhatsApp
+        </a>
+      </div>
     </div>
   );
 }

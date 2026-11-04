@@ -12,6 +12,7 @@
  *     FAST2SMS_API_KEY                     — India
  *   SMS_COUNTRY_CODE                       — default "91"
  */
+import { whatsappLink } from "./site";
 
 import { logError, logWarn } from "@/lib/logger";
 
@@ -136,6 +137,11 @@ export async function sendSMS(opts: { to: string; body: string }) {
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.thetastemakerrs.com";
 
+/** wa.me link prefilled with the order ref so the team knows which order a message is about. */
+function orderWhatsappUrl(id: string) {
+  return whatsappLink(`Hi, I have a question about my order #${id.slice(-8).toUpperCase()}`);
+}
+
 function shell(inner: string) {
   return `<!doctype html><html><body style="margin:0;background:#FBF1E4;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">
   <div style="max-width:520px;margin:0 auto;padding:32px 20px;">
@@ -209,7 +215,7 @@ export function orderEmailTemplate(order: {
     ${order.schedule ? `<div style="margin:18px 0 0;padding:12px 14px;background:#FFF4E6;border-radius:12px;font-size:14px;color:${INK};">🗓️ <b>Scheduled delivery:</b> ${escapeHtml(order.schedule)}</div>` : ""}
     ${order.gift?.recipientName ? `<p style="margin:12px 0 0;color:${ACCENT};font-size:14px;">🎁 This is a gift for ${escapeHtml(order.gift.recipientName)} — we'll pack it with your note.</p>` : ""}
     <p style="margin:18px 0 0;color:#5b5b62;font-size:14px;">Delivering to: ${escapeHtml(order.address.street)}, ${escapeHtml(order.address.city)}, ${escapeHtml(order.address.state)} ${escapeHtml(order.address.pincode)}.</p>
-    <p style="margin:8px 0 0;color:#9A7B57;font-size:13px;">We'll be in touch on WhatsApp with delivery updates. Questions? Just reply to this email.</p>
+    <p style="margin:8px 0 0;color:#9A7B57;font-size:13px;">We'll be in touch with delivery updates. Questions? Reply to this email or <a href="${orderWhatsappUrl(order.id)}" style="color:#25D366;font-weight:700;text-decoration:none;">message us on WhatsApp</a>.</p>
   `);
 }
 
@@ -275,6 +281,7 @@ export function orderStatusEmailTemplate(o: {
     <div style="text-align:center;">
       <a href="${o.trackUrl}" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:13px 26px;">Track your order →</a>
     </div>
+    <p style="margin:18px 0 0;text-align:center;color:#9A7B57;font-size:13px;">Questions? <a href="${orderWhatsappUrl(o.id)}" style="color:#25D366;font-weight:700;text-decoration:none;">Message us on WhatsApp</a></p>
   `);
 }
 

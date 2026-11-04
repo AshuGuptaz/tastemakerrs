@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { m, useReducedMotion } from "framer-motion";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, MessageCircle } from "lucide-react";
+import { whatsappLink } from "@/lib/site";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
@@ -107,6 +108,16 @@ function OrderSuccessInner() {
           <Link href="/menu" className="btn-line">Order more</Link>
           <Link href="/" className="btn-line">Back to home</Link>
         </div>
+        <p className="mt-6">
+          <a
+            href={whatsappLink(`Hi, I just placed order #${id.slice(-8).toUpperCase()}. Track: ${typeof window !== "undefined" ? window.location.origin : ""}/track/${id}`)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-flame hover:text-flame-700"
+          >
+            <MessageCircle className="h-4 w-4" /> Message us about this order on WhatsApp
+          </a>
+        </p>
       </div>
     </section>
   );
