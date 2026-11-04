@@ -13,7 +13,6 @@ import ScrollProgress from "@/components/ScrollProgress";
 import CartDrawer from "@/components/CartDrawer";
 import FlyToCart from "@/components/FlyToCart";
 import SugarBurst from "@/components/ui/SugarBurst";
-import WhatsAppButton from "@/components/WhatsAppButton";
 
 // Inter — the premium geometric-grotesque sans used by Linear, Vercel & co.
 // One variable family drives the whole type system (display + body).
@@ -103,7 +102,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <CartDrawer />
               <FlyToCart />
               <SugarBurst />
-              <WhatsAppButton />
               <Toaster position="bottom-right" toastOptions={{
                 style: { background: "#1C1714", color: "#fff", borderRadius: "14px" },
                 iconTheme: { primary: "#D67A47", secondary: "#fff" },
