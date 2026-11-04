@@ -134,7 +134,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
         className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-line bg-surface shadow-e3 md:rounded-[2.5rem] lg:grid-cols-[1.02fr_1fr]"
       >
         {/* ══ LEFT · brand half (dark) ══ */}
-        <div className="relative overflow-hidden bg-ink px-8 py-10 text-white md:px-10 md:py-12">
+        <div className="relative overflow-hidden bg-ink px-7 py-7 text-white md:px-10 md:py-10 lg:py-12">
           {/* animated glow mesh */}
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute left-1/2 top-[-28%] h-[26rem] w-[30rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(214,122,71,0.55),transparent_60%)] blur-2xl" />
@@ -154,7 +154,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
               <img src="/brand/logo-redesign-wordmark-reversed.png" alt="The Taste Makerrs" className="h-7 w-auto select-none" />
             </m.div>
 
-            <div className="mt-10 lg:mt-auto lg:pt-16">
+            <div className="mt-5 lg:mt-auto lg:pt-16">
               <m.p {...enter(1)} className="text-xs font-semibold uppercase tracking-[0.22em] text-flame-400">
                 Members&apos; table
               </m.p>
@@ -165,7 +165,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
                 </span>{" "}
                 side.
               </m.h1>
-              <m.p {...enter(3)} className="mt-4 max-w-sm text-[0.95rem] leading-relaxed text-white/65">
+              <m.p {...enter(3)} className="mt-4 hidden max-w-sm lg:block text-[0.95rem] leading-relaxed text-white/65">
                 Sign in to reorder in a tap, save your occasions, and follow every cake from our oven to your door.
               </m.p>
             </div>
@@ -185,7 +185,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
               ))}
             </ul>
 
-            <m.div {...enter(8)} className="mt-8 flex items-center gap-2 border-t border-white/10 pt-6 text-xs text-white/50 lg:mt-10">
+            <m.div {...enter(8)} className="mt-8 hidden items-center gap-2 border-t border-white/10 pt-6 text-xs text-white/50 lg:mt-10 lg:flex">
               <Lock className="h-3.5 w-3.5 text-flame-400" />
               Passwordless &amp; secure — we send a one-time code, nothing to remember.
             </m.div>
