@@ -119,7 +119,7 @@ export default function Hero() {
               worth" (150ms initial + 300ms/word → its turn lands at 750ms) so the
               hand-off from blur-in to shimmer-in reads as one continuous cascade,
               not two separate animations. */}
-          <h1 className="t-display flex flex-wrap items-baseline text-white tracking-[-0.015em]">
+          <h1 className="t-display flex flex-wrap items-baseline gap-x-[0.3em] text-white tracking-[-0.015em]">
             <BlurText
               as="span"
               text="Cakes worth"
@@ -130,7 +130,7 @@ export default function Hero() {
               initialDelay={150}
               threshold={0}
             />
-            <ShimmerText text="remembering." delay={0.75} className="ml-[0.3em]" />
+            <ShimmerText text="remembering." delay={0.75} />
           </h1>
 
           {/* subtitle — blur-in word by word, then typewriter follows inline */}
