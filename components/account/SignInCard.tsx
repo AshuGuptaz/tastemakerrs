@@ -142,7 +142,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
             <div className="absolute inset-0 bg-grid opacity-[0.07]" />
             {!reduce &&
               FLOATERS.map((f, i) => (
-                <span key={i} className={`absolute select-none opacity-25 ${f.cls}`} style={{ animationDelay: f.d }}>
+                <span key={i} className={`absolute hidden select-none opacity-25 lg:block ${f.cls}`} style={{ animationDelay: f.d }}>
                   {f.e}
                 </span>
               ))}
