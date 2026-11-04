@@ -247,7 +247,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
                     <input name="name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="Your name" className={inputCls} />
                   </Field>
                   <Field icon={Phone} label="Mobile">
-                    <input name="tel" type="tel" autoComplete="tel-national" inputMode="numeric" value={phone} onChange={(e) => setPhone(normalizePhone(e.target.value))} placeholder="10-digit mobile number" className={inputCls} />
+                    <input name="tel" type="tel" autoComplete="tel-national" inputMode="numeric" value={phone} onChange={(e) => setPhone(normalizePhone(e.target.value))} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="10-digit mobile number" className={inputCls} />
                   </Field>
                   <Field icon={Mail} label="Email" hint="optional">
                     <input name="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="you@email.com" className={inputCls} />
