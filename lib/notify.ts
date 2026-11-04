@@ -285,6 +285,37 @@ export function orderStatusEmailTemplate(o: {
   `);
 }
 
+/** One-time "you left something in your cart" email. Includes a one-click unsubscribe. */
+export function cartReminderEmailTemplate(o: {
+  name?: string;
+  items: { name: string; qty: number; price: number }[];
+  cartUrl: string;
+  unsubUrl: string;
+}) {
+  const shown = o.items.slice(0, 4);
+  const more = o.items.length - shown.length;
+  const rows = shown
+    .map(
+      (i) =>
+        `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F1E4D2;font-size:15px;"><span>${escapeHtml(i.name)}${i.qty > 1 ? ` × ${i.qty}` : ""}</span><span style="font-weight:700;">₹${i.price * i.qty}</span></div>`
+    )
+    .join("");
+  return shell(`
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:40px;line-height:1;">🎂</div>
+      <h1 style="margin:12px 0 4px;font-size:23px;">You left something sweet behind</h1>
+      <p style="margin:0;color:#5b5b62;font-size:15px;">${o.name ? `Hi ${escapeHtml(o.name)} — your` : "Your"} cart is saved and waiting.</p>
+    </div>
+    <div style="background:#FFF9F1;border-radius:16px;padding:6px 16px;margin-bottom:8px;">${rows}${more > 0 ? `<div style="padding:8px 0;font-size:13px;color:#9A7B57;">+ ${more} more item${more > 1 ? "s" : ""}</div>` : ""}</div>
+    <p style="margin:12px 0 18px;text-align:center;color:#5b5b62;font-size:14px;">Order before 12 noon for same-day delivery in Lucknow.</p>
+    <div style="text-align:center;">
+      <a href="${o.cartUrl}" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:13px 26px;">Complete my order →</a>
+    </div>
+    <p style="margin:18px 0 0;text-align:center;color:#9A7B57;font-size:13px;">Need help choosing? <a href="${whatsappLink("Hi, I need help with my order")}" style="color:#25D366;font-weight:700;text-decoration:none;">Message us on WhatsApp</a></p>
+    <p style="margin:14px 0 0;text-align:center;color:#b3a48f;font-size:12px;">We'll only send this once. <a href="${o.unsubUrl}" style="color:#b3a48f;">Stop cart reminders</a></p>
+  `);
+}
+
 export function orderStatusSmsTemplate(o: { id: string; emoji: string; label: string; trackUrl: string }) {
   return `${o.emoji} ${BRAND} order #${o.id.slice(-8).toUpperCase()}: ${o.label}. Track it: ${o.trackUrl}`;
 }
