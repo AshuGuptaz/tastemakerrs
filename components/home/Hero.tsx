@@ -7,8 +7,8 @@ import { m, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Magnetic from "@/components/ui/Magnetic";
 import Typewriter from "@/components/ui/Typewriter";
-import BlurText from "@/components/ui/BlurText";
-import ShimmerText from "@/components/ui/ShimmerText";
+import CssBlurText from "@/components/ui/CssBlurText";
+import CssShimmerText from "@/components/ui/CssShimmerText";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -45,11 +45,6 @@ export default function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["0%", "-16%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
-  const fadeUp = (delay: number) => ({
-    initial: reduce ? false : { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.8, ease: EASE, delay },
-  });
 
   return (
     <section ref={ref} className="relative isolate h-[100svh] min-h-[640px] overflow-hidden -mt-[72px] md:-mt-[76px]">
@@ -102,16 +97,16 @@ export default function Hero() {
       >
         <div className="max-w-3xl">
           {/* eyebrow — small-caps over the scrim */}
-          <m.div
-            {...fadeUp(0.1)}
-            className="mb-6 flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/70"
+          <div
+            style={{ animationDelay: "0.1s" }}
+            className="hero-fade mb-6 flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/70"
           >
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flame-400 opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-flame-400" />
             </span>
             Small-batch · Eggless options
-          </m.div>
+          </div>
 
           {/* headline — Fraunces, one shimmering accent word (kokonutui Shimmer
               Text, adapted to `m`/domMax + flame tones). "remembering." continues
@@ -120,30 +115,13 @@ export default function Hero() {
               hand-off from blur-in to shimmer-in reads as one continuous cascade,
               not two separate animations. */}
           <h1 className="t-display flex flex-wrap items-baseline gap-x-[0.3em] text-white tracking-[-0.015em]">
-            <BlurText
-              as="span"
-              text="Cakes worth"
-              animateBy="words"
-              direction="bottom"
-              delay={300}
-              stepDuration={0.7}
-              initialDelay={150}
-              threshold={0}
-            />
-            <ShimmerText text="remembering." delay={0.75} />
+            <CssBlurText text="Cakes worth" delay={300} stepDuration={0.7} initialDelay={150} />
+            <CssShimmerText text="remembering." delay={0.75} />
           </h1>
 
           {/* subtitle — blur-in word by word, then typewriter follows inline */}
           <div className="mt-3 flex flex-wrap items-center gap-x-2 font-sans text-[clamp(1.05rem,2.2vw,1.9rem)] font-normal leading-snug tracking-tight text-white/75">
-            <BlurText
-              text="Baked fresh, made for"
-              delay={130}
-              animateBy="words"
-              direction="bottom"
-              stepDuration={0.45}
-              initialDelay={950}
-              threshold={0}
-            />
+            <CssBlurText text="Baked fresh, made for" delay={130} stepDuration={0.45} initialDelay={950} />
             <Typewriter
               words={["birthdays", "weddings", "anniversaries", "you"]}
               className="font-semibold text-flame-400"
@@ -152,9 +130,9 @@ export default function Hero() {
           </div>
 
           {/* CTAs — single primary + quiet text link (rating lives in the TrustStrip below) */}
-          <m.div
-            {...fadeUp(1.5)}
-            className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center"
+          <div
+            style={{ animationDelay: "1.5s" }}
+            className="hero-fade mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center"
           >
             <Magnetic className="block w-full sm:inline-block sm:w-auto">
               <Link href="/menu" className="btn-accent group w-full justify-center px-7 text-[0.95rem]">
@@ -169,7 +147,7 @@ export default function Hero() {
               or design your own
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-          </m.div>
+          </div>
         </div>
       </m.div>
 
