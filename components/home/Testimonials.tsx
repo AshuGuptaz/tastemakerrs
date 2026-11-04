@@ -45,6 +45,24 @@ function Card({ r }: { r: Review }) {
 
 function Row({ items, reverse = false, duration = 42 }: { items: Review[]; reverse?: boolean; duration?: number }) {
   const reduce = useReducedMotion();
+  // Reduced motion: no auto-scrolling marquee and no duplicated set — a single,
+  // user-scrollable (swipe / trackpad / keyboard) row so every review is reachable.
+  if (reduce) {
+    return (
+      <div
+        className="no-scrollbar overflow-x-auto px-5 md:px-8"
+        tabIndex={0}
+        role="region"
+        aria-label="Customer reviews"
+      >
+        <div className="flex w-max gap-5">
+          {items.map((r) => (
+            <Card key={r.name} r={r} />
+          ))}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="overflow-hidden">
       <m.div
