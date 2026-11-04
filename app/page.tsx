@@ -11,6 +11,7 @@ import Testimonials from "@/components/home/Testimonials";
 import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import StickyOrderBar from "@/components/home/StickyOrderBar";
 
 export default function HomePage() {
   return (
@@ -50,6 +51,7 @@ export default function HomePage() {
         <FAQ />
       </div>
       <CTA />
+      <StickyOrderBar />
     </>
   );
 }
