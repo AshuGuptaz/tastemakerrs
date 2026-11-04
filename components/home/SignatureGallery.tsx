@@ -51,7 +51,7 @@ export default function SignatureGallery() {
 
         <div
           ref={railRef}
-          className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-5 pb-3 md:px-8"
+          className="no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-5 pb-3 scroll-px-5 md:px-8 md:scroll-px-8 min-[1280px]:px-[calc((100%-80rem)/2+2rem)] min-[1280px]:scroll-px-[calc((100%-80rem)/2+2rem)]"
         >
           {CAKES.map((c) => (
             <article
