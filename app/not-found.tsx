@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import PageHeader from "@/components/ui/PageHeader";
+import { whatsappLink } from "@/lib/site";
 
 export default function NotFound() {
   return (
@@ -23,9 +24,9 @@ export default function NotFound() {
           <Link href="/" className="btn-line">
             Back home
           </Link>
-          <Link href="/contact" className="btn-line">
-            Contact us
-          </Link>
+          <a href={whatsappLink("Hi, I couldn't find what I was looking for.")} target="_blank" rel="noopener noreferrer" className="btn-line">
+            Chat with us
+          </a>
         </div>
       </section>
     </>
