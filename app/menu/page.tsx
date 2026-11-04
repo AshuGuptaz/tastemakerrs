@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
+import { Search, X, MessageCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PRODUCTS, CATEGORY_META } from "@/lib/products";
 import type { Category } from "@/types/product";
@@ -10,6 +11,8 @@ import ProductCard from "@/components/ProductCard";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import Filters from "@/components/Filters";
 import PageHeader from "@/components/ui/PageHeader";
+import { matchesQuery } from "@/lib/menu-search";
+import { whatsappLink } from "@/lib/site";
 
 function MenuContent() {
   const sp = useSearchParams();
@@ -24,6 +27,18 @@ function MenuContent() {
   const parsedMax = Number(sp.get("max"));
   const max = Number.isFinite(parsedMax) && parsedMax > 0 ? parsedMax : 2500;
   const sort = sp.get("sort") || "featured";
+  const q = (sp.get("q") || "").slice(0, 60);
+
+  // Typing stays instant (local state); the URL commit is debounced.
+  const [qInput, setQInput] = useState(q);
+  const qTimer = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => setQInput(q), [q]); // back/forward, Reset
+  useEffect(() => () => clearTimeout(qTimer.current), []);
+  const onSearch = (v: string) => {
+    setQInput(v);
+    clearTimeout(qTimer.current);
+    qTimer.current = setTimeout(() => update("q", v.trim() || null), 200);
+  };
 
   const update = (key: string, val: string | null) => {
     const next = new URLSearchParams(sp.toString());
@@ -38,9 +53,10 @@ function MenuContent() {
       if (flavor && !p.flavors.includes(flavor)) return false;
       if (bestseller && !p.bestseller) return false;
       if (p.price > max) return false;
+      if (!matchesQuery(p, q)) return false;
       return true;
     });
-  }, [cat, flavor, bestseller, max]);
+  }, [cat, flavor, bestseller, max, q]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -63,6 +79,33 @@ function MenuContent() {
         scrollFx
       />
       <section className="section bg-transparent">
+        <div className="container-x">
+          <div className="relative mb-6 max-w-xl">
+            <label htmlFor="menu-search" className="sr-only">Search the menu</label>
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-mut/70" />
+            <input
+              id="menu-search"
+              type="search"
+              inputMode="search"
+              enterKeyHint="search"
+              autoComplete="off"
+              value={qInput}
+              onChange={(e) => onSearch(e.target.value)}
+              placeholder="Search cakes, flavours, “eggless”…"
+              className="input !rounded-pill !pl-11 !pr-11 shadow-e1 [&::-webkit-search-cancel-button]:hidden"
+            />
+            {qInput && (
+              <button
+                type="button"
+                onClick={() => onSearch("")}
+                aria-label="Clear search"
+                className="absolute right-2.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-pill text-ink-mut hover:bg-ink/[0.05] hover:text-ink focus-ring"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
         <div className="container-x grid items-start gap-8 md:grid-cols-[280px_1fr]">
           <Filters cat={cat} flavor={flavor} bestseller={bestseller} max={max} />
 
@@ -100,8 +143,20 @@ function MenuContent() {
             {sorted.length === 0 ? (
               <div className="card p-10 text-center">
                 <p className="t-h3">No treats found</p>
-                <p className="mt-2 text-ink-mut">Nothing matches those filters yet.</p>
-                <Link href="/menu" className="btn-line mt-5">Clear all filters</Link>
+                <p className="mt-2 text-ink-mut">
+                  {q ? <>Nothing matches “{q}” with those filters.</> : "Nothing matches those filters yet."}
+                </p>
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+                  <Link href="/menu" className="btn-line">Clear all filters</Link>
+                  <a
+                    href={whatsappLink(q ? `Hi, do you make “${q}”? I couldn't find it on the menu.` : "Hi, I couldn't find what I'm looking for on the menu.")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-accent"
+                  >
+                    <MessageCircle className="h-4 w-4" /> Can&apos;t find it? Ask us
+                  </a>
+                </div>
               </div>
             ) : (
               <m.div layout className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
