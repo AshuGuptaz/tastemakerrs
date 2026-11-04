@@ -1,42 +1,8 @@
-"use client";
-
-import { useState } from "react";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/site";
-import toast from "react-hot-toast";
 import PageHeader from "@/components/ui/PageHeader";
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
-  const [busy, setBusy] = useState(false);
-  const [errorField, setErrorField] = useState<"name" | "email" | "message" | null>(null);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.name.trim()) { setErrorField("name"); toast.error("Please enter your name"); return; }
-    if (!form.email.trim()) { setErrorField("email"); toast.error("Please enter your email"); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { setErrorField("email"); toast.error("Please enter a valid email address"); return; }
-    if (!form.message.trim()) { setErrorField("message"); toast.error("Please add a message"); return; }
-    setBusy(true);
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Could not send your message.");
-      }
-      toast.success("Message sent — we'll be in touch!");
-      setForm({ name: "", email: "", phone: "", message: "" });
-    } catch (err: any) {
-      toast.error(err?.message || "Could not send — try WhatsApp.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <>
       <PageHeader
@@ -46,32 +12,20 @@ export default function ContactPage() {
           { text: "sweet", className: "text-gradient" },
           { text: "plans" },
         ]}
-        subtitle="For custom cakes, bulk orders, weddings and corporate gifting — drop us a note and we'll be back in 2 hours."
+        subtitle="For custom cakes, bulk orders, weddings and corporate gifting — message us on WhatsApp and we'll be back in 2 hours."
       />
 
       <section className="section">
-        <div className="container-x grid gap-10 md:grid-cols-2 md:items-start">
-          <div>
-            <h2 className="t-h2 text-4xl md:text-5xl lg:text-6xl">Reach us <span className="text-flame">directly</span></h2>
-            <p className="mt-3 text-ink-mut">Prefer to talk? We&apos;re quickest on WhatsApp.</p>
-
-            {/* TODO: replace with your real shop address, phone and email before launch */}
-            <ul className="mt-8 space-y-4 text-sm text-ink-soft">
-              <li className="flex items-start gap-3"><MapPin className="mt-0.5 h-5 w-5 text-flame" /> 20B Water Works Road, Aishbagh, Lucknow, Uttar Pradesh</li>
-              <li className="flex items-center gap-3"><Phone className="h-5 w-5 text-flame" /> <a href="tel:+917905717007" className="hover:text-flame">+91 79057 17007</a> <a href={whatsappLink("Hi The Taste Makerrs!")} target="_blank" rel="noopener noreferrer" className="ml-1 rounded-pill bg-[#25D366] px-3 py-1 text-xs font-semibold text-white hover:opacity-90">Chat on WhatsApp</a></li>
-              <li className="flex items-center gap-3"><Mail className="h-5 w-5 text-flame" /> <a href="mailto:tastemakerrs@gmail.com" className="hover:text-flame">tastemakerrs@gmail.com</a></li>
-            </ul>
-          </div>
-
-          <form onSubmit={submit} className="card p-6 md:p-8">
-            <div className="grid gap-4">
-              <div><label className="label" htmlFor="contact-name">Name</label><input id="contact-name" required aria-required="true" aria-invalid={errorField === "name"} className={`input ${errorField === "name" ? "ring-2 ring-flame/50" : ""}`} value={form.name} onChange={(e) => { setErrorField(null); setForm({ ...form, name: e.target.value }); }} /></div>
-              <div><label className="label" htmlFor="contact-email">Email</label><input id="contact-email" type="email" required aria-required="true" aria-invalid={errorField === "email"} className={`input ${errorField === "email" ? "ring-2 ring-flame/50" : ""}`} value={form.email} onChange={(e) => { setErrorField(null); setForm({ ...form, email: e.target.value }); }} /></div>
-              <div><label className="label" htmlFor="contact-phone">Phone</label><input id="contact-phone" className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-              <div><label className="label" htmlFor="contact-message">Message</label><textarea id="contact-message" rows={5} required aria-required="true" aria-invalid={errorField === "message"} className={`input ${errorField === "message" ? "ring-2 ring-flame/50" : ""}`} value={form.message} onChange={(e) => { setErrorField(null); setForm({ ...form, message: e.target.value }); }} /></div>
-              <button disabled={busy} className="btn-accent justify-center">{busy ? "Sending..." : "Send Message"}</button>
-            </div>
-          </form>
+        <div className="container-x flex justify-center">
+          <a
+            href={whatsappLink("Hi, I want to order")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-3 rounded-pill bg-[#25D366] px-8 py-4 text-base font-semibold text-white shadow-e3 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas max-sm:w-full"
+          >
+            <MessageCircle className="h-6 w-6" strokeWidth={2.1} />
+            Chat on WhatsApp
+          </a>
         </div>
       </section>
     </>
