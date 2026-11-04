@@ -16,6 +16,19 @@ type SendRes = {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+/**
+ * Reduce whatever was typed/pasted to a 10-digit Indian mobile. Pasting
+ * "+91 98765 43210" or "09876543210" used to keep the FIRST 10 digits
+ * ("9198765432") — a wrong number, silently. Strip a leading country code (91)
+ * or trunk zero (0) when the input is too long to be a bare 10-digit number.
+ */
+function normalizePhone(raw: string): string {
+  let d = raw.replace(/\D/g, "");
+  if (d.length >= 12 && d.startsWith("91")) d = d.slice(2);
+  else if (d.length === 11 && d.startsWith("0")) d = d.slice(1);
+  return d.slice(0, 10);
+}
+
 const VALUE_PROPS = [
   { Icon: RotateCcw, title: "One-tap reorder", desc: "Your favourites, back in the cart instantly." },
   { Icon: CalendarHeart, title: "Occasion reminders", desc: "We nudge you before every big day." },
@@ -234,7 +247,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
                     <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="Your name" className={inputCls} />
                   </Field>
                   <Field icon={Phone} label="Mobile">
-                    <input inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="10-digit mobile number" className={inputCls} />
+                    <input inputMode="numeric" value={phone} onChange={(e) => setPhone(normalizePhone(e.target.value))} placeholder="10-digit mobile number" className={inputCls} />
                   </Field>
                   <Field icon={Mail} label="Email" hint="optional">
                     <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder="you@email.com" className={inputCls} />
