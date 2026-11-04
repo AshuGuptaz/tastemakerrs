@@ -11,6 +11,7 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import ProductCard from "@/components/ProductCard";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import DeliveryCheck from "@/components/DeliveryCheck";
 import Underlined from "@/components/Underlined";
 import type { Product } from "@/types/product";
 import { formatINR } from "@/lib/format";
@@ -149,6 +150,8 @@ export default function ProductDetail({
                   <Heart className={`h-5 w-5 ${saved ? "fill-flame" : ""}`} />
                 </button>
               </div>
+
+              <DeliveryCheck productName={product.name} />
 
               {/* Trust */}
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
