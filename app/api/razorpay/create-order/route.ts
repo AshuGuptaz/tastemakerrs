@@ -8,6 +8,8 @@ import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
 import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
 import { logError } from "@/lib/logger";
+import { sendOrderConfirmation } from "@/lib/order-confirmation";
+import { decideRazorpayOrder, type RpOrderLite } from "@/lib/razorpay-order";
 
 /**
  * POST /api/razorpay/create-order
@@ -54,6 +56,47 @@ export async function POST(req: Request) {
     }
 
     const rp = getRazorpay();
+
+    // A retry must not blindly make a NEW Razorpay order and orphan the old one: if the
+    // earlier attempt completes late (UPI can settle minutes later) we'd collect the money
+    // and never match it to this order. Look at what we made last time first.
+    let existing: RpOrderLite | null = null;
+    if (order.razorpayOrderId) {
+      try {
+        const prev = await rp.orders.fetch(order.razorpayOrderId);
+        existing = { id: prev.id, status: String(prev.status), amount: Number(prev.amount) };
+      } catch (e) {
+        logError("razorpay/create-order:fetch-existing", e instanceof Error ? e : new Error("fetch failed"));
+      }
+    }
+
+    const decision = decideRazorpayOrder(existing, paise);
+
+    if (decision === "already_paid" && existing) {
+      // Razorpay already holds the money for this order but our record still says unpaid
+      // (webhook late/missed). Reconcile from Razorpay's own records — never ask for a second payment.
+      try {
+        const pays = await rp.orders.fetchPayments(existing.id);
+        const captured = pays.items?.find((p) => p.status === "captured");
+        if (captured) {
+          const updated = await Order.findOneAndUpdate(
+            { _id: orderId, paymentStatus: { $in: ["unpaid", "failed"] } },
+            { paymentStatus: "paid", status: "paid", razorpayPaymentId: captured.id },
+            { new: true }
+          );
+          if (updated) await sendOrderConfirmation(orderId);
+          return NextResponse.json({ error: "Your payment was already received — your order is confirmed.", paid: true }, { status: 409 });
+        }
+      } catch (e) {
+        logError("razorpay/create-order:reconcile", e instanceof Error ? e : new Error("reconcile failed"));
+      }
+      return NextResponse.json({ error: "A payment for this order is already in progress. Please wait a minute and check your order status.", pending: true }, { status: 409 });
+    }
+
+    if (decision === "reuse" && existing) {
+      return NextResponse.json({ id: existing.id, amount: existing.amount, currency: "INR" });
+    }
+
     const rpOrder = await rp.orders.create({
       amount: paise,
       currency: "INR",
@@ -61,7 +104,11 @@ export async function POST(req: Request) {
       notes: { internalOrderId: orderId },
     });
 
-    await Order.findByIdAndUpdate(orderId, { razorpayOrderId: rpOrder.id });
+    // Keep EVERY attempt's id (see lib/razorpay-order) so a late payment on an older one still matches.
+    await Order.findByIdAndUpdate(orderId, {
+      razorpayOrderId: rpOrder.id,
+      $addToSet: { razorpayOrderIds: { $each: [order.razorpayOrderId, rpOrder.id].filter((x): x is string => !!x) } },
+    });
 
     return NextResponse.json({
       id: rpOrder.id,

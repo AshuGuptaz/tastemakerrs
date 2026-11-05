@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
 import { logError } from "@/lib/logger";
+import { matchRazorpayOrderId, hasRazorpayOrderId } from "@/lib/razorpay-order";
 
 /**
  * POST /api/razorpay/verify
@@ -62,7 +63,8 @@ export async function POST(req: Request) {
     // payload could revert a refunded order back to "paid" (the same bug already
     // fixed on both webhook handlers).
     const updated = await Order.findOneAndUpdate(
-      { _id: orderId, razorpayOrderId: razorpay_order_id, paymentStatus: { $in: ["unpaid", "failed"] } },
+      // matchRazorpayOrderId: the current id OR an earlier retry's id (a late UPI payment on an older attempt).
+      { _id: orderId, ...matchRazorpayOrderId(razorpay_order_id), paymentStatus: { $in: ["unpaid", "failed"] } },
       { paymentStatus: "paid", status: "paid", razorpayPaymentId: razorpay_payment_id },
       { new: true }
     );
@@ -72,7 +74,7 @@ export async function POST(req: Request) {
       // a genuine double-submit of an already-paid order still reports success
       // (the client polls this), while a mismatch is rejected.
       const existing = await Order.findById(orderId);
-      if (existing && existing.razorpayOrderId === razorpay_order_id && existing.paymentStatus === "paid") {
+      if (existing && hasRazorpayOrderId(existing, razorpay_order_id) && existing.paymentStatus === "paid") {
         return NextResponse.json({ ok: true });
       }
       return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });

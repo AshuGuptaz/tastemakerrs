@@ -366,6 +366,13 @@ export default function CheckoutPage() {
           body: JSON.stringify({ amount: total, orderId: order.id }),
         });
         const rp = await rpRes.json();
+        if (rpRes.status === 409 && rp.paid) {
+          // We'd already received this payment (late confirmation) — it's confirmed, don't charge again.
+          toast.success("Your payment was already received!");
+          clear();
+          router.push(`/order-success?id=${order.id}`);
+          return;
+        }
         if (!rpRes.ok || !rp.id) throw new Error(rp.error || "Razorpay order failed");
 
         const options = {

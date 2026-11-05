@@ -97,6 +97,8 @@ export interface IOrder {
   paymentStatus: PaymentStatus;
   paymentIntentId?: string;
   razorpayOrderId?: string;
+  /** Every Razorpay order created for this order (retries) — a late payment on an older attempt must still match. */
+  razorpayOrderIds?: string[];
   razorpayPaymentId?: string;
   status: OrderStatus;
   statusHistory?: { status: OrderStatus; at: Date }[];
@@ -123,6 +125,7 @@ const OrderSchema = new Schema(
     paymentStatus: { type: String, enum: ["unpaid", "paid", "failed", "refunded"], default: "unpaid" },
     paymentIntentId: String,
     razorpayOrderId: String,
+    razorpayOrderIds: { type: [String], default: undefined },
     razorpayPaymentId: String,
     status: {
       type: String,

@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
 import { logError } from "@/lib/logger";
+import { matchRazorpayOrderId } from "@/lib/razorpay-order";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,7 +64,8 @@ export async function POST(req: Request) {
         // confirmation side-effects or resurrect a refunded order back to
         // "paid" — the exact bug already fixed on the Stripe side.
         const updated = await Order.findOneAndUpdate(
-          { razorpayOrderId, paymentStatus: { $in: ["unpaid", "failed"] } },
+          // ANY attempt's Razorpay order id: money collected on an older retry must still mark the order paid.
+          { ...matchRazorpayOrderId(razorpayOrderId), paymentStatus: { $in: ["unpaid", "failed"] } },
           { paymentStatus: "paid", status: "paid", razorpayPaymentId },
           { new: true }
         );
