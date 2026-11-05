@@ -22,7 +22,17 @@ export async function connectDB() {
   }
   if (cached!.conn) return cached!.conn;
   if (!cached!.promise) {
-    cached!.promise = mongoose.connect(MONGODB_URI, { bufferCommands: false });
+    cached!.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+      // Fail fast instead of the driver's 30s default when Atlas is unreachable
+      // (paused cluster, IP allowlist, network): otherwise every API call hangs
+      // until the serverless function times out and the site just looks "slow".
+      serverSelectionTimeoutMS: 5000,
+      // Each serverless instance keeps its own pool. The driver default is 100,
+      // so a traffic burst across many instances can blow past the Atlas free
+      // tier's 500-connection cap. A handful per instance is plenty.
+      maxPoolSize: 5,
+    });
   }
   try {
     cached!.conn = await cached!.promise;
