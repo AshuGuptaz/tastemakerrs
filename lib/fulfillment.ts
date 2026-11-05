@@ -4,6 +4,8 @@
  * a slot the client offers is always one the server accepts.
  */
 
+import { istNow, SAME_DAY_CUTOFF_HOUR_IST } from "./delivery-area";
+
 export const DELIVERY_SLOTS = [
   { id: "morning", label: "9 AM – 12 PM" },
   { id: "afternoon", label: "12 – 3 PM" },
@@ -53,6 +55,39 @@ export function isValidDeliveryDate(dateStr: string): boolean {
   const ceil = new Date(now);
   ceil.setDate(ceil.getDate() + MAX_LEAD_DAYS);
   return picked >= new Date(floor.toDateString()) && picked <= ceil;
+}
+
+/* ── Same-day rules ───────────────────────────────────────────────────────
+ * The brand promise is "same-day if ordered before 12 noon" (FAQ, product page).
+ * These make that rule real, in India time, for BOTH the checkout UI (to disable
+ * unbookable slots) and /api/orders (the authority). Before this, every slot was
+ * selectable for today at any hour — a 5 PM order could pay for the 9 AM–12 PM slot.
+ */
+
+/** When each slot STARTS (hour, IST). Must stay in step with DELIVERY_SLOTS labels. */
+export const SLOT_START_HOUR: Record<SlotId, number> = { morning: 9, afternoon: 12, evening: 15, night: 18 };
+
+/** A same-day slot must start at least this long after the order is placed (baking + packing + travel). */
+export const MIN_LEAD_HOURS = 2;
+
+/**
+ * Can `slot` on `dateStr` (YYYY-MM-DD) still be booked at `now`?
+ *  - any past date → no; any future date → yes
+ *  - today → only before the noon cutoff AND only if the slot starts ≥ MIN_LEAD_HOURS away
+ * `graceMin` loosens the TODAY checks (server uses a few minutes so a customer who picked a
+ * valid slot and then took a while to pay isn't rejected at the last step).
+ */
+export function isSlotBookable(dateStr: string, slot: SlotId, now: Date = new Date(), graceMin = 0): boolean {
+  const { date: today, minutes } = istNow(now);
+  if (dateStr < today) return false;
+  if (dateStr > today) return true;
+  if (minutes >= SAME_DAY_CUTOFF_HOUR_IST * 60 + graceMin) return false;
+  return SLOT_START_HOUR[slot] * 60 - minutes >= MIN_LEAD_HOURS * 60 - graceMin;
+}
+
+/** Slot ids bookable on `dateStr` at `now`. */
+export function bookableSlots(dateStr: string, now: Date = new Date(), graceMin = 0): SlotId[] {
+  return SLOT_IDS.filter((id) => isSlotBookable(dateStr, id, now, graceMin));
 }
 
 /** Human date for emails/SMS, e.g. "Sat, 9 Aug 2026". */

@@ -14,7 +14,7 @@ import OtpDialog from "@/components/checkout/OtpDialog";
 import DatePicker from "@/components/DatePicker";
 import { formatINR } from "@/lib/format";
 import { couponValue, deliveryFee } from "@/lib/pricing";
-import { DELIVERY_SLOTS, isoDateOffset, formatDeliveryDate } from "@/lib/fulfillment";
+import { DELIVERY_SLOTS, isoDateOffset, formatDeliveryDate, isSlotBookable, bookableSlots, type SlotId } from "@/lib/fulfillment";
 
 type Address = {
   name: string;
@@ -56,6 +56,10 @@ export default function CheckoutPage() {
   const [fulfillDate, setFulfillDate] = useState(isoDateOffset(0));
   const [fulfillSlot, setFulfillSlot] = useState("");
   const [showCalendar, setShowCalendar] = useState(false);
+  // "Now" for slot availability — null until mounted (no SSR/CSR clock mismatch), then ticks every 30s
+  // so a slot disappears the moment it stops being bookable.
+  const [clock, setClock] = useState<Date | null>(null);
+  const dateDefaultedRef = useRef(false);
   // Gifting
   const [isGift, setIsGift] = useState(false);
   const [gift, setGift] = useState({ recipientName: "", recipientPhone: "", message: "", hidePrices: false });
@@ -121,6 +125,27 @@ export default function CheckoutPage() {
       pincode: prev.pincode || saved?.pincode || pin,
     }));
   }, [customer, customerLoading]);
+
+  useEffect(() => {
+    setClock(new Date());
+    const t = setInterval(() => setClock(new Date()), 30_000);
+    return () => clearInterval(t);
+  }, []);
+
+  // If nothing is bookable today (past the noon cutoff), default to tomorrow instead of
+  // leaving the customer on a date where every slot is greyed out. Once only — never
+  // overrides a date they chose themselves.
+  useEffect(() => {
+    if (!clock || dateDefaultedRef.current) return;
+    dateDefaultedRef.current = true;
+    const today = isoDateOffset(0);
+    if (fulfillDate === today && bookableSlots(today, clock).length === 0) setFulfillDate(isoDateOffset(1));
+  }, [clock, fulfillDate]);
+
+  // A previously-picked slot that has just become unbookable (clock moved / date changed) is cleared.
+  useEffect(() => {
+    if (clock && fulfillSlot && !isSlotBookable(fulfillDate, fulfillSlot as SlotId, clock)) setFulfillSlot("");
+  }, [clock, fulfillDate, fulfillSlot]);
 
   const applySavedAddress = (id: string) => {
     const a = customer?.addresses.find((x) => x._id === id);
@@ -513,20 +538,32 @@ export default function CheckoutPage() {
                 <div>
                   <label className="label flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-flame" /> Time slot</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {DELIVERY_SLOTS.map((s) => (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => setFulfillSlot(s.id)}
-                        aria-pressed={fulfillSlot === s.id}
-                        className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/30 ${
-                          fulfillSlot === s.id ? "border-flame bg-flame/5 text-flame-700 ring-2 ring-flame/30" : "border-line bg-white text-ink-soft hover:border-flame/50"
-                        }`}
-                      >
-                        {s.label}
-                      </button>
-                    ))}
+                    {DELIVERY_SLOTS.map((s) => {
+                      const available = !clock || isSlotBookable(fulfillDate, s.id, clock);
+                      return (
+                        <button
+                          key={s.id}
+                          type="button"
+                          disabled={!available}
+                          onClick={() => setFulfillSlot(s.id)}
+                          aria-pressed={fulfillSlot === s.id}
+                          title={available ? undefined : "Not available for this date"}
+                          className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/30 ${
+                            !available
+                              ? "cursor-not-allowed border-line bg-ink/[0.03] text-ink-mut/50 line-through"
+                              : fulfillSlot === s.id ? "border-flame bg-flame/5 text-flame-700 ring-2 ring-flame/30" : "border-line bg-white text-ink-soft hover:border-flame/50"
+                          }`}
+                        >
+                          {s.label}
+                        </button>
+                      );
+                    })}
                   </div>
+                  {clock && bookableSlots(fulfillDate, clock).length === 0 && (
+                    <p className="mt-2 text-xs text-flame-700">
+                      No slots are left for this date — same-day orders close at 12 noon. Please pick tomorrow or later.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

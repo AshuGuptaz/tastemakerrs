@@ -10,7 +10,7 @@ import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
 import { PRODUCTS } from "@/lib/products";
 import { priceCustomCake, customCakeName } from "@/lib/custom-cake";
 import { computeTotals } from "@/lib/pricing";
-import { isValidDeliveryDate, isSlotId } from "@/lib/fulfillment";
+import { isValidDeliveryDate, isSlotId, isSlotBookable } from "@/lib/fulfillment";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { logError } from "@/lib/logger";
 
@@ -140,6 +140,15 @@ export async function POST(req: Request) {
       const { date, slot } = body.fulfillment;
       if (!isValidDeliveryDate(date) || !isSlotId(slot)) {
         return NextResponse.json({ error: "Please choose a valid delivery date and time slot." }, { status: 400 });
+      }
+      // Same-day rule (before noon IST, slot ≥2h away; no past dates). 15 min of
+      // grace so a customer who picked a valid slot and then took a while to
+      // pay isn't rejected at the very last step.
+      if (!isSlotBookable(date, slot, new Date(), 15)) {
+        return NextResponse.json(
+          { error: "That delivery slot is no longer available — please choose another time or date." },
+          { status: 400 }
+        );
       }
       fulfillment = { date, slot };
     }
