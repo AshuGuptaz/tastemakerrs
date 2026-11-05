@@ -35,6 +35,17 @@ export function otpEnabled() {
   return process.env.NODE_ENV !== "production" || emailConfigured() || smsConfigured();
 }
 
+/**
+ * Hard cap on any provider call. These are awaited inside request handlers (OTP
+ * send, payment verify/webhook, status updates) — a hung Resend/Twilio/Fast2SMS
+ * would otherwise stall the whole request until the platform kills it, and a
+ * killed /api/razorpay/verify tells the customer "verification failed" for an
+ * order that was already marked paid. On timeout the call resolves {ok:false}
+ * like any other delivery failure (callers already handle that).
+ */
+const PROVIDER_TIMEOUT_MS = 6000;
+const providerSignal = () => AbortSignal.timeout(PROVIDER_TIMEOUT_MS);
+
 /* ───────────────────────────── Email (Resend) ───────────────────────────── */
 
 export async function sendEmail(opts: { to: string; subject: string; html: string; text?: string; replyTo?: string }) {
@@ -49,6 +60,7 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from, to: [opts.to], subject: opts.subject, html: opts.html, text: opts.text, ...(opts.replyTo ? { reply_to: opts.replyTo } : {}) }),
+      signal: providerSignal(),
     });
     if (!res.ok) {
       const body = await res.text();
@@ -83,6 +95,7 @@ export async function sendSMS(opts: { to: string; body: string }) {
         method: "POST",
         headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ From: process.env.TWILIO_FROM!, To: to, Body: opts.body }),
+        signal: providerSignal(),
       });
       if (!res.ok) { logError("notify/sms/twilio", new Error(await res.text())); return { ok: false as const }; }
       return { ok: true as const };
@@ -101,6 +114,7 @@ export async function sendSMS(opts: { to: string; body: string }) {
           numbers: opts.to.replace(/\D/g, "").slice(-10),
           flash: 0,
         }),
+        signal: providerSignal(),
       });
       const data = await res.json();
       if (!data.return) {
@@ -123,6 +137,7 @@ export async function sendSMS(opts: { to: string; body: string }) {
           mobiles: to.replace("+", ""),
           message: opts.body,
         }),
+        signal: providerSignal(),
       });
       if (!res.ok) { logError("notify/sms/msg91", new Error(await res.text())); return { ok: false as const }; }
       return { ok: true as const };
