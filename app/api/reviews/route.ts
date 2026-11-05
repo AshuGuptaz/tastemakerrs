@@ -8,6 +8,7 @@ import { getCustomerFromCookies } from "@/lib/customer-server";
 import { PRODUCTS } from "@/lib/products";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { logError } from "@/lib/logger";
+import { reviewPhotoUrls, isAllowedPhotoDataUrl } from "@/lib/review-photos";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,7 +36,16 @@ export async function GET(req: Request) {
     if (!productId) return NextResponse.json({ error: "Missing productId" }, { status: 400 });
     await connectDB();
 
-    const reviews = await Review.find({ productId, status: "approved" }).sort({ createdAt: -1 }).limit(100).lean();
+    // Aggregate so the photo data URLs (megabytes) never leave Mongo — only a count does.
+    // Photos are then referenced by small cacheable URLs (see lib/review-photos).
+    const reviews = await Review.aggregate<{
+      _id: { toString(): string }; rating: number; title?: string; body: string; authorName: string; createdAt: Date; updatedAt: Date; photoCount: number;
+    }>([
+      { $match: { productId, status: "approved" } },
+      { $sort: { createdAt: -1 } },
+      { $limit: 100 },
+      { $project: { rating: 1, title: 1, body: 1, authorName: 1, createdAt: 1, updatedAt: 1, photoCount: { $size: { $ifNull: ["$photos", []] } } } },
+    ]);
 
     const count = reviews.length;
     const average = count ? reviews.reduce((s, r) => s + r.rating, 0) / count : 0;
@@ -64,7 +74,7 @@ export async function GET(req: Request) {
         rating: r.rating,
         title: r.title ?? "",
         body: r.body,
-        photos: r.photos ?? [],
+        photos: reviewPhotoUrls(r._id.toString(), r.photoCount, r.updatedAt),
         authorName: r.authorName,
         createdAt: r.createdAt,
       })),
@@ -98,8 +108,9 @@ export async function POST(req: Request) {
 
     // Validate photos: image data URLs only, each under the size cap.
     for (const photo of input.photos) {
-      if (!photo.startsWith("data:image/") || photo.length > MAX_PHOTO_CHARS) {
-        return NextResponse.json({ error: "Each photo must be an image under ~650KB." }, { status: 400 });
+      // Raster only (JPEG/PNG/WebP/GIF) — SVG is refused because photos are now served from our own origin.
+      if (!isAllowedPhotoDataUrl(photo) || photo.length > MAX_PHOTO_CHARS) {
+        return NextResponse.json({ error: "Each photo must be a JPEG, PNG, WebP or GIF image under ~650KB." }, { status: 400 });
       }
     }
 
