@@ -16,13 +16,35 @@ import { logError } from "@/lib/logger";
 
 export const runtime = "nodejs";
 
+// Shape of a custom-cake spec. Unknown keys are stripped and every field is
+// size-capped so an order can't be used to stuff arbitrary data into Mongo.
+// image mirrors the cap in /api/custom-orders (data URL, ~1.4MB raw).
+const CustomSchema = z.object({
+  base: z.string().max(100).nullable().optional(),
+  flavor: z.string().max(100).optional(),
+  weight: z.string().max(50).optional(),
+  shape: z.string().max(50).optional(),
+  eggless: z.boolean().optional(),
+  message: z.string().max(500).optional(),
+  date: z.string().max(50).optional(),
+  image: z.string().max(2_000_000).optional(),
+  price: z.number().optional(),
+  contact: z
+    .object({
+      name: z.string().max(100).optional(),
+      phone: z.string().max(20).optional(),
+      email: z.string().max(200).optional(),
+    })
+    .optional(),
+});
+
 const ItemSchema = z.object({
   productId: z.string().optional(),
   name: z.string().max(200),
   price: z.number().positive(),
   qty: z.number().int().min(1).max(50),
   variant: z.string().max(100).optional(),
-  custom: z.any().optional(),
+  custom: CustomSchema.optional(),
 });
 
 const AddressSchema = z.object({
@@ -131,6 +153,33 @@ export async function POST(req: Request) {
     // identical to the checkout UI, so the client can neither invent a discount
     // nor see a total different from what we charge.
     const { delivery, discount, total, coupon } = computeTotals(subtotal, body.coupon);
+
+    // One-off coupons: FIRSTBITE is for a contact's first order, BDAY150 once
+    // per contact. Matched on phone OR email so a new email can't reset it.
+    // Only paid orders count, so an abandoned checkout doesn't burn the code.
+    if (coupon === "FIRSTBITE" || coupon === "BDAY150") {
+      await connectDB();
+      const contact = [
+        { "address.phone": body.address.phone },
+        { "address.email": body.address.email.trim() },
+      ];
+      const prior = await Order.exists({
+        $or: contact,
+        paymentStatus: { $in: ["paid", "refunded"] },
+        ...(coupon === "BDAY150" ? { coupon: "BDAY150" } : {}),
+      }).collation({ locale: "en", strength: 2 });
+      if (prior) {
+        return NextResponse.json(
+          {
+            error:
+              coupon === "FIRSTBITE"
+                ? "FIRSTBITE is only valid on your first order. Remove the code to continue."
+                : "BDAY150 has already been used. Remove the code to continue.",
+          },
+          { status: 400 }
+        );
+      }
+    }
 
     // Optional delivery schedule — validated against the shared authority so a
     // forged slot / out-of-range date can't be stored. A partial/invalid
