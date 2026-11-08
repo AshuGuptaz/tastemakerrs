@@ -110,7 +110,7 @@ export default function AdminOrders() {
                         className="rounded-lg border border-line bg-white px-2 py-1 text-xs capitalize focus:border-flame focus:outline-none disabled:opacity-50"
                       >
                         {STATUSES.map((s) => (
-                          <option key={s} value={s}>{s.replaceAll("_", " ")}</option>
+                          <option key={s} value={s} disabled={(s === "paid" || s === "refunded") && o.status !== s}>{s.replaceAll("_", " ")}</option>
                         ))}
                       </select>
                     </td>

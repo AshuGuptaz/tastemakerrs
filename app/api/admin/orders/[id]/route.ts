@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const Body = z.object({
-  status: z.enum(["pending", "paid", "in_kitchen", "out_for_delivery", "delivered", "cancelled", "refunded"]),
+  status: z.enum(["pending", "in_kitchen", "out_for_delivery", "delivered", "cancelled"]),
 });
 
 /** PATCH /api/admin/orders/:id — admin: advance an order's status (notifies the customer). */
@@ -22,7 +22,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
     const { status } = Body.parse(await req.json());
     const res = await updateOrderStatus(params.id, status);
-    if (!res.ok) return NextResponse.json({ error: res.error || "Update failed" }, { status: 404 });
+    if (!res.ok) return NextResponse.json({ error: res.error || "Update failed" }, { status: res.error === "Order not found" ? 404 : 409 });
     return NextResponse.json({ ok: true, status });
   } catch (e: unknown) {
     if (e instanceof Error && e.name === "ZodError") {

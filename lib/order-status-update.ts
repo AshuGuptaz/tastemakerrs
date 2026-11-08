@@ -15,6 +15,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.thetastemakerr
 
 // Customer-facing transitions worth a notification. "paid" is already covered
 // by the order confirmation, and "pending" isn't meaningful to notify about.
+const FULFILMENT: OrderStatus[] = ["in_kitchen", "out_for_delivery", "delivered"];
 const NOTIFY_ON: OrderStatus[] = ["in_kitchen", "out_for_delivery", "delivered", "cancelled", "refunded"];
 
 /**
@@ -30,6 +31,13 @@ export async function updateOrderStatus(
   const order = await Order.findById(orderId);
   if (!order) return { ok: false, error: "Order not found" };
   if (order.status === status) return { ok: true }; // idempotent no-op
+
+  // Fulfilment can only advance on an order that was actually paid. "paid" and
+  // "refunded" are set solely by the payment webhooks/verify, never by hand —
+  // otherwise status and paymentStatus drift apart (and /track 404s on unpaid).
+  if (FULFILMENT.includes(status) && order.paymentStatus !== "paid") {
+    return { ok: false, error: "This order hasn't been paid yet." };
+  }
 
   order.status = status;
   order.statusHistory = [...(order.statusHistory ?? []), { status, at: new Date() }];
