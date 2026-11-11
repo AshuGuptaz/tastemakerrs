@@ -9,7 +9,8 @@ import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-
 import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
 import { PRODUCTS } from "@/lib/products";
 import { priceCustomCake, customCakeName } from "@/lib/custom-cake";
-import { computeTotals } from "@/lib/pricing";
+import { computeTotals, type CouponRule } from "@/lib/pricing";
+import { evaluateCoupon } from "@/lib/coupons";
 import { isValidDeliveryDate, isSlotId, isSlotBookable } from "@/lib/fulfillment";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { logError } from "@/lib/logger";
@@ -152,34 +153,21 @@ export async function POST(req: Request) {
     // Delivery + coupon come from the shared pricing authority (lib/pricing) —
     // identical to the checkout UI, so the client can neither invent a discount
     // nor see a total different from what we charge.
-    const { delivery, discount, total, coupon } = computeTotals(subtotal, body.coupon);
-
-    // One-off coupons: FIRSTBITE is for a contact's first order, BDAY150 once
-    // per contact. Matched on phone OR email so a new email can't reset it.
-    // Only paid orders count, so an abandoned checkout doesn't burn the code.
-    if (coupon === "FIRSTBITE" || coupon === "BDAY150") {
-      await connectDB();
-      const contact = [
-        { "address.phone": body.address.phone },
-        { "address.email": body.address.email.trim() },
-      ];
-      const prior = await Order.exists({
-        $or: contact,
-        paymentStatus: { $in: ["paid", "refunded"] },
-        ...(coupon === "BDAY150" ? { coupon: "BDAY150" } : {}),
-      }).collation({ locale: "en", strength: 2 });
-      if (prior) {
-        return NextResponse.json(
-          {
-            error:
-              coupon === "FIRSTBITE"
-                ? "FIRSTBITE is only valid on your first order. Remove the code to continue."
-                : "BDAY150 has already been used. Remove the code to continue.",
-          },
-          { status: 400 }
-        );
+    // The coupon is evaluated against the DB (active, dates, usage limit, minimum,
+    // first-order-only / once-per-contact — matched on phone OR email so a new email
+    // can't reset it; only PAID orders count, so an abandoned checkout doesn't burn
+    // a code). A code that doesn't apply is a clear 400, not a silent ₹0 that would
+    // surface as a confusing "prices changed" at the client's total reconciliation.
+    const rawCoupon = (body.coupon || "").trim();
+    let rules: CouponRule[] = [];
+    if (rawCoupon) {
+      const verdict = await evaluateCoupon(rawCoupon, subtotal, { phone: body.address.phone, email: body.address.email });
+      if (!verdict.ok) {
+        return NextResponse.json({ error: `${verdict.error} Remove the code to continue.` }, { status: 400 });
       }
+      rules = [verdict.rule];
     }
+    const { delivery, discount, total, coupon } = computeTotals(subtotal, rawCoupon, rules);
 
     // Optional delivery schedule — validated against the shared authority so a
     // forged slot / out-of-range date can't be stored. A partial/invalid
