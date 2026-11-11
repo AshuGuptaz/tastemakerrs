@@ -82,8 +82,13 @@ export default function CheckoutPage() {
   const discount = couponValue(appliedCoupon, subtotal);
   const total = Math.max(0, subtotal + delivery - discount);
 
+  // `paidRef` is set right before a successful payment clears the cart and heads to
+  // /order-success. Without it, clear() empties the cart → this effect fires
+  // router.replace("/cart") and OVERRIDES the push to /order-success, so a customer
+  // who just paid lands on an empty cart instead of their confirmation.
+  const paidRef = useRef(false);
   useEffect(() => {
-    if (hydrated && items.length === 0) router.replace("/cart");
+    if (hydrated && items.length === 0 && !paidRef.current) router.replace("/cart");
   }, [hydrated, items.length, router]);
 
   // Funnel: reached checkout with a non-empty cart (once per visit).
@@ -384,6 +389,7 @@ export default function CheckoutPage() {
         if (rpRes.status === 409 && rp.paid) {
           // We'd already received this payment (late confirmation) — it's confirmed, don't charge again.
           toast.success("Your payment was already received!");
+          paidRef.current = true;
           clear();
           router.push(`/order-success?id=${order.id}`);
           return;
@@ -405,7 +411,7 @@ export default function CheckoutPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ ...resp, orderId: order.id }),
               }).then((r) => r.json());
-              if (verify.ok) { clear(); router.push(`/order-success?id=${order.id}`); }
+              if (verify.ok) { paidRef.current = true; clear(); router.push(`/order-success?id=${order.id}`); }
               else { toast.error("Payment verification failed. Contact us if amount was deducted."); release(); }
             } catch { toast.error("Verification error. Please contact support."); release(); }
           },
