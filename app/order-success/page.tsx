@@ -8,6 +8,7 @@ import { whatsappLink } from "@/lib/site";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
+import { trackPurchaseOnce } from "@/lib/analytics";
 
 function OrderSuccessInner() {
   const sp = useSearchParams();
@@ -57,9 +58,10 @@ function OrderSuccessInner() {
   useEffect(() => {
     if (verified && !cleared.current) {
       cleared.current = true;
+      if (id) trackPurchaseOnce(id);
       clear();
     }
-  }, [verified, clear]);
+  }, [verified, clear, id]);
 
   // No id, or the id doesn't correspond to an actually-paid order → don't
   // fake a confirmation (and don't clear the cart).

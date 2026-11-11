@@ -14,6 +14,7 @@ import CartDrawer from "@/components/CartDrawer";
 import FlyToCart from "@/components/FlyToCart";
 import SugarBurst from "@/components/ui/SugarBurst";
 import CartSync from "@/components/CartSync";
+import Analytics from "@/components/Analytics";
 
 // Inter — the premium geometric-grotesque sans used by Linear, Vercel & co.
 // One variable family drives the whole type system (display + body).
@@ -82,6 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="grain min-h-screen font-sans text-ink antialiased">
+        <Analytics />
         <CustomerProvider>
         <WishlistProvider>
         <CartProvider>

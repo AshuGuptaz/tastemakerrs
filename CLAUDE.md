@@ -70,6 +70,7 @@ Customers save birthdays/anniversaries (`Customer.occasions`, month+day). `/api/
 | `FAST2SMS_API_KEY` | For SMS OTP | Needs ₹100 top-up before API works |
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | For address autocomplete | Optional; checkout degrades gracefully |
 | `NEXT_PUBLIC_SITE_URL` | For OG metadata + email/SMS tracking links | e.g. `https://www.thetastemakerrs.com` |
+| `NEXT_PUBLIC_GA_ID` | For funnel analytics | GA4 measurement ID (`G-XXXXXXX`). Unset → analytics is a silent no-op. Events via `lib/analytics.ts` (`track`, never PII) |
 | `CRON_SECRET` | For occasion reminders | Vercel sends it as `Authorization: Bearer …` to `/api/cron/reminders`; the job 401s without a match in production |
 
 **After adding/changing any env var in Vercel → always confirm all vars are still present for Production scope before redeploying.**

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Minus, Plus, Heart, Truck, Shield, Sparkles, Leaf, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { CartToast } from "@/components/ui/CartToast";
+import { trackAddToCart, trackViewItem } from "@/lib/analytics";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import ProductCard from "@/components/ProductCard";
@@ -34,10 +35,12 @@ export default function ProductDetail({
 
   useEffect(() => {
     recordView(product.id);
+    trackViewItem({ id: product.id, name: product.name, price: product.price });
   }, [product.id]);
 
   function handleAdd() {
     add({ id: product.id, slug: product.slug, name: product.name, price: product.price, image: product.image }, qty);
+    trackAddToCart({ id: product.id, name: product.name, price: product.price, qty });
     setAdded(true);
     setTimeout(() => setAdded(false), 1100);
     toast.custom(

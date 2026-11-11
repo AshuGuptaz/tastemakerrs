@@ -11,6 +11,7 @@ import { useCart } from "@/context/CartContext";
 import { useCustomer } from "@/context/CustomerContext";
 import { loadSavedContact, saveContact, clearSavedContact } from "@/lib/saved-contact";
 import OtpDialog from "@/components/checkout/OtpDialog";
+import { track, trackBeginCheckout, stashPurchase } from "@/lib/analytics";
 import DatePicker from "@/components/DatePicker";
 import { formatINR } from "@/lib/format";
 import { couponValue, deliveryFee } from "@/lib/pricing";
@@ -84,6 +85,14 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (hydrated && items.length === 0) router.replace("/cart");
   }, [hydrated, items.length, router]);
+
+  // Funnel: reached checkout with a non-empty cart (once per visit).
+  const trackedCheckoutRef = useRef(false);
+  useEffect(() => {
+    if (!hydrated || items.length === 0 || trackedCheckoutRef.current) return;
+    trackedCheckoutRef.current = true;
+    trackBeginCheckout(items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, variant: i.variant })), subtotal);
+  }, [hydrated, items, subtotal]);
 
   // Prefill contact + default address for a signed-in customer (once, and only
   // into still-empty fields so it never clobbers something they've typed).
@@ -301,6 +310,7 @@ export default function CheckoutPage() {
   // Step 1: validate, then require OTP verification before payment.
   const placeOrder = () => {
     if (!validate()) return;
+    track("place_order_clicked", { currency: "INR", value: total, payment_method: method });
     setShowOtp(true);
   };
 
@@ -351,6 +361,11 @@ export default function CheckoutPage() {
         return;
       }
 
+      stashPurchase({
+        id: order.id, value: total, shipping: delivery, coupon: appliedCoupon || null,
+        items: items.map((i) => ({ id: i.id, name: i.name, price: i.price, qty: i.qty, variant: i.variant })),
+      });
+
       // Order exists and prices reconcile → remember (or forget) a guest's details.
       if (!customer) {
         if (rememberMe) saveContact(addr);
@@ -394,11 +409,12 @@ export default function CheckoutPage() {
               else { toast.error("Payment verification failed. Contact us if amount was deducted."); release(); }
             } catch { toast.error("Verification error. Please contact support."); release(); }
           },
-          modal: { ondismiss: () => { toast("Payment cancelled"); release(); } },
+          modal: { ondismiss: () => { track("payment_cancelled", { payment_method: "razorpay" }); toast("Payment cancelled"); release(); } },
         };
         // @ts-ignore
         const r = new window.Razorpay(options);
         r.on("payment.failed", (resp: any) => {
+          track("payment_failed", { payment_method: "razorpay", reason: resp?.error?.reason || "unknown" });
           toast.error(resp?.error?.description || "Payment failed. Please try again.");
           release();
         });
@@ -705,7 +721,7 @@ export default function CheckoutPage() {
             email={addr.email}
             phone={addr.phone}
             name={addr.name}
-            onVerified={() => { setShowOtp(false); createOrderAndPay(); }}
+            onVerified={() => { track("otp_verified"); setShowOtp(false); createOrderAndPay(); }}
             onSkip={() => { setShowOtp(false); createOrderAndPay(); }}
             onClose={() => setShowOtp(false)}
           />

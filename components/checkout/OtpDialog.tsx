@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@/lib/analytics";
 import { useEffect, useRef, useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Check, X } from "lucide-react";
@@ -55,6 +56,7 @@ export default function OtpDialog({
         toast.error(res.error);
         return;
       }
+      track("otp_requested");
       setOtpId(res.otpId || null);
       setChannels(res.channels || { email: false, sms: false });
       setCooldown(30);
