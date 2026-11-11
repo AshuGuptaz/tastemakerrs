@@ -19,7 +19,7 @@ import assert from "node:assert/strict";
 import { spawn, type ChildProcess } from "node:child_process";
 import { chromium, type Browser, type BrowserContext, type Page, type Route } from "playwright";
 import { PRODUCTS } from "../../lib/products";
-import { computeTotals } from "../../lib/pricing";
+import { computeTotals, BUILTIN_COUPONS, discountForRule } from "../../lib/pricing";
 
 const PORT = 3101;
 const BASE = process.env.E2E_BASE_URL || `http://localhost:${PORT}`;
@@ -101,6 +101,14 @@ async function newCheckoutPage(opts: { orderTotal?: number } = {}): Promise<{ ct
       body.coupon
     );
     json(r, { id: ORDER_ID, subtotal: t.subtotal, delivery: t.delivery, discount: t.discount, total: m.orderTotal ?? t.total });
+  });
+  // Coupon validation mirrors the real endpoint using the built-in rules (no DB).
+  await page.route("**/api/coupons/validate", (r) => {
+    const { code, subtotal } = r.request().postDataJSON();
+    const rule = BUILTIN_COUPONS.find((c) => c.code === String(code).toUpperCase());
+    const discount = rule ? discountForRule(rule, subtotal) : 0;
+    if (!rule || discount <= 0) return json(r, { ok: false, error: "That coupon code isn't valid." });
+    json(r, { ok: true, rule, discount, description: null });
   });
   await page.route("**/api/razorpay/create-order", (r) => {
     m.createOrderCalls++;
@@ -249,6 +257,24 @@ test("out-of-area pincode shows a notice but never blocks the order", async () =
     await payButton(page).click();
     await page.waitForFunction(() => (window as any).__rzpOpened === 1, null, { timeout: 30_000 });
     assert.equal(m.orderBodies.length, 1, "guidance only — the order is still created");
+  } finally {
+    await ctx.close();
+  }
+});
+
+test("invalid coupon is rejected with a message; a valid one can be removed", async () => {
+  const { ctx, page } = await newCheckoutPage();
+  try {
+    await page.fill("#checkout-coupon", "NOPE");
+    await page.getByRole("button", { name: /^apply$/i }).click();
+    await page.getByText(/isn't valid/i).waitFor({ timeout: 10_000 });
+    assert.equal(await page.getByText("Discount", { exact: true }).count(), 0, "no discount for an invalid code");
+
+    await page.fill("#checkout-coupon", "firstbite");
+    await page.getByRole("button", { name: /^apply$/i }).click();
+    await page.getByText("Discount", { exact: true }).waitFor({ timeout: 10_000 });
+    await page.getByRole("button", { name: /^remove$/i }).click();
+    await page.waitForFunction(() => !document.body.innerText.includes("Discount"));
   } finally {
     await ctx.close();
   }

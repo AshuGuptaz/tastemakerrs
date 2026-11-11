@@ -16,7 +16,7 @@ import { whatsappLink } from "@/lib/site";
 import { track, trackBeginCheckout, stashPurchase } from "@/lib/analytics";
 import DatePicker from "@/components/DatePicker";
 import { formatINR } from "@/lib/format";
-import { couponValue, deliveryFee } from "@/lib/pricing";
+import { discountForRule, deliveryFee, type CouponRule } from "@/lib/pricing";
 import { DELIVERY_SLOTS, isoDateOffset, formatDeliveryDate, isSlotBookable, bookableSlots, type SlotId } from "@/lib/fulfillment";
 
 type Address = {
@@ -79,7 +79,10 @@ export default function CheckoutPage() {
   const [addr, setAddr] = useState<Address>(EMPTY);
   const [razorpayReady, setRazorpayReady] = useState(false);
   const [coupon, setCoupon] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState("");
+  // The rule the SERVER validated (/api/coupons/validate). The discount is recomputed
+  // from it with the same pure function /api/orders uses, so it tracks the subtotal.
+  const [appliedRule, setAppliedRule] = useState<CouponRule | null>(null);
+  const [couponBusy, setCouponBusy] = useState(false);
   const [method, setMethod] = useState<"razorpay" | "stripe">("razorpay");
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -110,7 +113,9 @@ export default function CheckoutPage() {
   // Delivery + discount from the shared pricing authority (lib/pricing) — the
   // exact same code the server uses, so the display can't drift from the charge.
   const delivery = deliveryFee(subtotal);
-  const discount = couponValue(appliedCoupon, subtotal);
+  const discount = appliedRule ? discountForRule(appliedRule, subtotal) : 0;
+  // Only send a code that actually earns something at this subtotal.
+  const appliedCoupon = appliedRule && discount > 0 ? appliedRule.code : "";
   const total = Math.max(0, subtotal + delivery - discount);
 
   // `paidRef` is set right before a successful payment clears the cart and heads to
@@ -317,15 +322,28 @@ export default function CheckoutPage() {
     });
   }
 
-  const applyCoupon = () => {
+  const applyCoupon = async () => {
     const c = coupon.trim().toUpperCase();
-    const value = couponValue(c, subtotal);
-    if (value > 0) {
-      setAppliedCoupon(c);
-      toast.success(`Applied ${c} · saved ${formatINR(value)}`);
-    } else {
-      setAppliedCoupon("");
-      toast.error("Coupon not valid for this cart");
+    if (!c) { setAppliedRule(null); return; }
+    if (couponBusy) return;
+    setCouponBusy(true);
+    try {
+      const r = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: c, subtotal, phone: addr.phone || undefined, email: addr.email || undefined }),
+      }).then((res) => res.json());
+      if (r.ok && r.rule) {
+        setAppliedRule(r.rule);
+        toast.success(`Applied ${r.rule.code} · saved ${formatINR(r.discount)}`);
+      } else {
+        setAppliedRule(null);
+        toast.error(r.error || "Coupon not valid for this cart");
+      }
+    } catch {
+      toast.error("Couldn't check that code right now. Please try again.");
+    } finally {
+      setCouponBusy(false);
     }
   };
 
@@ -732,8 +750,14 @@ export default function CheckoutPage() {
               <div className="mt-4 flex gap-2">
                 <label className="sr-only" htmlFor="checkout-coupon">Coupon code</label>
                 <input id="checkout-coupon" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon code" className="input" />
-                <button onClick={applyCoupon} className="btn-line shrink-0 rounded-2xl py-3">Apply</button>
+                <button onClick={applyCoupon} disabled={couponBusy} className="btn-line shrink-0 rounded-2xl py-3">{couponBusy ? "Checking…" : "Apply"}</button>
               </div>
+              {appliedCoupon && (
+                <p className="mt-2 text-xs text-flame-700">
+                  <strong>{appliedCoupon}</strong> applied.{" "}
+                  <button type="button" onClick={() => { setAppliedRule(null); setCoupon(""); }} className="font-semibold underline">Remove</button>
+                </p>
+              )}
 
               <ul className="mt-4 space-y-2 text-sm">
                 <li className="flex justify-between"><span className="text-ink-mut">Subtotal</span><span>{formatINR(subtotal)}</span></li>
