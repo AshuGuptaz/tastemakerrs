@@ -42,6 +42,35 @@ const LABELS: Record<keyof Address, string> = {
   notes: "notes",
 };
 
+/**
+ * Run `fn` once the page has loaded and the browser is idle — or at the customer's
+ * first interaction, whichever comes first. Keeps heavy third-party scripts
+ * (Razorpay ~166KB, Google Maps ~400KB) off the critical path so they can't
+ * compete with the page's own JS/LCP, while still being ready long before anyone
+ * can finish the form. Returns a cleanup.
+ */
+function afterLoadOrInteract(fn: () => void): () => void {
+  let done = false;
+  let idleId: number | undefined;
+  const cleanups: Array<() => void> = [];
+  const run = () => {
+    if (done) return;
+    done = true;
+    cleanups.forEach((c) => c());
+    fn();
+  };
+  const onLoad = () => {
+    if (typeof window.requestIdleCallback === "function") idleId = window.requestIdleCallback(run, { timeout: 3000 });
+    else { const t = window.setTimeout(run, 1500); cleanups.push(() => clearTimeout(t)); }
+  };
+  if (document.readyState === "complete") onLoad();
+  else { window.addEventListener("load", onLoad, { once: true }); cleanups.push(() => window.removeEventListener("load", onLoad)); }
+  document.addEventListener("focusin", run, { once: true });
+  document.addEventListener("pointerdown", run, { once: true });
+  cleanups.push(() => { document.removeEventListener("focusin", run); document.removeEventListener("pointerdown", run); });
+  return () => { done = true; cleanups.forEach((c) => c()); if (idleId !== undefined && typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(idleId); };
+}
+
 export default function CheckoutPage() {
   const { items, subtotal, clear, hydrated } = useCart();
   const { customer, loading: customerLoading } = useCustomer();
@@ -179,15 +208,18 @@ export default function CheckoutPage() {
   // Load Razorpay script once (dedup: StrictMode double-runs + remounts must not re-inject)
   useEffect(() => {
     if ((window as any).Razorpay) { setRazorpayReady(true); return; }
-    const existing = document.querySelector<HTMLScriptElement>("script[data-razorpay]");
-    if (existing) { existing.addEventListener("load", () => setRazorpayReady(true)); return; }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.dataset.razorpay = "1";
-    script.onload = () => setRazorpayReady(true);
-    document.body.appendChild(script);
-    // Keep the single tag mounted for the app's lifetime — no remove() race.
+    return afterLoadOrInteract(() => {
+      if ((window as any).Razorpay) { setRazorpayReady(true); return; }
+      const existing = document.querySelector<HTMLScriptElement>("script[data-razorpay]");
+      if (existing) { existing.addEventListener("load", () => setRazorpayReady(true)); return; }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.dataset.razorpay = "1";
+      script.onload = () => setRazorpayReady(true);
+      document.body.appendChild(script);
+      // Keep the single tag mounted for the app's lifetime — no remove() race.
+    });
   }, []);
 
   // Load Google Maps + Places Autocomplete once (deduped, never removed)
@@ -201,15 +233,18 @@ export default function CheckoutPage() {
     // address field instead of injecting a broken tag.
     if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) return;
     if ((window as any).google?.maps?.places) { initAutocomplete(); return clearListeners; }
-    const existing = document.querySelector<HTMLScriptElement>("script[data-gmaps]");
-    if (existing) { existing.addEventListener("load", initAutocomplete); return clearListeners; }
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
-    script.async = true;
-    script.dataset.gmaps = "1";
-    script.onload = initAutocomplete;
-    document.body.appendChild(script);
-    return clearListeners; // only detach listeners; never remove the shared tag
+    const cancelDefer = afterLoadOrInteract(() => {
+      if ((window as any).google?.maps?.places) { initAutocomplete(); return; }
+      const existing = document.querySelector<HTMLScriptElement>("script[data-gmaps]");
+      if (existing) { existing.addEventListener("load", initAutocomplete); return; }
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.async = true;
+      script.dataset.gmaps = "1";
+      script.onload = initAutocomplete;
+      document.body.appendChild(script);
+    });
+    return () => { cancelDefer(); clearListeners(); }; // only detach listeners; never remove the shared tag
   }, []);
 
   // Init map when coords change
@@ -445,7 +480,9 @@ export default function CheckoutPage() {
 
   if (!hydrated) {
     return (
-      <section className="bg-transparent py-16 md:py-24">
+      // min-h approximates the real form's height so the footer doesn't jump down
+      // (CLS ~0.18) when the form replaces this skeleton.
+      <section className="bg-transparent py-16 md:py-24 min-h-[1900px] lg:min-h-[1050px]">
         <div className="container-x">
           <div className="skeleton h-14 w-56 rounded-xl" />
           <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
