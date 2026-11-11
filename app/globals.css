@@ -310,6 +310,8 @@ html { scrollbar-gutter: stable; }
     hero-reveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) both,
     hero-shimmer 2.5s linear infinite;
 }
+@keyframes page-fade-in { from { opacity: 0.001; } to { opacity: 1; } }
+.page-fade { animation: page-fade-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .hero-fade { animation: hero-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @media (prefers-reduced-motion: reduce) {
   .hero-word, .hero-fade { animation: none; }

@@ -1,21 +1,15 @@
-"use client";
-
-import { m, useReducedMotion } from "framer-motion";
-
 /**
  * App Router `template.tsx` re-mounts on every navigation (unlike `layout.tsx`),
- * so wrapping children here gives a gentle page-transition on each route change.
- * Opacity only (never transform) so it can't re-root fixed/sticky descendants.
+ * so this gives a gentle page-transition on each route change.
+ *
+ * PERF: this is a pure-CSS fade on purpose. It used to be a Framer `m.div` with
+ * `initial={{ opacity: 0 }}`, which meant the server-rendered HTML stayed fully
+ * invisible until React hydrated — on throttled mobile that pushed LCP to ~7s
+ * (Lighthouse: ~0ms load, ~7s render delay). A CSS animation runs from first
+ * paint with no JS, and the `prefers-reduced-motion` rule in globals.css
+ * collapses it to instant. Opacity only (never transform) so it can't re-root
+ * fixed/sticky descendants.
  */
 export default function Template({ children }: { children: React.ReactNode }) {
-  const reduce = useReducedMotion();
-  return (
-    <m.div
-      initial={reduce ? false : { opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </m.div>
-  );
+  return <div className="page-fade">{children}</div>;
 }
