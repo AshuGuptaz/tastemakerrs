@@ -16,7 +16,7 @@
 ## Critical architecture rules
 
 ### Pricing (single source of truth)
-Delivery/coupon/total math lives ONLY in `lib/pricing.ts` (`couponValue`, `deliveryFee`, `computeTotals`, `DELIVERY_FEE=79`, `FREE_DELIVERY_ABOVE=999`). Both the client display (`app/checkout/page.tsx`) and the server authority (`app/api/orders/route.ts`) import from it — never re-implement the math inline (that duplication used to cause charge ≠ display). Custom-cake pricing is likewise centralized in `lib/custom-cake.ts` (`priceCustomCake`, `customCakeName`), imported by the studio page and re-derived server-side in `/api/orders`. Tests in `tests/*.test.ts` lock these invariants (`npm test`).
+Delivery/coupon/total math lives ONLY in `lib/pricing.ts` (`couponValue`, `deliveryFee`, `computeTotals`, `DELIVERY_FEE=79`, `FREE_DELIVERY_ABOVE=999`). Both the client display (`app/checkout/page.tsx`) and the server authority (`app/api/orders/route.ts`) import from it — never re-implement the math inline (that duplication used to cause charge ≠ display). Custom-cake pricing is likewise centralized in `lib/custom-cake.ts` (`priceCustomCake`, `customCakeName`), imported by the studio page and re-derived server-side in `/api/orders`. Tests in `tests/*.test.ts` lock these invariants (`npm test`). `npm run test:e2e` (`tests/e2e/checkout.e2e.ts`, Playwright + mocked Razorpay/APIs, boots `next dev` on :3101 or uses `E2E_BASE_URL`) locks the cart → checkout → pay → order-success flow; run it before touching checkout/payment code.
 
 `/api/orders` returns `{ subtotal, delivery, discount, total }`; checkout reconciles them against the displayed total before opening the payment modal (catches stale cart prices → no surprise charge).
 
