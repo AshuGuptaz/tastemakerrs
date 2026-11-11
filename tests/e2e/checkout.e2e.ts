@@ -235,3 +235,21 @@ test("dismissing the Razorpay modal keeps the cart and re-enables Pay", async ()
     await ctx.close();
   }
 });
+
+test("out-of-area pincode shows a notice but never blocks the order", async () => {
+  const { ctx, page, m } = await newCheckoutPage();
+  try {
+    await page.evaluate(() => { (window as any).__rzpMode = "dismiss"; });
+    await fillForm(page);
+    await page.fill("#checkout-pincode", "560038"); // Bengaluru — outside the Lucknow range
+    await page.getByText(/outside our usual Lucknow delivery area/i).waitFor({ timeout: 10_000 });
+    await page.fill("#checkout-pincode", "226010"); // Lucknow — notice disappears
+    await page.waitForFunction(() => !document.body.innerText.includes("outside our usual Lucknow delivery area"));
+    await page.fill("#checkout-pincode", "560038");
+    await payButton(page).click();
+    await page.waitForFunction(() => (window as any).__rzpOpened === 1, null, { timeout: 30_000 });
+    assert.equal(m.orderBodies.length, 1, "guidance only — the order is still created");
+  } finally {
+    await ctx.close();
+  }
+});

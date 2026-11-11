@@ -11,6 +11,8 @@ import { useCart } from "@/context/CartContext";
 import { useCustomer } from "@/context/CustomerContext";
 import { loadSavedContact, saveContact, clearSavedContact } from "@/lib/saved-contact";
 import OtpDialog from "@/components/checkout/OtpDialog";
+import { isValidPincode, isServiceablePincode } from "@/lib/delivery-area";
+import { whatsappLink } from "@/lib/site";
 import { track, trackBeginCheckout, stashPurchase } from "@/lib/analytics";
 import DatePicker from "@/components/DatePicker";
 import { formatINR } from "@/lib/format";
@@ -525,7 +527,14 @@ export default function CheckoutPage() {
                 <div><label className="label" htmlFor="checkout-name">Full name</label><input id="checkout-name" required aria-required="true" aria-invalid={errorField === "name"} className={`input ${errorField === "name" ? "ring-2 ring-flame/50" : ""}`} value={addr.name} onChange={(e) => { setErrorField(null); setAddr({ ...addr, name: e.target.value }); }} /></div>
                 <div><label className="label" htmlFor="checkout-email">Email</label><input id="checkout-email" type="email" required aria-required="true" aria-invalid={errorField === "email"} className={`input ${errorField === "email" ? "ring-2 ring-flame/50" : ""}`} value={addr.email} onChange={(e) => { setErrorField(null); setAddr({ ...addr, email: e.target.value }); }} /></div>
                 <div><label className="label" htmlFor="checkout-phone">Phone</label><input id="checkout-phone" required aria-required="true" aria-invalid={errorField === "phone"} className={`input ${errorField === "phone" ? "ring-2 ring-flame/50" : ""}`} value={addr.phone} onChange={(e) => { setErrorField(null); setAddr({ ...addr, phone: e.target.value }); }} /></div>
-                <div><label className="label" htmlFor="checkout-pincode">Pincode</label><input id="checkout-pincode" required aria-required="true" aria-invalid={errorField === "pincode"} className={`input ${errorField === "pincode" ? "ring-2 ring-flame/50" : ""}`} value={addr.pincode} onChange={(e) => { setErrorField(null); setAddr({ ...addr, pincode: e.target.value }); }} /></div>
+                <div><label className="label" htmlFor="checkout-pincode">Pincode</label><input id="checkout-pincode" required aria-required="true" aria-invalid={errorField === "pincode"} className={`input ${errorField === "pincode" ? "ring-2 ring-flame/50" : ""}`} value={addr.pincode} onChange={(e) => { setErrorField(null); setAddr({ ...addr, pincode: e.target.value }); }} />
+                  {isValidPincode(addr.pincode) && !isServiceablePincode(addr.pincode) && (
+                    <p role="status" className="mt-1.5 text-xs text-flame-700">
+                      {addr.pincode} is outside our usual Lucknow delivery area. You can still order — we&apos;ll confirm delivery with you on WhatsApp,{" "}
+                      <a href={whatsappLink(`Hi, can you deliver to pincode ${addr.pincode}?`)} target="_blank" rel="noopener noreferrer" className="font-semibold underline">or ask us now</a>.
+                    </p>
+                  )}
+                </div>
                 <div className="md:col-span-2">
                   <label className="label" htmlFor="checkout-street">Street address</label>
                   <input
