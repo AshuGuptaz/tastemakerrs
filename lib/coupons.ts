@@ -22,7 +22,7 @@ const builtinDocs = (): CouponDoc[] =>
 
 let seeded: Promise<void> | null = null;
 /** Insert the launch codes once per process; `$setOnInsert` never overwrites an admin's edits. */
-function ensureSeeded(): Promise<void> {
+export function ensureSeeded(): Promise<void> {
   if (!seeded) {
     seeded = (async () => {
       await connectDB();
