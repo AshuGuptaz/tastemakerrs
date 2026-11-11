@@ -52,3 +52,38 @@ test("computeTotals: no coupon", () => {
   assert.equal(t.coupon, null);
   assert.equal(t.total, 1200); // free delivery, no discount
 });
+
+import { discountForRule, BUILTIN_COUPONS, type CouponRule } from "../lib/pricing";
+
+test("discountForRule: percent, flat, min subtotal, cap", () => {
+  const pct: CouponRule = { code: "P", kind: "percent", value: 15 };
+  assert.equal(discountForRule(pct, 1000), 150);
+  assert.equal(discountForRule({ ...pct, maxDiscount: 100 }, 1000), 100); // capped
+  assert.equal(discountForRule({ ...pct, maxDiscount: 500 }, 1000), 150); // cap not reached
+  const flat: CouponRule = { code: "F", kind: "flat", value: 200, minSubtotal: 500 };
+  assert.equal(discountForRule(flat, 500), 200);
+  assert.equal(discountForRule(flat, 499), 0); // below minimum
+  assert.equal(discountForRule({ code: "F2", kind: "flat", value: 500 }, 300), 300); // never exceeds subtotal
+  assert.equal(discountForRule(pct, 0), 0);
+  assert.equal(discountForRule(pct, -5), 0);
+});
+
+test("computeTotals: custom rule set (DB-backed coupons) drives the same math", () => {
+  const rules: CouponRule[] = [{ code: "DIWALI25", kind: "percent", value: 25, maxDiscount: 400, minSubtotal: 800 }];
+  const t = computeTotals(2000, "diwali25", rules);
+  assert.equal(t.discount, 400); // 25% = 500, capped at 400
+  assert.equal(t.coupon, "DIWALI25");
+  assert.equal(computeTotals(2000, "FIRSTBITE", rules).discount, 0); // built-ins are NOT implicitly active
+  assert.equal(computeTotals(700, "DIWALI25", rules).coupon, null); // below minimum earns nothing
+});
+
+test("BUILTIN_COUPONS reproduce the original hardcoded rules exactly", () => {
+  const codes = BUILTIN_COUPONS.map((c) => c.code).sort();
+  assert.deepEqual(codes, ["BDAY150", "BULK10", "FIRSTBITE", "HAMPER20"]);
+  for (const sub of [100, 995, 998, 999, 1000, 2999, 3000, 12345]) {
+    assert.equal(couponValue("FIRSTBITE", sub), Math.round(sub * 0.1));
+    assert.equal(couponValue("HAMPER20", sub), Math.round(sub * 0.2));
+    assert.equal(couponValue("BDAY150", sub), sub >= 999 ? 150 : 0);
+    assert.equal(couponValue("BULK10", sub), sub >= 3000 ? Math.round(sub * 0.1) : 0);
+  }
+});
