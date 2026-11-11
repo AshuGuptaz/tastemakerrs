@@ -16,7 +16,7 @@ export default function Stars({
   const interactive = !!onChange;
 
   return (
-    <div className="flex items-center gap-0.5" role={interactive ? "radiogroup" : undefined} aria-label={interactive ? "Rating" : `${value} out of 5 stars`}>
+    <div className="flex items-center gap-0.5" role={interactive ? "radiogroup" : "img"} aria-label={interactive ? "Rating" : `${value} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((s) => {
         const filled = s <= Math.round(value);
         const star = (

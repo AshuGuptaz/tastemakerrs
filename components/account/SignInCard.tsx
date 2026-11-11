@@ -164,7 +164,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
           <div className="relative flex h-full flex-col">
             <m.div {...enter(0)} className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo-redesign-wordmark-reversed.png" alt="The Taste Makerrs" className="h-7 w-auto select-none" />
+              <img src="/brand/logo-redesign-wordmark-reversed.png" alt="The Taste Makerrs" width={371} height={60} className="h-7 w-auto select-none" />
             </m.div>
 
             <div className="mt-5 lg:mt-auto lg:pt-16">

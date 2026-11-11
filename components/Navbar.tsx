@@ -95,6 +95,8 @@ export default function Navbar() {
               <img
                 src="/brand/logo-redesign-wordmark-full.png"
                 alt="The Taste Makerrs"
+                width={371}
+                height={60}
                 className="h-6 w-auto select-none transition-transform duration-300 group-hover:-translate-y-0.5"
               />
             </Link>

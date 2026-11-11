@@ -21,7 +21,7 @@ export default function Footer() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/brand/logo-redesign-mark-reversed.png" alt="" aria-hidden className="h-9 w-9 shrink-0 transition-transform duration-300 group-hover:-translate-y-0.5" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/brand/logo-redesign-wordmark-reversed.png" alt="The Taste Makerrs" className="h-7 w-auto select-none" />
+              <img src="/brand/logo-redesign-wordmark-reversed.png" alt="The Taste Makerrs" width={371} height={60} className="h-7 w-auto select-none" />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
               Small-batch bakery in Lucknow. Baked fresh, delivered with love.
@@ -47,7 +47,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className={headingCls}>Shop</h4>
+            <h2 className={headingCls}>Shop</h2>
             <ul className="mt-4 space-y-2.5">
               <li><Link href="/menu?cat=cakes" className={linkCls}>Cakes</Link></li>
               <li><Link href="/menu?cat=muffins" className={linkCls}>Muffins</Link></li>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className={headingCls}>Company</h4>
+            <h2 className={headingCls}>Company</h2>
             <ul className="mt-4 space-y-2.5">
               <li><Link href="/about" className={linkCls}>About</Link></li>
               <li><Link href="/kitchen" className={linkCls}>Our Kitchen</Link></li>
@@ -70,7 +70,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className={headingCls}>Reach Us</h4>
+            <h2 className={headingCls}>Reach Us</h2>
             <ul className="mt-4 space-y-3 text-sm text-white/70">
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-flame-400" />
