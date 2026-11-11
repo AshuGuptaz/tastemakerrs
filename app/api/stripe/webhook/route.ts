@@ -4,6 +4,7 @@ import { getStripe } from "@/lib/stripe";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
+import { logError, logWarn } from "@/lib/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +17,12 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const sig = req.headers.get("stripe-signature");
   const whSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!sig || !whSecret) {
+  if (!whSecret) {
+    logError("stripe/webhook", new Error("STRIPE_WEBHOOK_SECRET is not set — webhooks are being rejected"));
+    return NextResponse.json({ error: "missing signature/secret" }, { status: 400 });
+  }
+  if (!sig) {
+    logWarn("stripe/webhook", "request without stripe-signature (probe?)");
     return NextResponse.json({ error: "missing signature/secret" }, { status: 400 });
   }
   const stripe = getStripe();
@@ -26,6 +32,8 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, whSecret);
   } catch (e: unknown) {
+    // Most likely cause in production: dashboard signing secret != STRIPE_WEBHOOK_SECRET.
+    logError("stripe/webhook", e instanceof Error ? e : new Error(String(e)), { phase: "signature" });
     return NextResponse.json({ error: `Webhook error: ${e instanceof Error ? e.message : String(e)}` }, { status: 400 });
   }
 
@@ -52,6 +60,15 @@ export async function POST(req: Request) {
           { new: true }
         );
         if (updated) await sendOrderConfirmation(orderId);
+        else if (!(await Order.exists({ _id: orderId }))) {
+          logError("stripe/webhook", new Error("checkout.session.completed matches no order — reconcile or refund"), {
+            orderId, paymentIntent: s.payment_intent,
+          });
+        }
+      } else {
+        logError("stripe/webhook", new Error("paid checkout session has no orderId metadata — reconcile or refund"), {
+          sessionId: s.id, paymentIntent: s.payment_intent,
+        });
       }
       break;
     }
