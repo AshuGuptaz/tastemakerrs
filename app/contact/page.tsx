@@ -2,12 +2,19 @@ import { MessageCircle, Clock, Sparkles, Truck, ArrowRight } from "lucide-react"
 import { whatsappLink } from "@/lib/site";
 import PageHeader from "@/components/ui/PageHeader";
 import Reveal from "@/components/ui/Reveal";
+import type { Metadata } from "next";
 
 const PERKS = [
   { Icon: Clock, label: "Replies within 2 hours" },
   { Icon: Sparkles, label: "Custom & photo cakes" },
   { Icon: Truck, label: "Same-day delivery in Lucknow" },
 ];
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Questions about an order, a custom cake or a gift hamper? Reach The Taste Makerrs on WhatsApp, phone or email.",
+  alternates: { canonical: "/contact" },
+};
 
 export default function ContactPage() {
   return (
