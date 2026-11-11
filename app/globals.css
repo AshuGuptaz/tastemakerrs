@@ -312,6 +312,19 @@ html { scrollbar-gutter: stable; }
 }
 @keyframes page-fade-in { from { opacity: 0.001; } to { opacity: 1; } }
 .page-fade { animation: page-fade-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* Inner-page header entrance (PageHeader/TextReveal). Pure CSS so it runs from
+   first paint — the Framer version started at opacity:0 and stayed invisible until
+   hydration (menu LCP ~5s on throttled mobile). Delays come from inline styles. */
+@keyframes reveal-word {
+  from { transform: translateY(115%); filter: blur(12px); opacity: 0; }
+  to   { transform: none; filter: blur(0); opacity: 1; }
+}
+@keyframes reveal-rise {
+  from { transform: translateY(var(--rise, 12px)); filter: blur(var(--blur, 0px)); opacity: 0; }
+  to   { transform: none; filter: blur(0); opacity: 1; }
+}
+.reveal-word { animation: reveal-word 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; will-change: transform, filter, opacity; }
+.reveal-rise { animation: reveal-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .hero-fade { animation: hero-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @media (prefers-reduced-motion: reduce) {
   .hero-word, .hero-fade { animation: none; }

@@ -12,12 +12,10 @@
  */
 
 import { Fragment, type ElementType } from "react";
-import { m, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 
 /** A run of the headline that shares one style (e.g. the flame accent word). */
 export type RevealSegment = { text: string; className?: string };
-
-const EASE = [0.16, 1, 0.3, 1] as const; // easeOutExpo — the "expensive" reveal curve
 
 interface TextRevealProps {
   segments: RevealSegment[];
@@ -72,14 +70,12 @@ export default function TextReveal({
             // rising mask never shears them; align-bottom keeps the baseline honest.
             style={{ paddingBottom: "0.14em", marginBottom: "-0.14em" }}
           >
-            <m.span
-              className={`inline-block will-change-[transform,filter,opacity] ${c ?? ""}`}
-              initial={{ y: "115%", filter: "blur(12px)", opacity: 0 }}
-              animate={{ y: "0%", filter: "blur(0px)", opacity: 1 }}
-              transition={{ duration, ease: EASE, delay: (startDelay + i * stagger) / 1000 }}
+            <span
+              className={`reveal-word inline-block ${c ?? ""}`}
+              style={{ animationDelay: `${startDelay + i * stagger}ms`, animationDuration: `${duration}s` }}
             >
               {w}
-            </m.span>
+            </span>
           </span>
           {/* real inter-word space between clips (h1 is normal inline flow, not flex) */}
           {i < words.length - 1 ? " " : ""}

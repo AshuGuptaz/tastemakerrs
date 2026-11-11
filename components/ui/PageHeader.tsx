@@ -67,11 +67,9 @@ export default function PageHeader({
           </div>
 
           <m.div className="relative z-10" style={active ? { y: textY, opacity: textOpacity } : undefined}>
-            <m.span
-              className="gradient-ring relative inline-flex items-center gap-2.5 overflow-hidden rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm"
-              initial={animated && !reduce ? { opacity: 0, y: 10 } : false}
-              animate={animated && !reduce ? { opacity: 1, y: 0 } : undefined}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: EYEBROW_MS / 1000 }}
+            <span
+              className={`${animated && !reduce ? "reveal-rise " : ""}gradient-ring relative inline-flex items-center gap-2.5 overflow-hidden rounded-pill bg-white/[0.07] px-4 py-[0.45rem] text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-sm`}
+              style={animated && !reduce ? ({ "--rise": "10px", animationDelay: `${EYEBROW_MS}ms` } as React.CSSProperties) : undefined}
             >
               {/* shine sweep */}
               <span
@@ -85,7 +83,7 @@ export default function PageHeader({
                 <span className="relative h-[5px] w-[5px] rounded-full bg-flame-400 shadow-[0_0_5px_2px_rgba(249,115,22,0.65)]" />
               </span>
               {eyebrow}
-            </m.span>
+            </span>
             {animated ? (
               <TextReveal
                 segments={titleSegments!}
@@ -100,14 +98,12 @@ export default function PageHeader({
             )}
             {subtitle &&
               (animated && !reduce ? (
-                <m.p
-                  className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
-                  initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: subtitleDelay }}
+                <p
+                  className="reveal-rise mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
+                  style={{ "--rise": "14px", "--blur": "6px", animationDelay: `${subtitleDelay * 1000}ms`, animationDuration: "0.8s" } as React.CSSProperties}
                 >
                   {subtitle}
-                </m.p>
+                </p>
               ) : (
                 <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/65 md:text-lg">{subtitle}</p>
               ))}
