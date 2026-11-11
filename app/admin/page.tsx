@@ -76,6 +76,13 @@ export default async function AdminDashboard() {
             </div>
             <span className="text-3xl">→</span>
           </Link>
+          <Link href="/admin/coupons" className="card flex items-center justify-between p-6 hover:border-flame">
+            <div>
+              <p className="font-display text-2xl uppercase">Coupons</p>
+              <p className="text-sm text-cocoa/60">Create codes, set limits & expiry, switch them on or off.</p>
+            </div>
+            <span className="text-3xl">→</span>
+          </Link>
           <Link href="/admin/reviews" className="card flex items-center justify-between p-6 hover:border-flame">
             <div>
               <p className="font-display text-2xl uppercase">Moderate Reviews</p>
