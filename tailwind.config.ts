@@ -36,7 +36,7 @@ const config: Config = {
         peach: { 100: "#FFEDD5", 200: "#FED7AA", 300: "#FDBA74", DEFAULT: "#FDBA74" },
         sky:   { 50: "#F6F6F6", 100: "#EFEFEF", 200: "#E4E4E4", DEFAULT: "#EFEFEF" },
         cocoa: { 50: "#FFF1E6", DEFAULT: "#1C1714", 900: "#000000" },
-        flame: { 400: "#E08B5A", 500: "#D67A47", 600: "#C25E36", 700: "#A4472A", 800: "#823620", DEFAULT: "#D67A47" },
+        flame: { 400: "#E08B5A", 500: "#D67A47", 600: "#C25E36", 700: "#A4472A", 800: "#823620", DEFAULT: "#B05628" },
         rose:  { 500: "#C25E36", 600: "#A4472A" },
         wine:  { DEFAULT: "#1C1714", dark: "#000000" },
 

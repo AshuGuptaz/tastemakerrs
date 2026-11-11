@@ -9,7 +9,7 @@
 
 ## Design tokens
 - **Fonts**: Fraunces (`font-display`, variable serif for headings/prices/wordmark) + Inter (`font-sans`, body)
-- **Palette**: `#FBF8F3` canvas · `#D67A47` flame · `#1C1714` ink
+- **Palette**: `#FBF8F3` canvas · `#B05628` flame (AA-contrast with white text/canvas; `flame-400/500` `#E08B5A/#D67A47` kept for decorative fills only — never put text on them) · `#1C1714` ink
 - **Classes**: `bg-canvas`, `bg-surface`, `text-flame`, `text-ink`, `text-ink-mut`, `border-line`, `shadow-e1/e2/e3`, `btn-accent`, `btn-line`, `rounded-pill`, `focus-ring`
 - Grain texture via `.grain` on `<body>`
 
