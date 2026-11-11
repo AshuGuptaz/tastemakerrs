@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
-import { logError } from "@/lib/logger";
+import { logError, logWarn } from "@/lib/logger";
 import { matchRazorpayOrderId } from "@/lib/razorpay-order";
 
 export const runtime = "nodejs";
@@ -24,7 +24,14 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const sig = req.headers.get("x-razorpay-signature");
   const whSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
-  if (!sig || !whSecret) {
+  if (!whSecret) {
+    // Config error: with no secret EVERY webhook 400s, so payments made with a
+    // closed tab never reconcile. Must page someone, not fail silently.
+    logError("razorpay/webhook", new Error("RAZORPAY_WEBHOOK_SECRET is not set — webhooks are being rejected"));
+    return NextResponse.json({ error: "missing signature/secret" }, { status: 400 });
+  }
+  if (!sig) {
+    logWarn("razorpay/webhook", "request without x-razorpay-signature (probe?)");
     return NextResponse.json({ error: "missing signature/secret" }, { status: 400 });
   }
 
@@ -41,6 +48,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid signature" }, { status: 400 });
   }
   if (expectedBuf.length !== sigBuf.length || !crypto.timingSafeEqual(expectedBuf, sigBuf)) {
+    // Most likely cause in production: dashboard webhook secret != RAZORPAY_WEBHOOK_SECRET
+    // (every real payment webhook then fails). Sentry groups repeats, so a bot can't flood alerts.
+    logError("razorpay/webhook", new Error("invalid webhook signature — check RAZORPAY_WEBHOOK_SECRET matches the dashboard"));
     return NextResponse.json({ error: "invalid signature" }, { status: 400 });
   }
 
@@ -70,6 +80,14 @@ export async function POST(req: Request) {
           { new: true }
         );
         if (updated) await sendOrderConfirmation(updated._id.toString());
+        else if (!(await Order.exists(matchRazorpayOrderId(razorpayOrderId)))) {
+          // Money was captured but no order carries this Razorpay order id — the one
+          // case that needs a human (reconcile/refund). "Already paid" is the benign
+          // no-op and is NOT reported.
+          logError("razorpay/webhook", new Error("payment.captured matches no order — reconcile or refund"), {
+            razorpayOrderId, razorpayPaymentId,
+          });
+        }
       }
       break;
     }
