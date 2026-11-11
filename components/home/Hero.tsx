@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { m, useReducedMotion, useScroll, useTransform } from "framer-motion";
@@ -19,6 +19,27 @@ export default function Hero() {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // PERF: the poster (optimised AVIF/WebP via next/image, `priority`) is the LCP
+  // element on every device. The 2.7MB loop is layered on top only AFTER load,
+  // and only on a fast, non-data-saver connection and a desktop-class viewport —
+  // phones on cellular get the still poster and never download the video.
+  const [loadVideo, setLoadVideo] = useState(false);
+  useEffect(() => {
+    if (reduce) return;
+    const conn = (navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }).connection;
+    const slow = !!conn?.saveData || /(^|-)(slow-2g|2g|3g)$/.test(conn?.effectiveType ?? "");
+    const small = window.matchMedia("(max-width: 767px)").matches;
+    if (slow || small) return;
+    const start = () => setLoadVideo(true);
+    if (document.readyState === "complete") {
+      const t = setTimeout(start, 300);
+      return () => clearTimeout(t);
+    }
+    window.addEventListener("load", start, { once: true });
+    return () => window.removeEventListener("load", start);
+  }, [reduce]);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
   // PERF: pause the autoplaying hero video once it scrolls out of view — an
@@ -37,7 +58,7 @@ export default function Hero() {
     );
     io.observe(vid);
     return () => io.disconnect();
-  }, []);
+  }, [loadVideo]);
 
   // Slow Ken-Burns push + parallax on the cake; content drifts up & fades out.
   const imgY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["0%", "12%"]);
@@ -53,26 +74,24 @@ export default function Hero() {
           behind the page background). Reduced-motion users get the still poster
           instead of the autoplaying loop. */}
       <m.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0 z-0">
-        {reduce ? (
-          <Image
-            src={HERO_POSTER}
-            alt="A freshly baked celebration cake from The Taste Makerrs"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-        ) : (
+        <Image
+          src={HERO_POSTER}
+          alt="A freshly baked celebration cake from The Taste Makerrs"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        {loadVideo && (
           <video
             ref={videoRef}
-            className="h-full w-full object-cover object-center"
+            className="absolute inset-0 h-full w-full object-cover object-center"
             autoPlay
             muted
             loop
             playsInline
             preload="auto"
-            poster={HERO_POSTER}
-            aria-label="A freshly baked celebration cake from The Taste Makerrs"
+            aria-hidden
           >
             <source src={HERO_VIDEO} type="video/mp4" />
           </video>
