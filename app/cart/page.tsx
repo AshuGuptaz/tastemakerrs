@@ -6,6 +6,7 @@ import { m } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart, MAX_QTY } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
+import DeliveryCheck from "@/components/DeliveryCheck";
 import { formatINR } from "@/lib/format";
 import { deliveryFee } from "@/lib/pricing";
 
@@ -79,6 +80,7 @@ export default function CartPage() {
                   </div>
                 </m.div>
               ))}
+              <DeliveryCheck />
             </div>
 
             <aside className="lg:sticky lg:top-24 self-start">
