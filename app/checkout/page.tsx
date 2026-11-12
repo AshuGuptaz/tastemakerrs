@@ -458,7 +458,17 @@ export default function CheckoutPage() {
           description: `Order ${order.id}`,
           order_id: rp.id,
           prefill: { name: addr.name, email: addr.email, contact: addr.phone },
-          theme: { color: "#F97316" },
+          theme: { color: "#B05628" },
+          // UPI first (GPay / PhonePe / Paytm intents on mobile) — the way most
+          // Indian customers pay. show_default_blocks keeps every other method
+          // available below, so nothing is hidden.
+          config: {
+            display: {
+              blocks: { upi: { name: "Pay via UPI", instruments: [{ method: "upi" }] } },
+              sequence: ["block.upi"],
+              preferences: { show_default_blocks: true },
+            },
+          },
           handler: async (resp: any) => {
             try {
               const verify = await fetch("/api/razorpay/verify", {
@@ -712,7 +722,7 @@ export default function CheckoutPage() {
               <h3 className="t-h3">Payment method</h3>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
                 {[
-                  { id: "razorpay", label: "Razorpay (UPI, cards, netbanking)", Icon: CreditCard, desc: "Recommended for India" },
+                  { id: "razorpay", label: "UPI, cards & netbanking", Icon: CreditCard, desc: "GPay, PhonePe, Paytm · Recommended for India" },
                   { id: "stripe", label: "Stripe (international cards)", Icon: Globe, desc: "For overseas customers" },
                 ].map((m) => (
                   <button key={m.id} type="button" onClick={() => setMethod(m.id as any)}
