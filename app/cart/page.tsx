@@ -7,6 +7,7 @@ import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart, MAX_QTY } from "@/context/CartContext";
 import Underlined from "@/components/Underlined";
 import DeliveryCheck from "@/components/DeliveryCheck";
+import AddOns from "@/components/AddOns";
 import { formatINR } from "@/lib/format";
 import { deliveryFee } from "@/lib/pricing";
 
@@ -80,6 +81,7 @@ export default function CartPage() {
                   </div>
                 </m.div>
               ))}
+              <AddOns />
               <DeliveryCheck />
             </div>
 
