@@ -12,10 +12,16 @@ import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import StickyOrderBar from "@/components/home/StickyOrderBar";
+import { homeJsonLd } from "@/lib/structured-data";
 
 export default function HomePage() {
   return (
     <>
+      {/* "<" escaped so text can never close the script tag */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd()).replace(/</g, "\\u003c") }}
+      />
       <AuroraBg />
       <Hero />
 
