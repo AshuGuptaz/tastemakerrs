@@ -50,6 +50,9 @@ Accounts reuse the OTP infra — there are NO passwords. `/api/otp/verify` upser
 ### Reviews (verified-buyer, moderated)
 `models/Review.ts` — one review per customer per product, defaults to `pending`. `/api/reviews` POST requires a signed-in customer with a **paid** order containing the product; photos are image data URLs, size-capped. Only `approved` reviews are public. Moderate at `/admin/reviews` (`/api/admin/reviews`).
 
+### GST invoices
+`lib/gst.ts` is the pure, integer-paise source of truth (`buildInvoice`, `gstConfig`, `invoiceNumber`; tests in `tests/gst.test.ts`). Prices are TAX-INCLUSIVE: tax is backed out of what was paid, the coupon discount is allocated across item lines pro rata, delivery is a taxed line, and the invoice grand total always equals `Order.total`. `/invoice/[id]` (server page, print → PDF) is viewable only by admin, the owning customer session, or a matching checkout token, and only for `paid` orders (else 404). Invoice numbers are derived from the order id (`TTM/FY/XXXXXX`), NOT a gapless counter — swap in a counter collection if your CA requires strictly consecutive numbers.
+
 ### Live order tracking
 `Order.statusHistory` records each transition. `updateOrderStatus` (`lib/order-status-update.ts`) is the ONLY path that should change status — it appends history and notifies the customer (email/SMS with a tracking link) for customer-facing transitions. Admin advances status via the dropdown on `/admin/orders` (`PATCH /api/admin/orders/:id`). `/track/:id` is a public capability link (`/api/track/:id` returns ONLY non-sensitive fields — no email/phone/address/totals; unpaid orders 404). `lib/order-status.ts` holds shared `STATUS_META`/`TRACK_STEPS`.
 
@@ -72,6 +75,9 @@ Customers save birthdays/anniversaries (`Customer.occasions`, month+day). `/api/
 | `NEXT_PUBLIC_SITE_URL` | For OG metadata + email/SMS tracking links | e.g. `https://www.thetastemakerrs.com` |
 | `NEXT_PUBLIC_GA_ID` | For funnel analytics | GA4 measurement ID (`G-XXXXXXX`). Unset → analytics is a silent no-op. Events via `lib/analytics.ts` (`track`, never PII) |
 | `CRON_SECRET` | For occasion reminders | Vercel sends it as `Authorization: Bearer …` to `/api/cron/reminders`; the job 401s without a match in production |
+| `GST_GSTIN` | For GST tax invoices | Seller GSTIN. Unset → `/invoice/:id` renders a plain "Payment Receipt" with no tax breakup |
+| `GST_LEGAL_NAME` / `GST_ADDRESS` / `GST_STATE` | For GST invoices | Print header; `GST_STATE` (default "Uttar Pradesh") decides CGST+SGST vs IGST |
+| `GST_RATE_PERCENT` | For GST invoices | Default 18 — confirm the rate/HSN with your CA |
 
 **After adding/changing any env var in Vercel → always confirm all vars are still present for Production scope before redeploying.**
 

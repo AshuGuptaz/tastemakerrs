@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { RotateCcw, Package, ExternalLink } from "lucide-react";
+import { RotateCcw, Package, ExternalLink, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
 import { PRODUCTS } from "@/lib/products";
@@ -156,6 +156,12 @@ export default function OrderHistory() {
                 <Link href={`/track/${o.id}`} className="btn-line text-sm">
                   <ExternalLink className="h-4 w-4" />
                   Track order
+                </Link>
+              )}
+              {o.paymentStatus === "paid" && (
+                <Link href={`/invoice/${o.id}`} className="btn-line text-sm">
+                  <FileText className="h-4 w-4" />
+                  Invoice
                 </Link>
               )}
             </div>
