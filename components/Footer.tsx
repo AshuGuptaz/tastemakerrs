@@ -66,6 +66,7 @@ export default function Footer() {
               <li><Link href="/contact" className={linkCls}>Contact</Link></li>
               <li><Link href="/delivery-policy" className={linkCls}>Delivery &amp; Refunds</Link></li>
               <li><Link href="/privacy-policy" className={linkCls}>Privacy Policy</Link></li>
+              <li><Link href="/terms" className={linkCls}>Terms &amp; Conditions</Link></li>
             </ul>
           </div>
 

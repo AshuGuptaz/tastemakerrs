@@ -14,6 +14,7 @@ const STATIC: Array<{ path: string; priority: number; changeFrequency: "daily" |
   { path: "/contact", priority: 0.5, changeFrequency: "monthly" },
   { path: "/delivery-policy", priority: 0.3, changeFrequency: "monthly" },
   { path: "/privacy-policy", priority: 0.2, changeFrequency: "monthly" },
+  { path: "/terms", priority: 0.2, changeFrequency: "monthly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
