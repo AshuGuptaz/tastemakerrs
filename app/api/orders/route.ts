@@ -76,7 +76,15 @@ const FulfillmentSchema = z.object({
 
 // Client no longer sends prices — server computes them from the catalog.
 const Body = z.object({
-  items: z.array(ItemSchema).min(1),
+  // Capped: each custom item may carry a ~2MB image, so an unbounded array could
+  // blow Mongo's 16MB document limit (and server memory).
+  items: z
+    .array(ItemSchema)
+    .min(1)
+    .max(30)
+    .refine((items) => items.reduce((n, i) => n + (i.custom?.image?.length ?? 0), 0) <= 6_000_000, {
+      message: "Too much image data in one order",
+    }),
   address: AddressSchema,
   gift: GiftSchema.optional(),
   fulfillment: FulfillmentSchema.optional(),
