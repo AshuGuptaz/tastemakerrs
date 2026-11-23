@@ -50,6 +50,12 @@ export async function POST(req: Request) {
     if (order.paymentStatus === "paid") {
       return NextResponse.json({ error: "Order already paid" }, { status: 400 });
     }
+    // Only an unpaid/failed, still-open order may be paid. A refunded order would
+    // be charged but never re-marked paid (the webhooks only accept unpaid/failed),
+    // and a cancelled order must not take money.
+    if (!["unpaid", "failed"].includes(order.paymentStatus) || order.status === "cancelled") {
+      return NextResponse.json({ error: "This order can no longer be paid. Please place a new order." }, { status: 400 });
+    }
 
     const couponCheck = await orderCouponStillValid(order);
     if (!couponCheck.ok) {
