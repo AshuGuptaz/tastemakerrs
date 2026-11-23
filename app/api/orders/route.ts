@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { z } from "zod";
+import { ItemsSchema, AddressSchema } from "@/lib/order-schema";
 import { getAdminFromCookies } from "@/lib/auth-server";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
@@ -16,50 +17,6 @@ import { rateLimit, clientIp } from "@/lib/rate-limit";
 import { logError } from "@/lib/logger";
 
 export const runtime = "nodejs";
-
-// Shape of a custom-cake spec. Unknown keys are stripped and every field is
-// size-capped so an order can't be used to stuff arbitrary data into Mongo.
-// image mirrors the cap in /api/custom-orders (data URL, ~1.4MB raw).
-const CustomSchema = z.object({
-  base: z.string().max(100).nullable().optional(),
-  flavor: z.string().max(100).optional(),
-  weight: z.string().max(50).optional(),
-  shape: z.string().max(50).optional(),
-  eggless: z.boolean().optional(),
-  message: z.string().max(500).optional(),
-  date: z.string().max(50).optional(),
-  image: z.string().max(2_000_000).optional(),
-  price: z.number().optional(),
-  contact: z
-    .object({
-      name: z.string().max(100).optional(),
-      phone: z.string().max(20).optional(),
-      email: z.string().max(200).optional(),
-    })
-    .optional(),
-});
-
-const ItemSchema = z.object({
-  productId: z.string().optional(),
-  name: z.string().max(200),
-  price: z.number().positive(),
-  qty: z.number().int().min(1).max(50),
-  variant: z.string().max(100).optional(),
-  custom: CustomSchema.optional(),
-});
-
-const AddressSchema = z.object({
-  name: z.string().min(1),
-  // Stored lowercase: customer sessions carry a lowercased email, so exact
-  // matching (account history) would miss "John@Gmail.com" otherwise.
-  email: z.string().trim().toLowerCase().email(),
-  phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
-  street: z.string().min(1),
-  city: z.string().min(1),
-  state: z.string().min(1),
-  pincode: z.string().min(4),
-  notes: z.string().optional().default(""),
-});
 
 const GiftSchema = z.object({
   isGift: z.boolean().optional().default(false),
@@ -76,15 +33,7 @@ const FulfillmentSchema = z.object({
 
 // Client no longer sends prices — server computes them from the catalog.
 const Body = z.object({
-  // Capped: each custom item may carry a ~2MB image, so an unbounded array could
-  // blow Mongo's 16MB document limit (and server memory).
-  items: z
-    .array(ItemSchema)
-    .min(1)
-    .max(30)
-    .refine((items) => items.reduce((n, i) => n + (i.custom?.image?.length ?? 0), 0) <= 6_000_000, {
-      message: "Too much image data in one order",
-    }),
+  items: ItemsSchema,
   address: AddressSchema,
   gift: GiftSchema.optional(),
   fulfillment: FulfillmentSchema.optional(),

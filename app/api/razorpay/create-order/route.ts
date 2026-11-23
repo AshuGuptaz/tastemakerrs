@@ -7,6 +7,7 @@ import { Order } from "@/models/Order";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
 import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
+import { canStartPayment } from "@/lib/order-payable";
 import { logError } from "@/lib/logger";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
 import { orderCouponStillValid } from "@/lib/coupons";
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
     // Only an unpaid/failed, still-open order may be paid. A refunded order would
     // be charged but never re-marked paid (the webhooks only accept unpaid/failed),
     // and a cancelled order must not take money.
-    if (!["unpaid", "failed"].includes(order.paymentStatus) || order.status === "cancelled") {
+    if (!canStartPayment(order)) {
       return NextResponse.json({ error: "This order can no longer be paid. Please place a new order." }, { status: 400 });
     }
 
