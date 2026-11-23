@@ -50,7 +50,9 @@ const ItemSchema = z.object({
 
 const AddressSchema = z.object({
   name: z.string().min(1),
-  email: z.string().email(),
+  // Stored lowercase: customer sessions carry a lowercased email, so exact
+  // matching (account history) would miss "John@Gmail.com" otherwise.
+  email: z.string().trim().toLowerCase().email(),
   phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
   street: z.string().min(1),
   city: z.string().min(1),

@@ -27,6 +27,8 @@ export async function GET() {
     const orders = await Order.find({ $or: or, paymentStatus: { $ne: "unpaid" } })
       .sort({ createdAt: -1 })
       .limit(50)
+      // Case-insensitive: orders placed before emails were normalised may be mixed-case.
+      .collation({ locale: "en", strength: 2 })
       .lean();
 
     return NextResponse.json({
