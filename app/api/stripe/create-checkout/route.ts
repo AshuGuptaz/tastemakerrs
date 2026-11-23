@@ -7,6 +7,7 @@ import { Order } from "@/models/Order";
 import { otpEnabled } from "@/lib/notify";
 import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-token";
 import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
+import { orderCouponStillValid } from "@/lib/coupons";
 import { logError } from "@/lib/logger";
 
 /**
@@ -45,6 +46,11 @@ export async function POST(req: Request) {
     }
     if (order.paymentStatus === "paid") {
       return NextResponse.json({ error: "Order already paid" }, { status: 400 });
+    }
+
+    const couponCheck = await orderCouponStillValid(order);
+    if (!couponCheck.ok) {
+      return NextResponse.json({ error: couponCheck.error }, { status: 400 });
     }
 
     const stripe = getStripe();

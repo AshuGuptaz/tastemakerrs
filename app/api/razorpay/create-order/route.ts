@@ -9,6 +9,7 @@ import { verifyCheckout, contactMatches, CHECKOUT_COOKIE } from "@/lib/checkout-
 import { verifyCustomer, CUSTOMER_COOKIE } from "@/lib/customer-auth";
 import { logError } from "@/lib/logger";
 import { sendOrderConfirmation } from "@/lib/order-confirmation";
+import { orderCouponStillValid } from "@/lib/coupons";
 import { decideRazorpayOrder, type RpOrderLite } from "@/lib/razorpay-order";
 
 /**
@@ -48,6 +49,11 @@ export async function POST(req: Request) {
     }
     if (order.paymentStatus === "paid") {
       return NextResponse.json({ error: "Order already paid" }, { status: 400 });
+    }
+
+    const couponCheck = await orderCouponStillValid(order);
+    if (!couponCheck.ok) {
+      return NextResponse.json({ error: couponCheck.error }, { status: 400 });
     }
 
     const paise = Math.round(order.total * 100);

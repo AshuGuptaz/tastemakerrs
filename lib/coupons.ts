@@ -104,3 +104,25 @@ export async function evaluateCoupon(rawCode: string, subtotal: number, contact?
   };
   return { ok: true, rule, discount: verdict.discount, description: doc.description };
 }
+
+/**
+ * Re-check an existing order's coupon at the moment payment is started.
+ *
+ * Usage limits / first-order-only / once-per-contact count only PAID orders, so
+ * at order-creation time several unpaid orders can all pass. Checking again when
+ * payment starts (self is unpaid, so never counted) means that once one of them
+ * is paid, the rest are refused instead of being paid with the same code.
+ */
+export async function orderCouponStillValid(order: {
+  coupon?: string | null;
+  subtotal: number;
+  address?: { phone?: string; email?: string };
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!order.coupon) return { ok: true };
+  const verdict = await evaluateCoupon(order.coupon, order.subtotal, {
+    phone: order.address?.phone,
+    email: order.address?.email,
+  });
+  if (verdict.ok) return { ok: true };
+  return { ok: false, error: `${verdict.error} Please go back to checkout and remove the code.` };
+}
