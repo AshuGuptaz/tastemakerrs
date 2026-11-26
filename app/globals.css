@@ -126,6 +126,11 @@ html { scrollbar-gutter: stable; }
   .btn-accent {
     @apply inline-flex items-center justify-center gap-2 rounded-pill bg-flame px-6 py-3 text-sm font-semibold text-cream shadow-glow transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-rose-500 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
   }
+  /* On cocoa / dark photo surfaces the primary button flips to cream-on-cocoa
+     (brand v5 "reversed"), so it never sinks into the cocoa ground. */
+  .on-dark .btn-accent, .band-dark .btn-accent {
+    @apply bg-cream text-cocoa shadow-none hover:bg-butter;
+  }
   .btn-line {
     @apply inline-flex items-center justify-center gap-2 rounded-pill border border-line bg-surface px-6 py-3 text-sm font-semibold text-ink transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-e2 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
   }
