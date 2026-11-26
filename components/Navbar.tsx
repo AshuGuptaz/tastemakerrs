@@ -81,23 +81,23 @@ export default function Navbar() {
             transformOrigin: "center top",
             willChange:      "transform",
           }}
-          className="mx-auto flex max-w-3xl items-center justify-between gap-3 rounded-pill border border-line px-3.5 py-3 backdrop-blur-md"
+          className="mx-auto flex max-w-[60rem] items-center justify-between gap-3 rounded-pill border border-line py-2.5 pl-4 pr-3.5 backdrop-blur-md"
         >
 
           {/* ── Logo + desktop nav, grouped so they sit close together ── */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-5 lg:gap-8">
             <Link
               href="/"
               aria-label="The Taste Makerrs — home"
-              className="group flex items-center gap-2 rounded-pill pl-1 pr-2 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
+              className="group flex shrink-0 items-center gap-2 rounded-pill pl-1 pr-2 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/brand/v5/lockup-horizontal.svg"
+                src="/brand/v5/lockup-horizontal-tight.svg"
                 alt="The Taste Makerrs"
-                width={1044}
-                height={280}
-                className="h-9 w-auto select-none md:h-10 transition-transform duration-300 group-hover:-translate-y-0.5"
+                width={968}
+                height={204}
+                className="h-7 w-auto select-none min-[380px]:h-8 sm:h-10 md:h-12 transition-transform duration-300 group-hover:-translate-y-0.5"
               />
             </Link>
 
@@ -129,7 +129,7 @@ export default function Navbar() {
                     href={n.href}
                     aria-current={active ? "page" : undefined}
                     onMouseEnter={(e) => { setHovered(n.href); track(e); }}
-                    className={`relative z-10 rounded-pill px-3.5 py-2 text-sm tracking-tight transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
+                    className={`relative z-10 rounded-pill px-3 py-2 text-[0.95rem] lg:px-3.5 tracking-tight transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 ${
                       active
                         ? "font-semibold text-flame-700"
                         : "font-medium text-ink-mut hover:text-ink"
@@ -151,7 +151,7 @@ export default function Navbar() {
           </div>
 
           {/* ── Actions ───────────────────────────────────────────────── */}
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-0.5 pl-2 min-[380px]:gap-1 sm:gap-2">
 
             {/* Account */}
             <Link
