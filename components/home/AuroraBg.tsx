@@ -18,8 +18,8 @@ export default function AuroraBg() {
         className="absolute inset-0"
         style={{
           background: `
-            radial-gradient(60% 50% at 12% 8%,  rgba(214,122,71,0.26), transparent 60%),
-            radial-gradient(50% 45% at 88% 0%,  rgba(224,139,90,0.20), transparent 62%),
+            radial-gradient(60% 50% at 12% 8%,  rgba(240,167,184,0.26), transparent 60%),
+            radial-gradient(50% 45% at 88% 0%,  rgba(244,207,122,0.20), transparent 62%),
             radial-gradient(55% 60% at 78% 88%, rgba(164,71,42,0.15), transparent 64%),
             radial-gradient(45% 40% at 30% 80%, rgba(244,233,214,0.45), transparent 66%),
             radial-gradient(40% 35% at 50% 50%, rgba(120,140,150,0.05), transparent 70%)`,

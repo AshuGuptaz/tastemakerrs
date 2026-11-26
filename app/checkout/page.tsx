@@ -265,10 +265,10 @@ export default function CheckoutPage() {
         zoomControl: true,
         styles: [
           { featureType: "poi", stylers: [{ visibility: "off" }] },
-          { elementType: "geometry", stylers: [{ color: "#FBF1E4" }] },
-          { elementType: "labels.text.fill", stylers: [{ color: "#0B0B0C" }] },
+          { elementType: "geometry", stylers: [{ color: "#F6E7C9" }] },
+          { elementType: "labels.text.fill", stylers: [{ color: "#2A140D" }] },
           { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
-          { featureType: "water", elementType: "geometry", stylers: [{ color: "#FDE3C8" }] },
+          { featureType: "water", elementType: "geometry", stylers: [{ color: "#E3E7F6" }] },
         ],
       });
     } else {
@@ -282,7 +282,7 @@ export default function CheckoutPage() {
       icon: {
         path: (window as any).google.maps.SymbolPath.CIRCLE,
         scale: 10,
-        fillColor: "#F97316",
+        fillColor: "#6A2A1B",
         fillOpacity: 1,
         strokeColor: "#ffffff",
         strokeWeight: 2,
@@ -458,7 +458,7 @@ export default function CheckoutPage() {
           description: `Order ${order.id}`,
           order_id: rp.id,
           prefill: { name: addr.name, email: addr.email, contact: addr.phone },
-          theme: { color: "#B05628" },
+          theme: { color: "#6A2A1B" },
           // UPI first (GPay / PhonePe / Paytm intents on mobile) — the way most
           // Indian customers pay. show_default_blocks keeps every other method
           // available below, so nothing is hidden.

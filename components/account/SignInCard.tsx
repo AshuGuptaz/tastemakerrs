@@ -134,8 +134,8 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
     <section className="relative flex min-h-[calc(100vh-76px)] items-center justify-center overflow-hidden px-4 py-10 md:py-14">
       {/* ── Living canvas backdrop ── */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[10%] top-[8%] h-72 w-72 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(214,122,71,0.22),transparent_65%)] blur-3xl" />
-        <div className="absolute bottom-[6%] right-[12%] h-80 w-80 animate-float-slow rounded-full bg-[radial-gradient(circle,rgba(224,139,90,0.18),transparent_66%)] blur-3xl" />
+        <div className="absolute left-[10%] top-[8%] h-72 w-72 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.22),transparent_65%)] blur-3xl" />
+        <div className="absolute bottom-[6%] right-[12%] h-80 w-80 animate-float-slow rounded-full bg-[radial-gradient(circle,rgba(244,207,122,0.18),transparent_66%)] blur-3xl" />
         <div className="absolute inset-0 bg-grid mask-fade opacity-[0.5]" />
       </div>
 
@@ -150,7 +150,7 @@ export default function SignInCard({ onSignedIn }: { onSignedIn: () => void }) {
         <div className="relative overflow-hidden bg-ink px-7 py-7 text-white md:px-10 md:py-10 lg:py-12">
           {/* animated glow mesh */}
           <div aria-hidden className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-[-28%] h-[26rem] w-[30rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(214,122,71,0.55),transparent_60%)] blur-2xl" />
+            <div className="absolute left-1/2 top-[-28%] h-[26rem] w-[30rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.55),transparent_60%)] blur-2xl" />
             <div className="absolute bottom-[-30%] right-[-8%] h-72 w-72 animate-float-slow rounded-full bg-[radial-gradient(circle,rgba(253,186,116,0.32),transparent_62%)] blur-2xl" />
             <div className="absolute inset-0 bg-grid opacity-[0.07]" />
             {!reduce &&

@@ -97,8 +97,8 @@ export default function Testimonials() {
           </div>
         </div>
         {/* edge fades to the warm canvas */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#EFE7DB] to-transparent md:w-40" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#EFE7DB] to-transparent md:w-40" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#F6E7C9] to-transparent md:w-40" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#F6E7C9] to-transparent md:w-40" />
       </div>
     </section>
   );

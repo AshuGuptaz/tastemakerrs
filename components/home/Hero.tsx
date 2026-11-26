@@ -101,12 +101,12 @@ export default function Hero() {
       {/* warm espresso scrim (not neutral ink) so the shadows read edible */}
       <div
         aria-hidden
-        className="absolute inset-0 z-[1] bg-gradient-to-t from-[#1A120B]/90 via-[#1A120B]/30 to-[#1A120B]/55"
+        className="absolute inset-0 z-[1] bg-gradient-to-t from-[#2A140D]/90 via-[#2A140D]/30 to-[#2A140D]/55"
       />
       {/* warm ember glow rising from the bottom-left, behind the type */}
       <div
         aria-hidden
-        className="absolute inset-0 z-[2] bg-[radial-gradient(80%_60%_at_15%_100%,rgba(214,122,71,0.22),transparent_60%)]"
+        className="absolute inset-0 z-[2] bg-[radial-gradient(80%_60%_at_15%_100%,rgba(240,167,184,0.22),transparent_60%)]"
       />
 
       {/* content anchored bottom-left, editorial-poster style */}

@@ -23,7 +23,7 @@ export default function Bento() {
               <div className="bg-dots relative h-44 overflow-hidden rounded-[1.25rem] border border-line bg-canvas">
                 {/* route hairline */}
                 <svg aria-hidden className="absolute inset-0 h-full w-full" viewBox="0 0 320 176" fill="none" preserveAspectRatio="none">
-                  <path d="M40 132 C 100 120, 120 60, 196 56 S 280 72, 286 44" stroke="#F97316" strokeWidth="2" strokeDasharray="5 6" strokeLinecap="round" opacity="0.6" />
+                  <path d="M40 132 C 100 120, 120 60, 196 56 S 280 72, 286 44" stroke="#6A2A1B" strokeWidth="2" strokeDasharray="5 6" strokeLinecap="round" opacity="0.6" />
                 </svg>
                 {/* pins */}
                 <span className="absolute left-[12%] top-[68%] h-3 w-3 rounded-full bg-flame shadow-e1 ring-4 ring-flame/15" />

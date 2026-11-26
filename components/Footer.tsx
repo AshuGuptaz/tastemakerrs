@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="relative overflow-hidden rounded-[2rem] bg-ink p-8 text-white md:p-12">
         {/* warm ambient so the dark bookend feels on-brand, not cold */}
         <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute right-[-6%] top-[-30%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.28),transparent_62%)] blur-2xl" />
+          <div className="absolute right-[-6%] top-[-30%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.28),transparent_62%)] blur-2xl" />
           <div className="absolute inset-0 bg-grid opacity-[0.05]" />
         </div>
 

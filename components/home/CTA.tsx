@@ -19,7 +19,7 @@ export default function CTA() {
 
             {/* accent mesh */}
             <div aria-hidden className="pointer-events-none absolute inset-0">
-              <div className="absolute left-1/2 top-[-35%] h-[30rem] w-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(249,115,22,0.45),transparent_60%)] blur-2xl" />
+              <div className="absolute left-1/2 top-[-35%] h-[30rem] w-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.45),transparent_60%)] blur-2xl" />
               <div className="absolute bottom-[-45%] right-[4%] h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(253,186,116,0.32),transparent_62%)] blur-2xl" />
               <div className="absolute bottom-[-30%] left-[6%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(234,88,12,0.28),transparent_64%)] blur-2xl" />
               <div className="absolute inset-0 bg-grid opacity-[0.07]" />
@@ -30,7 +30,7 @@ export default function CTA() {
                 <span aria-hidden className="animate-shine pointer-events-none absolute inset-0" style={{ background: "linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.11) 50%, transparent 75%)", backgroundSize: "200% 100%" }} />
                 <span className="relative flex h-[5px] w-[5px] shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-flame-400 opacity-60" />
-                  <span className="relative h-[5px] w-[5px] rounded-full bg-flame-400 shadow-[0_0_5px_2px_rgba(249,115,22,0.65)]" />
+                  <span className="relative h-[5px] w-[5px] rounded-full bg-flame-400 shadow-[0_0_5px_2px_rgba(240,167,184,0.65)]" />
                 </span>
                 Let&apos;s make plans
               </span>

@@ -1,14 +1,10 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Design tokens.
- *
- * REDESIGN (premium light-neutral + warm accent):
- *   ink / canvas / surface / line  → the new neutral system (Linear/Apple/Stripe feel)
- *   flame (#F26A8D) + wine (#890F20) → retained brand accent (warm, appetizing)
- *
- * The original brand tokens (cream / peach / sky / cocoa / flame / rose / wine)
- * are kept so pages not yet migrated to the new system keep rendering correctly.
+ * Design tokens — Tastemakerrs Brand Identity v5.
+ * Palette: cocoa #6A2A1B · cream #F6E7C9 · kraft #E4C79D · blush #F0A7B8 ·
+ * sage #A8C3A0 · periwinkle #8F9FD3 · butter #F4CF7A on paper #FBF5EA.
+ * Type: Fredoka SemiBold (display) + DM Sans (text).
  */
 const config: Config = {
   content: [
@@ -18,40 +14,50 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* ── Warm premium-bakery system: toasted-paper canvas + espresso ink +
-              roasted-terracotta accent. Token NAMES are unchanged so components
-              inherit the new palette with zero per-file edits. ── */
-        canvas: "#FBF8F3",          // warm baked-paper white (was clinical #FFF)
-        surface: "#FFFDFA",         // cards a hair brighter than canvas
-        line: "#EAE3D9",            // warm hairline (not cold grey)
+        /* ── BRAND v5 "a bakery palette" (Tastemakerrs Brand Guidelines v5).
+              Cocoa + cream do the talking; pastels are accents, one or two at a
+              time. Legacy token NAMES are kept and remapped so every component
+              inherits the new identity without per-file edits. ── */
+        canvas: "#FBF5EA",          // paper — page ground
+        surface: "#FFFBF4",         // cards, a hair brighter than paper
+        line: "#EBDCC3",            // kraft-tinted hairline
         ink: {
-          DEFAULT: "#1C1714",       // espresso near-black (warm, not cold #0B0B0C)
-          soft: "#3A322D",          // warm secondary text
-          mut: "#6E635B",           // warm muted/captions
+          DEFAULT: "#2A140D",       // brand ink — near-black brown for small text
+          soft: "#4E3127",          // secondary text
+          mut: "#7A5A4C",           // muted / captions (AA on paper + cream)
         },
 
-        /* ── Accent = roasted terracotta / burnt amber (was default Tailwind
-              orange-500). Token names kept so components inherit it for free. ── */
-        cream: { 50: "#FFFBF5", 100: "#FFF4E6", 200: "#FFE7CC", 300: "#FFD9AD", DEFAULT: "#FFF4E6" },
-        peach: { 100: "#FFEDD5", 200: "#FED7AA", 300: "#FDBA74", DEFAULT: "#FDBA74" },
-        sky:   { 50: "#F6F6F6", 100: "#EFEFEF", 200: "#E4E4E4", DEFAULT: "#EFEFEF" },
-        cocoa: { 50: "#FFF1E6", DEFAULT: "#1C1714", 900: "#000000" },
-        flame: { 400: "#E08B5A", 500: "#D67A47", 600: "#C25E36", 700: "#A4472A", 800: "#823620", DEFAULT: "#B05628" },
-        rose:  { 500: "#C25E36", 600: "#A4472A" },
-        wine:  { DEFAULT: "#1C1714", dark: "#000000" },
+        /* brand primaries */
+        paper: "#FBF5EA",
+        kraft: { 50: "#F6EBDA", 100: "#EFDDC2", DEFAULT: "#E4C79D", deep: "#CFAB7B" },
+        blush: { 50: "#FDF0F3", 100: "#FBE3E8", 200: "#F7CBD5", DEFAULT: "#F0A7B8" },
+        sage:  { 50: "#F1F6EF", 100: "#E2ECDF", DEFAULT: "#A8C3A0" },
+        peri:  { 50: "#F1F3FB", 100: "#E3E7F6", DEFAULT: "#8F9FD3" },
+        butter:{ 50: "#FEF8EA", 100: "#FCEFCF", DEFAULT: "#F4CF7A" },
 
-        /* ── NEW: warm support tones for section rhythm + warm dark surfaces ── */
-        clay:  { 50: "#F3ECE3", 100: "#EAE0D3", 200: "#DCCDB9", DEFAULT: "#EAE0D3" },
-        wheat: { 50: "#FAF4E9", 100: "#F4E9D6", DEFAULT: "#FAF4E9" },
-        espresso: { DEFAULT: "#2A211C", deep: "#1C1714" },
+        /* cocoa = PRIMARY brand colour (buttons, headlines, dark surfaces) */
+        cocoa: { 50: "#F8EDE6", 100: "#EED8CC", DEFAULT: "#6A2A1B", deep: "#4A1B10", 900: "#2A140D" },
+        cream: { 50: "#FDF7EC", 100: "#FAEFDB", 200: "#F6E7C9", 300: "#E4C79D", DEFAULT: "#F6E7C9" },
+
+        /* "flame" was the accent token — it now resolves to cocoa so every
+           CTA / link / ring picks up the brand primary. flame-400 is the
+           butter highlight used for small accents ON cocoa/dark surfaces. */
+        flame: { 400: "#F4CF7A", 500: "#8C3E28", 600: "#7A321F", 700: "#4A1B10", 800: "#3A140B", DEFAULT: "#6A2A1B" },
+        rose:  { 50: "#FDF0F3", 200: "#F7CBD5", 500: "#4A1B10", 600: "#3A140B" },
+        wine:  { DEFAULT: "#4A1B10", dark: "#2A140D" },
+        peach: { 100: "#FBE3E8", 200: "#F7CBD5", 300: "#F0A7B8", DEFAULT: "#F0A7B8" },
+        sky:   { 50: "#F1F3FB", 100: "#E3E7F6", 200: "#C9D0EE", DEFAULT: "#E3E7F6" },
+        clay:  { 50: "#F6EBDA", 100: "#EFDDC2", 200: "#E4C79D", DEFAULT: "#EFDDC2" },
+        wheat: { 50: "#FBF1DE", 100: "#F6E7C9", DEFAULT: "#FBF1DE" },
+        espresso: { DEFAULT: "#4A1B10", deep: "#2A140D" },
       },
       fontFamily: {
-        sans:    ["var(--font-inter)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
-        // Fraunces — warm variable display serif (opsz/SOFT axes). Drives headlines,
-        // product names & prices. Georgia is the metric-near fallback (low CLS).
-        display: ["var(--font-display)", "Fraunces", "Georgia", "Times New Roman", "serif"],
-        serif:   ["var(--font-display)", "Fraunces", "Georgia", "serif"],
-        script:  ["var(--font-display)", "Georgia", "serif"],
+        // Brand v5 "two voices": DM Sans for text, Fredoka SemiBold for display
+        // (rounded like piping). Both SIL OFL, served by next/font.
+        sans:    ["var(--font-sans)", "ui-sans-serif", "system-ui", "-apple-system", "sans-serif"],
+        display: ["var(--font-display)", "ui-rounded", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif:   ["var(--font-display)", "ui-rounded", "ui-sans-serif", "sans-serif"],
+        script:  ["var(--font-display)", "ui-rounded", "sans-serif"],
       },
       letterSpacing: {
         tightish: "-0.02em",
@@ -59,14 +65,14 @@ const config: Config = {
       },
       boxShadow: {
         // Soft, layered, Apple/Linear-grade elevation
-        e1: "0 1px 2px rgba(18,17,19,0.04), 0 1px 1px rgba(18,17,19,0.03)",
-        e2: "0 6px 20px -6px rgba(18,17,19,0.10), 0 2px 6px -2px rgba(18,17,19,0.06)",
-        e3: "0 24px 60px -20px rgba(18,17,19,0.22), 0 8px 24px -12px rgba(18,17,19,0.12)",
-        glow: "0 14px 40px -12px rgba(214,122,71,0.42)",
-        ring: "inset 0 0 0 1px rgba(18,17,19,0.06)",
+        e1: "0 1px 2px rgba(74,27,16,0.04), 0 1px 1px rgba(74,27,16,0.03)",
+        e2: "0 6px 20px -6px rgba(74,27,16,0.10), 0 2px 6px -2px rgba(74,27,16,0.06)",
+        e3: "0 24px 60px -20px rgba(74,27,16,0.22), 0 8px 24px -12px rgba(74,27,16,0.12)",
+        glow: "0 14px 40px -12px rgba(106,42,27,0.35)",
+        ring: "inset 0 0 0 1px rgba(74,27,16,0.06)",
         // legacy
-        soft: "0 10px 30px -10px rgba(18,17,19,0.14)",
-        card: "0 8px 24px -8px rgba(18,17,19,0.10)",
+        soft: "0 10px 30px -10px rgba(74,27,16,0.14)",
+        card: "0 8px 24px -8px rgba(74,27,16,0.10)",
       },
       borderRadius: {
         xl2: "1.25rem",
@@ -97,8 +103,8 @@ const config: Config = {
         rise: { "0%": { opacity: "0", transform: "translateY(16px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
         // Soft expanding glow ring (box-shadow only — stays tight around the button)
         "pulse-ring": {
-          "0%": { boxShadow: "0 0 0 0 rgba(214,122,71,0.45)" },
-          "70%,100%": { boxShadow: "0 0 0 14px rgba(214,122,71,0)" },
+          "0%": { boxShadow: "0 0 0 0 rgba(106,42,27,0.35)" },
+          "70%,100%": { boxShadow: "0 0 0 14px rgba(106,42,27,0)" },
         },
         "blob-drift": {
           "0%,100%": { transform: "translate(0,0)", borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%" },

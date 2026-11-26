@@ -10,10 +10,12 @@ html, body {
   /* Wide, low-opacity, overlapping warm washes → one smooth warm field rather
      than two distinct orange corners divided by white. */
   background:
-    radial-gradient(1300px 900px at 72% -12%, rgba(214,122,71,0.10), transparent 60%),
-    radial-gradient(1200px 950px at 12% 4%, rgba(224,139,90,0.075), transparent 62%),
-    #FBF8F3;
-  color: #1C1714;
+    radial-gradient(1300px 900px at 72% -12%, rgba(240,167,184,0.12), transparent 60%),
+    radial-gradient(1200px 950px at 12% 4%, rgba(244,207,122,0.10), transparent 62%),
+    #FBF5EA;
+  color: #2A140D;
+  /* Fredoka ships no italic: never fake-slant it (DM Sans has a real italic). */
+  font-synthesis-style: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   /* Stop decorative/absolute elements from causing a horizontal scrollbar that
@@ -24,7 +26,7 @@ html, body {
 html { scrollbar-gutter: stable; }
 
 /* Premium selection */
-::selection { background: #D67A47; color: #fff; }
+::selection { background: #6A2A1B; color: #F6E7C9; }
 
 /* ─────────────────────────  Film grain  ─────────────────────────
    The single cheapest "expensive" cue: a fixed fractal-noise overlay (inline
@@ -56,36 +58,29 @@ html { scrollbar-gutter: stable; }
   .t-eyebrow {
     @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-flame-700;
   }
-  /* Serif display utilities — tuned for Fraunces (the OPPOSITE of the tight,
-     bold settings a grotesque like Inter wants). Weight comes from the variable
-     wght axis; opsz/SOFT carry the warm "baked" character. */
+  /* Display utilities — Fredoka SemiBold in cocoa, "rounded like the piping".
+     Brand v5: headlines short, warm and (ideally) lowercase. */
   .t-display {
-    @apply font-display text-[clamp(2.75rem,6.4vw,5.5rem)] leading-[1.04] text-ink;
-    font-weight: 480;
-    letter-spacing: -0.012em;
-    font-optical-sizing: auto;
-    font-variation-settings: "opsz" 120, "SOFT" 60, "WONK" 0, "wght" 480;
+    @apply font-display text-[clamp(2.75rem,6.4vw,5.5rem)] leading-[1.02] text-cocoa;
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
   .t-h2 {
-    @apply font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.06] text-ink;
-    font-weight: 500;
-    letter-spacing: -0.008em;
-    font-optical-sizing: auto;
-    font-variation-settings: "opsz" 80, "SOFT" 50, "WONK" 0, "wght" 500;
+    @apply font-display text-[clamp(2rem,3.8vw,3.25rem)] leading-[1.05] text-cocoa;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   .t-h3 { @apply text-xl font-semibold tracking-tight text-ink md:text-2xl; }
   .t-lead { @apply text-[1.075rem] leading-relaxed text-ink-mut md:text-lg; }
   .text-gradient {
     @apply bg-gradient-to-r from-flame-500 via-flame-600 to-flame-700 bg-clip-text text-transparent;
   }
-  /* Money figures — Fraunces, lining + tabular numerals (patisserie menu, not invoice) */
+  /* Money figures — Fredoka, tabular where supported */
   .price {
-    @apply font-display text-[clamp(2.25rem,4vw,3rem)] text-ink;
-    font-weight: 460;
+    @apply font-display text-[clamp(2.25rem,4vw,3rem)] text-cocoa;
+    font-weight: 600;
     letter-spacing: -0.01em;
-    font-optical-sizing: auto;
-    font-variation-settings: "opsz" 60, "wght" 460;
-    font-feature-settings: "lnum" 1, "tnum" 1;
+    font-feature-settings: "tnum" 1;
   }
 
   /* ── Section rhythm: tonal bands so chapters don't blur into one white sheet.
@@ -99,8 +94,8 @@ html { scrollbar-gutter: stable; }
     margin: clamp(0.5rem, 1.5vw, 1.5rem);
     border-radius: clamp(1.25rem, 2.5vw, 2rem);
     overflow: hidden;
-    background-color: #EFE7DB;
-    background-image: radial-gradient(1000px 460px at 18% 40%, rgba(214, 122, 71, 0.06), transparent 62%);
+    background-color: #F6E7C9;
+    background-image: radial-gradient(1000px 460px at 18% 40%, rgba(240, 167, 184, 0.14), transparent 62%);
   }
   /* Dark chapter — NEVER fade near-black into cream (that's the muddy smudge).
      Instead float it as an inset rounded card on the canvas: an intentional
@@ -110,22 +105,22 @@ html { scrollbar-gutter: stable; }
     margin: clamp(1rem, 3.5vw, 2.75rem);
     border-radius: clamp(1.5rem, 3vw, 2.25rem);
     overflow: hidden;
-    background-color: #1C1714;
-    background-image: radial-gradient(1100px 520px at 80% 0%, rgba(214, 122, 71, 0.14), transparent 60%);
-    color: #fff;
-    box-shadow: 0 40px 90px -36px rgba(28, 23, 20, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    background-color: #6A2A1B;
+    background-image: radial-gradient(1100px 520px at 80% 0%, rgba(244, 207, 122, 0.10), transparent 60%);
+    color: #F6E7C9;
+    box-shadow: 0 40px 90px -36px rgba(74, 27, 16, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
   /* only the section header sits on the dark field — cards inside stay light */
-  .band-dark .t-h2 { color: #fff; }
-  .band-dark .t-lead { color: rgba(255, 255, 255, 0.72); }
-  .band-dark .t-eyebrow { color: #E08B5A; }
+  .band-dark .t-h2 { color: #F6E7C9; }
+  .band-dark .t-lead { color: rgba(246, 231, 201, 0.78); }
+  .band-dark .t-eyebrow { color: #F4CF7A; }
 
   /* ─────────────────────────  Buttons (new system)  ───────────────────────── */
   .btn-ink {
     @apply inline-flex items-center justify-center gap-2 rounded-pill bg-ink px-6 py-3 text-sm font-semibold text-white shadow-e2 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-e3 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
   }
   .btn-accent {
-    @apply inline-flex items-center justify-center gap-2 rounded-pill bg-flame px-6 py-3 text-sm font-semibold text-white shadow-glow transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-rose-500 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
+    @apply inline-flex items-center justify-center gap-2 rounded-pill bg-flame px-6 py-3 text-sm font-semibold text-cream shadow-glow transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-rose-500 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/40 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
   }
   .btn-line {
     @apply inline-flex items-center justify-center gap-2 rounded-pill border border-line bg-surface px-6 py-3 text-sm font-semibold text-ink transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-e2 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
@@ -154,7 +149,7 @@ html { scrollbar-gutter: stable; }
     position: relative;
     --mouse-x: 50%;
     --mouse-y: 50%;
-    --spotlight-color: rgba(214, 122, 71, 0.16);
+    --spotlight-color: rgba(240, 167, 184, 0.22);
   }
   .spotlight-card::before {
     content: "";
@@ -181,7 +176,7 @@ html { scrollbar-gutter: stable; }
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(140deg, rgba(249,115,22,0.65), rgba(253,186,116,0.30) 45%, transparent 70%);
+    background: linear-gradient(140deg, rgba(106,42,27,0.55), rgba(240,167,184,0.40) 45%, transparent 70%);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude;
@@ -191,12 +186,12 @@ html { scrollbar-gutter: stable; }
   /* ─────────────────────────  Decorative backgrounds  ───────────────────────── */
   .bg-grid {
     background-image:
-      linear-gradient(to right, rgba(18,17,19,0.035) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(18,17,19,0.035) 1px, transparent 1px);
+      linear-gradient(to right, rgba(74,27,16,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(74,27,16,0.04) 1px, transparent 1px);
     background-size: 56px 56px;
   }
   .bg-dots {
-    background-image: radial-gradient(rgba(18,17,19,0.06) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(74,27,16,0.08) 1px, transparent 1px);
     background-size: 22px 22px;
   }
   /* fade a decorative layer toward the edges */
@@ -214,7 +209,7 @@ html { scrollbar-gutter: stable; }
   .editorial { @apply font-serif italic; }
   .script { @apply font-script; }
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-pill bg-flame px-7 py-3.5 text-sm font-semibold text-white shadow-glow transition-all duration-300 ease-out hover:bg-rose-500 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/50 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
+    @apply inline-flex items-center gap-2 rounded-pill bg-flame px-7 py-3.5 text-sm font-semibold text-cream shadow-glow transition-all duration-300 ease-out hover:bg-rose-500 hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-flame/50 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
   }
   .btn-dark {
     @apply inline-flex items-center gap-2 rounded-pill bg-ink px-7 py-3.5 text-sm font-semibold text-white shadow-e2 transition-all duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas;
@@ -231,7 +226,7 @@ html { scrollbar-gutter: stable; }
   }
   .glass {
     @apply border border-white/60 bg-white/65 backdrop-blur-xl;
-    box-shadow: 0 8px 32px -12px rgba(18,17,19,0.14), inset 0 1px 0 rgba(255,255,255,0.7);
+    box-shadow: 0 8px 32px -12px rgba(74,27,16,0.14), inset 0 1px 0 rgba(255,255,255,0.7);
   }
   .h-display { @apply display text-[clamp(2.5rem,7vw,6rem)]; }
   .h-section { @apply display text-[clamp(2rem,5vw,4rem)]; }
@@ -262,7 +257,7 @@ html { scrollbar-gutter: stable; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Skeleton shimmer */
-.skeleton { position: relative; overflow: hidden; background: #F1EEEA; }
+.skeleton { position: relative; overflow: hidden; background: #F3E6CF; }
 .skeleton::after {
   content: ""; position: absolute; inset: 0; transform: translateX(-100%);
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);
@@ -328,5 +323,5 @@ html { scrollbar-gutter: stable; }
 .hero-fade { animation: hero-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @media (prefers-reduced-motion: reduce) {
   .hero-word, .hero-fade { animation: none; }
-  .hero-shimmer { animation: none; background-image: none; color: #E08B5A; -webkit-text-fill-color: #E08B5A; }
+  .hero-shimmer { animation: none; background-image: none; color: #F4CF7A; -webkit-text-fill-color: #F4CF7A; }
 }

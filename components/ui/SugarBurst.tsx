@@ -14,7 +14,7 @@ import { m, AnimatePresence } from "framer-motion";
  */
 
 type Burst = { id: number; x: number; y: number };
-const COLORS = ["#D67A47", "#E08B5A", "#F4E9D6", "#A4472A"];
+const COLORS = ["#F0A7B8", "#A8C3A0", "#8F9FD3", "#F4CF7A", "#F6E7C9"];
 const COUNT = 12;
 
 export function fireSugarBurst(x: number, y: number) {

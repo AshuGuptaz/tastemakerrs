@@ -59,7 +59,7 @@ export default function AboutPage() {
           <Reveal>
             <div className="card relative overflow-hidden px-6 py-12 md:px-16 md:py-16">
               <div aria-hidden className="pointer-events-none absolute inset-0">
-                <div className="absolute left-1/2 top-[-30%] h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(214,122,71,0.12),transparent_65%)] blur-2xl" />
+                <div className="absolute left-1/2 top-[-30%] h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.12),transparent_65%)] blur-2xl" />
               </div>
               <div className="relative grid items-center gap-10 md:grid-cols-[0.8fr_1.2fr]">
                 <div className="flex justify-center">
@@ -114,7 +114,7 @@ export default function AboutPage() {
           <Reveal>
             <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-14 md:rounded-[2.5rem] md:px-12 md:py-20">
               <div aria-hidden className="pointer-events-none absolute inset-0">
-                <div className="absolute right-[-6%] top-[-25%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(214,122,71,0.24),transparent_62%)] blur-2xl" />
+                <div className="absolute right-[-6%] top-[-25%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.24),transparent_62%)] blur-2xl" />
                 <div className="absolute inset-0 bg-grid opacity-[0.05]" />
               </div>
 

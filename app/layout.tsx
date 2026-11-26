@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { DM_Sans, Fredoka } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -16,23 +16,22 @@ import SugarBurst from "@/components/ui/SugarBurst";
 import CartSync from "@/components/CartSync";
 import Analytics from "@/components/Analytics";
 
-// Inter — the premium geometric-grotesque sans used by Linear, Vercel & co.
-// One variable family drives the whole type system (display + body).
-const inter = Inter({
+// Brand v5 "two voices".
+// DM Sans — body copy, menus, labels and small print (italic loaded for emphasis).
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
+  weight: "variable",
+  style: ["normal", "italic"],
 });
 
-// Fraunces — characterful variable serif for headlines, product names & prices.
-// opsz/SOFT/WONK axes give warmth at large sizes; italic loaded for accent words.
-const fraunces = Fraunces({
+// Fredoka — rounded display face, "anything we would pipe onto a cake".
+const fredoka = Fredoka({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
   weight: "variable",
-  style: ["normal", "italic"],
-  axes: ["opsz", "SOFT", "WONK"],
 });
 
 export const metadata: Metadata = {
@@ -75,14 +74,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1C1714",
+  themeColor: "#6A2A1B",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${fredoka.variable}`}>
       <body className="grain min-h-screen font-sans text-ink antialiased">
         <Analytics />
         <CustomerProvider>
@@ -108,8 +107,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SugarBurst />
               <CartSync />
               <Toaster position="bottom-right" toastOptions={{
-                style: { background: "#1C1714", color: "#fff", borderRadius: "14px" },
-                iconTheme: { primary: "#D67A47", secondary: "#fff" },
+                style: { background: "#6A2A1B", color: "#F6E7C9", borderRadius: "14px" },
+                iconTheme: { primary: "#F4CF7A", secondary: "#6A2A1B" },
               }} />
             </SmoothScroll>
           </CartUIProvider>
