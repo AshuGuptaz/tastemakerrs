@@ -75,6 +75,10 @@ html { scrollbar-gutter: stable; }
   .text-gradient {
     @apply bg-gradient-to-r from-flame-500 via-flame-600 to-flame-700 bg-clip-text text-transparent;
   }
+  /* On cocoa surfaces the accent word turns butter → cream (icing on cocoa). */
+  .on-dark .text-gradient, .band-dark .text-gradient {
+    @apply from-butter via-cream to-butter;
+  }
   /* Money figures — Fredoka, tabular where supported */
   .price {
     @apply font-display text-[clamp(2.25rem,4vw,3rem)] text-cocoa;

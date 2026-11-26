@@ -11,7 +11,7 @@ export default function CTABanner() {
     <section className="section">
       <div className="container-x">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-24">
+          <div className="relative overflow-hidden rounded-[2rem] on-dark bg-cocoa px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-24">
             {/* orange glow mesh */}
             <div aria-hidden className="pointer-events-none absolute inset-0">
               <div className="absolute left-1/2 top-[-35%] h-[30rem] w-[34rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.55),transparent_60%)] blur-2xl" />

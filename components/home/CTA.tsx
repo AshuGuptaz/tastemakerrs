@@ -9,7 +9,7 @@ export default function CTA() {
     <section className="section max-md:py-12">
       <div className="container-x">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-24 max-md:py-12">
+          <div className="relative overflow-hidden rounded-[2rem] on-dark bg-cocoa px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-24 max-md:py-12">
             {/* cinematic cake video backdrop */}
             <div aria-hidden className="pointer-events-none absolute inset-0">
               <VideoBackdrop src="/hero-cake.mp4" poster="/hero-cake-poster.jpg" />

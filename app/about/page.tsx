@@ -65,19 +65,18 @@ export default function AboutPage() {
                 <div className="flex justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/brand/mark-line-full.svg"
-                    alt="The Taste Makerrs logo mark — a two-tier cake with a single lit candle"
+                    src="/brand/v5/mark-cocoa.svg"
+                    alt="The Taste Makerrs mark — a T and an m piped in icing on a cocoa cake, ringed with piped dots"
                     className="h-40 w-40 md:h-52 md:w-52"
                   />
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-flame">The mark</p>
-                  <h2 className="t-h2 mt-3">A cake for your <span className="text-gradient">favourite memories</span></h2>
+                  <h2 className="t-h2 mt-3">written in icing.</h2>
                   <p className="mt-4 leading-relaxed text-ink-soft">
-                    That line is the whole brand — so our logo simply <em>is</em> that cake: a hand-finished two-tier
-                    celebration cake with a single lit candle. It&apos;s the product, the occasion, and the feeling,
-                    all in one small, warm mark. We avoided a generic badge or a plain monogram — a bakery this
-                    personal deserved a symbol you <em>feel</em> something about.
+                    Every celebration cake leaves our kitchen with a message piped on top. So the logo is exactly
+                    that: a T and an m, piped in one continuous stroke onto a cake. The cocoa disc is the cake seen
+                    from above; the ring of cream dots is the piped border every baker finishes with.
                   </p>
                 </div>
               </div>
@@ -85,10 +84,10 @@ export default function AboutPage() {
               {/* What every element indicates */}
               <div className="relative mt-12 grid gap-x-10 gap-y-7 border-t border-line pt-10 sm:grid-cols-2">
                 {[
-                  { t: "The two tiers", d: "Celebration & small-batch craft. A single layer is everyday; a tiered cake is made for a moment — occasion-worthy, made to order." },
-                  { t: "The single flame", d: "The memory itself — a wish, a birthday, an anniversary. It's the one spot of terracotta in the whole system, so the warmth is literally the focal point." },
-                  { t: "The hand-piped drips", d: "The soft, slightly irregular scallops are the trace of a human hand finishing each cake. No two are exactly alike." },
-                  { t: "The terracotta full-stop", d: "A quiet signature of confidence. A period says this is complete, and we stand behind it — in the brand's ember colour." },
+                  { t: "One continuous stroke", d: "Curl, crossbar, stem, loop, arches — the nozzle never lifts, the way a message really gets piped onto a cake." },
+                  { t: "An even line", d: "The stroke never changes width, like a round piping nozzle. Our doodles and wordmark are drawn with the same line." },
+                  { t: "The piped border", d: "The ring of cream dots is the finishing border every cake gets before it's boxed. It frames the mark like it frames the cake." },
+                  { t: "The little heart", d: "The stroke lifts off in a flick and a small heart — the sign-off on every order, because each one is made for someone." },
                 ].map((el) => (
                   <div key={el.t} className="flex gap-3">
                     <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-flame" />
@@ -101,7 +100,7 @@ export default function AboutPage() {
               </div>
 
               <p className="relative mt-11 text-center font-display text-2xl italic text-flame-700 md:text-3xl">
-                “A single candle. On everything worth remembering.”
+                “say it with icing.”
               </p>
             </div>
           </Reveal>
@@ -112,7 +111,7 @@ export default function AboutPage() {
       <section className="section pt-0">
         <div className="container-x">
           <Reveal>
-            <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-14 md:rounded-[2.5rem] md:px-12 md:py-20">
+            <div className="relative overflow-hidden rounded-[2rem] on-dark bg-cocoa px-6 py-14 md:rounded-[2.5rem] md:px-12 md:py-20">
               <div aria-hidden className="pointer-events-none absolute inset-0">
                 <div className="absolute right-[-6%] top-[-25%] h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.24),transparent_62%)] blur-2xl" />
                 <div className="absolute inset-0 bg-grid opacity-[0.05]" />

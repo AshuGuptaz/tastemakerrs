@@ -93,11 +93,11 @@ export default function Navbar() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/brand/logo-redesign-wordmark-full.png"
+                src="/brand/v5/lockup-horizontal.svg"
                 alt="The Taste Makerrs"
-                width={371}
-                height={60}
-                className="h-6 w-auto select-none transition-transform duration-300 group-hover:-translate-y-0.5"
+                width={1044}
+                height={280}
+                className="h-9 w-auto select-none md:h-10 transition-transform duration-300 group-hover:-translate-y-0.5"
               />
             </Link>
 

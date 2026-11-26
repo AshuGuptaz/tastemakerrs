@@ -57,7 +57,7 @@ export default function PageHeader({
   return (
     <section ref={sectionRef} className="container-x pt-4 md:pt-6">
       <Reveal>
-        <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-20">
+        <div className="relative overflow-hidden rounded-[2rem] on-dark bg-cocoa px-6 py-16 text-center md:rounded-[2.5rem] md:px-12 md:py-20">
           {/* orange glow mesh */}
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute left-1/2 top-[-32%] h-[26rem] w-[34rem] -translate-x-1/2 animate-aurora rounded-full bg-[radial-gradient(circle,rgba(240,167,184,0.50),transparent_60%)] blur-2xl" />

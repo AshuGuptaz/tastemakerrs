@@ -17,8 +17,8 @@ import { whatsappLink } from "./site";
 import { logError, logWarn } from "@/lib/logger";
 
 const BRAND = "The Taste Makerrs";
-const ACCENT = "#F97316";
-const INK = "#0B0B0C";
+const ACCENT = "#6A2A1B"; // brand v5 cocoa
+const INK = "#2A140D";
 
 export function emailConfigured() {
   return !!process.env.RESEND_API_KEY;
@@ -158,34 +158,34 @@ function orderWhatsappUrl(id: string) {
 }
 
 function shell(inner: string) {
-  return `<!doctype html><html><body style="margin:0;background:#FBF1E4;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">
+  return `<!doctype html><html><body style="margin:0;background:#FBF5EA;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:${INK};">
   <div style="max-width:520px;margin:0 auto;padding:32px 20px;">
     <div style="text-align:center;margin-bottom:24px;">
       <a href="${SITE_URL}" style="display:inline-block;">
         <img
-          src="${SITE_URL}/brand/logo-redesign-wordmark-full.png"
+          src="${SITE_URL}/brand/v5/lockup-horizontal.png"
           alt="The Taste Makerrs"
           width="220"
-          height="36"
+          height="59"
           style="display:block;border:0;max-width:220px;height:auto;"
         />
       </a>
     </div>
-    <div style="background:#fff;border:1px solid #F0E2CE;border-radius:24px;padding:32px;box-shadow:0 10px 30px -12px rgba(154,86,22,.18);">
+    <div style="background:#fff;border:1px solid #EBDCC3;border-radius:24px;padding:32px;box-shadow:0 10px 30px -12px rgba(106,42,27,.14);">
       ${inner}
     </div>
-    <p style="text-align:center;color:#9A7B57;font-size:12px;margin-top:18px;">Baked fresh in Lucknow, delivered with love. 🧡</p>
+    <p style="text-align:center;color:#7A5A4C;font-size:12px;margin-top:18px;">Baked fresh in Lucknow, delivered with love. 🤎</p>
   </div></body></html>`;
 }
 
 export function otpEmailTemplate(code: string, name?: string) {
   return shell(`
     <h1 style="margin:0 0 6px;font-size:22px;">Hi ${name ? escapeHtml(name) : "there"} 👋</h1>
-    <p style="margin:0 0 22px;color:#5b5b62;font-size:15px;">Here's your verification code to confirm your order. It's valid for <b>10 minutes</b>.</p>
+    <p style="margin:0 0 22px;color:#4E3127;font-size:15px;">Here's your verification code to confirm your order. It's valid for <b>10 minutes</b>.</p>
     <div style="text-align:center;margin:8px 0 22px;">
-      <div style="display:inline-block;font-size:38px;font-weight:800;letter-spacing:10px;color:${ACCENT};background:#FFF4E6;border:1px dashed ${ACCENT};border-radius:16px;padding:16px 24px;">${code}</div>
+      <div style="display:inline-block;font-size:38px;font-weight:800;letter-spacing:10px;color:${ACCENT};background:#FAEFDB;border:1px dashed ${ACCENT};border-radius:16px;padding:16px 24px;">${code}</div>
     </div>
-    <p style="margin:0;color:#9A7B57;font-size:13px;">Never share this code with anyone — not even with us. If you didn't request it, you can ignore this email.</p>
+    <p style="margin:0;color:#7A5A4C;font-size:13px;">Never share this code with anyone — not even with us. If you didn't request it, you can ignore this email.</p>
   `);
 }
 
@@ -204,21 +204,21 @@ export function orderEmailTemplate(order: {
   const rows = order.items
     .map(
       (i) =>
-        `<tr><td style="padding:8px 0;color:${INK};">${escapeHtml(i.name)} <span style="color:#b09b80;">× ${i.qty}</span></td><td style="padding:8px 0;text-align:right;font-weight:600;">₹${i.qty * i.price}</td></tr>`
+        `<tr><td style="padding:8px 0;color:${INK};">${escapeHtml(i.name)} <span style="color:#A88B7A;">× ${i.qty}</span></td><td style="padding:8px 0;text-align:right;font-weight:600;">₹${i.qty * i.price}</td></tr>`
     )
     .join("");
   return shell(`
     <div style="text-align:center;margin-bottom:18px;">
       <div style="font-size:40px;line-height:1;">🎂</div>
       <h1 style="margin:12px 0 4px;font-size:24px;">Your order is confirmed!</h1>
-      <p style="margin:0;color:#5b5b62;font-size:15px;">Thank you, ${escapeHtml(order.name)} — we're already preheating the oven.</p>
+      <p style="margin:0;color:#4E3127;font-size:15px;">Thank you, ${escapeHtml(order.name)} — we're already preheating the oven.</p>
     </div>
-    <div style="background:#FFF9F1;border-radius:16px;padding:16px 18px;margin-bottom:16px;">
-      <div style="font-size:12px;color:#9A7B57;text-transform:uppercase;letter-spacing:.12em;font-weight:700;">Order</div>
+    <div style="background:#FDF7EC;border-radius:16px;padding:16px 18px;margin-bottom:16px;">
+      <div style="font-size:12px;color:#7A5A4C;text-transform:uppercase;letter-spacing:.12em;font-weight:700;">Order</div>
       <div style="font-size:15px;font-weight:700;">#${order.id.slice(-8).toUpperCase()}</div>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:15px;">${rows}</table>
-    <div style="border-top:1px solid #F0E2CE;margin-top:12px;padding-top:12px;font-size:14px;color:#5b5b62;">
+    <div style="border-top:1px solid #EBDCC3;margin-top:12px;padding-top:12px;font-size:14px;color:#4E3127;">
       <div style="display:flex;justify-content:space-between;"><span>Subtotal</span><span>₹${order.subtotal}</span></div>
       <div style="display:flex;justify-content:space-between;"><span>Delivery</span><span>${order.delivery === 0 ? "FREE" : "₹" + order.delivery}</span></div>
       ${order.discount > 0 ? `<div style="display:flex;justify-content:space-between;color:${ACCENT};"><span>Discount</span><span>− ₹${order.discount}</span></div>` : ""}
@@ -227,10 +227,10 @@ export function orderEmailTemplate(order: {
       <span style="font-weight:800;font-size:16px;">Total</span>
       <span style="font-weight:800;font-size:22px;color:${ACCENT};">₹${order.total}</span>
     </div>
-    ${order.schedule ? `<div style="margin:18px 0 0;padding:12px 14px;background:#FFF4E6;border-radius:12px;font-size:14px;color:${INK};">🗓️ <b>Scheduled delivery:</b> ${escapeHtml(order.schedule)}</div>` : ""}
+    ${order.schedule ? `<div style="margin:18px 0 0;padding:12px 14px;background:#FAEFDB;border-radius:12px;font-size:14px;color:${INK};">🗓️ <b>Scheduled delivery:</b> ${escapeHtml(order.schedule)}</div>` : ""}
     ${order.gift?.recipientName ? `<p style="margin:12px 0 0;color:${ACCENT};font-size:14px;">🎁 This is a gift for ${escapeHtml(order.gift.recipientName)} — we'll pack it with your note.</p>` : ""}
-    <p style="margin:18px 0 0;color:#5b5b62;font-size:14px;">Delivering to: ${escapeHtml(order.address.street)}, ${escapeHtml(order.address.city)}, ${escapeHtml(order.address.state)} ${escapeHtml(order.address.pincode)}.</p>
-    <p style="margin:8px 0 0;color:#9A7B57;font-size:13px;">We'll be in touch with delivery updates. Questions? Reply to this email or <a href="${orderWhatsappUrl(order.id)}" style="color:#25D366;font-weight:700;text-decoration:none;">message us on WhatsApp</a>.</p>
+    <p style="margin:18px 0 0;color:#4E3127;font-size:14px;">Delivering to: ${escapeHtml(order.address.street)}, ${escapeHtml(order.address.city)}, ${escapeHtml(order.address.state)} ${escapeHtml(order.address.pincode)}.</p>
+    <p style="margin:8px 0 0;color:#7A5A4C;font-size:13px;">We'll be in touch with delivery updates. Questions? Reply to this email or <a href="${orderWhatsappUrl(order.id)}" style="color:#25D366;font-weight:700;text-decoration:none;">message us on WhatsApp</a>.</p>
   `);
 }
 
@@ -254,13 +254,13 @@ export function occasionReminderEmailTemplate(o: {
     <div style="text-align:center;margin-bottom:16px;">
       <div style="font-size:40px;line-height:1;">🎉</div>
       <h1 style="margin:12px 0 4px;font-size:23px;">${who} ${escapeHtml(o.label)} is coming up!</h1>
-      <p style="margin:0;color:#5b5b62;font-size:15px;">Hi ${o.greetingName ? escapeHtml(o.greetingName) : "there"} — it&apos;s ${when} (${escapeHtml(o.dateText)}). Beat the rush and order a fresh, hand-finished cake now.</p>
+      <p style="margin:0;color:#4E3127;font-size:15px;">Hi ${o.greetingName ? escapeHtml(o.greetingName) : "there"} — it&apos;s ${when} (${escapeHtml(o.dateText)}). Beat the rush and order a fresh, hand-finished cake now.</p>
     </div>
-    ${o.code ? `<div style="text-align:center;margin:8px 0 18px;"><div style="display:inline-block;font-size:15px;font-weight:700;color:${ACCENT};background:#FFF4E6;border:1px dashed ${ACCENT};border-radius:12px;padding:10px 18px;">Use code ${escapeHtml(o.code)} at checkout</div></div>` : ""}
+    ${o.code ? `<div style="text-align:center;margin:8px 0 18px;"><div style="display:inline-block;font-size:15px;font-weight:700;color:${ACCENT};background:#FAEFDB;border:1px dashed ${ACCENT};border-radius:12px;padding:10px 18px;">Use code ${escapeHtml(o.code)} at checkout</div></div>` : ""}
     <div style="text-align:center;">
       <a href="${SITE_URL}/menu" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:13px 26px;">Order a cake →</a>
     </div>
-    <p style="margin:18px 0 0;color:#9A7B57;font-size:12px;text-align:center;">You&apos;re getting this because you saved this occasion in your account. Manage reminders anytime in your account.</p>
+    <p style="margin:18px 0 0;color:#7A5A4C;font-size:12px;text-align:center;">You&apos;re getting this because you saved this occasion in your account. Manage reminders anytime in your account.</p>
   `);
 }
 
@@ -287,16 +287,16 @@ export function orderStatusEmailTemplate(o: {
     <div style="text-align:center;margin-bottom:16px;">
       <div style="font-size:40px;line-height:1;">${o.emoji}</div>
       <h1 style="margin:12px 0 4px;font-size:23px;">${escapeHtml(o.label)}</h1>
-      <p style="margin:0;color:#5b5b62;font-size:15px;">Hi ${escapeHtml(o.name)} — ${escapeHtml(o.blurb)}</p>
+      <p style="margin:0;color:#4E3127;font-size:15px;">Hi ${escapeHtml(o.name)} — ${escapeHtml(o.blurb)}</p>
     </div>
-    <div style="background:#FFF9F1;border-radius:16px;padding:14px 16px;margin-bottom:16px;text-align:center;">
-      <div style="font-size:12px;color:#9A7B57;text-transform:uppercase;letter-spacing:.12em;font-weight:700;">Order</div>
+    <div style="background:#FDF7EC;border-radius:16px;padding:14px 16px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:12px;color:#7A5A4C;text-transform:uppercase;letter-spacing:.12em;font-weight:700;">Order</div>
       <div style="font-size:15px;font-weight:700;">#${o.id.slice(-8).toUpperCase()}</div>
     </div>
     <div style="text-align:center;">
       <a href="${o.trackUrl}" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:13px 26px;">Track your order →</a>
     </div>
-    <p style="margin:18px 0 0;text-align:center;color:#9A7B57;font-size:13px;">Questions? <a href="${orderWhatsappUrl(o.id)}" style="color:#25D366;font-weight:700;text-decoration:none;">Message us on WhatsApp</a></p>
+    <p style="margin:18px 0 0;text-align:center;color:#7A5A4C;font-size:13px;">Questions? <a href="${orderWhatsappUrl(o.id)}" style="color:#25D366;font-weight:700;text-decoration:none;">Message us on WhatsApp</a></p>
   `);
 }
 
@@ -312,22 +312,22 @@ export function cartReminderEmailTemplate(o: {
   const rows = shown
     .map(
       (i) =>
-        `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F1E4D2;font-size:15px;"><span>${escapeHtml(i.name)}${i.qty > 1 ? ` × ${i.qty}` : ""}</span><span style="font-weight:700;">₹${i.price * i.qty}</span></div>`
+        `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EBDCC3;font-size:15px;"><span>${escapeHtml(i.name)}${i.qty > 1 ? ` × ${i.qty}` : ""}</span><span style="font-weight:700;">₹${i.price * i.qty}</span></div>`
     )
     .join("");
   return shell(`
     <div style="text-align:center;margin-bottom:16px;">
       <div style="font-size:40px;line-height:1;">🎂</div>
       <h1 style="margin:12px 0 4px;font-size:23px;">You left something sweet behind</h1>
-      <p style="margin:0;color:#5b5b62;font-size:15px;">${o.name ? `Hi ${escapeHtml(o.name)} — your` : "Your"} cart is saved and waiting.</p>
+      <p style="margin:0;color:#4E3127;font-size:15px;">${o.name ? `Hi ${escapeHtml(o.name)} — your` : "Your"} cart is saved and waiting.</p>
     </div>
-    <div style="background:#FFF9F1;border-radius:16px;padding:6px 16px;margin-bottom:8px;">${rows}${more > 0 ? `<div style="padding:8px 0;font-size:13px;color:#9A7B57;">+ ${more} more item${more > 1 ? "s" : ""}</div>` : ""}</div>
-    <p style="margin:12px 0 18px;text-align:center;color:#5b5b62;font-size:14px;">Order before 12 noon for same-day delivery in Lucknow.</p>
+    <div style="background:#FDF7EC;border-radius:16px;padding:6px 16px;margin-bottom:8px;">${rows}${more > 0 ? `<div style="padding:8px 0;font-size:13px;color:#7A5A4C;">+ ${more} more item${more > 1 ? "s" : ""}</div>` : ""}</div>
+    <p style="margin:12px 0 18px;text-align:center;color:#4E3127;font-size:14px;">Order before 12 noon for same-day delivery in Lucknow.</p>
     <div style="text-align:center;">
       <a href="${o.cartUrl}" style="display:inline-block;background:${ACCENT};color:#fff;text-decoration:none;font-weight:700;font-size:15px;border-radius:999px;padding:13px 26px;">Complete my order →</a>
     </div>
-    <p style="margin:18px 0 0;text-align:center;color:#9A7B57;font-size:13px;">Need help choosing? <a href="${whatsappLink("Hi, I need help with my order")}" style="color:#25D366;font-weight:700;text-decoration:none;">Message us on WhatsApp</a></p>
-    <p style="margin:14px 0 0;text-align:center;color:#b3a48f;font-size:12px;">We'll only send this once. <a href="${o.unsubUrl}" style="color:#b3a48f;">Stop cart reminders</a></p>
+    <p style="margin:18px 0 0;text-align:center;color:#7A5A4C;font-size:13px;">Need help choosing? <a href="${whatsappLink("Hi, I need help with my order")}" style="color:#25D366;font-weight:700;text-decoration:none;">Message us on WhatsApp</a></p>
+    <p style="margin:14px 0 0;text-align:center;color:#A88B7A;font-size:12px;">We'll only send this once. <a href="${o.unsubUrl}" style="color:#A88B7A;">Stop cart reminders</a></p>
   `);
 }
 
@@ -351,18 +351,18 @@ export function customOrderAdminEmailTemplate(order: {
 }) {
   return shell(`
     <h1 style="margin:0 0 6px;font-size:22px;">🎂 New custom cake request</h1>
-    <p style="margin:0 0 18px;color:#5b5b62;font-size:15px;">From <b>${escapeHtml(order.name)}</b> — call or WhatsApp to confirm details and quote.</p>
+    <p style="margin:0 0 18px;color:#4E3127;font-size:15px;">From <b>${escapeHtml(order.name)}</b> — call or WhatsApp to confirm details and quote.</p>
     <table style="width:100%;border-collapse:collapse;font-size:15px;">
-      <tr><td style="padding:6px 0;color:#9A7B57;">Flavor</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.flavor)}</td></tr>
-      <tr><td style="padding:6px 0;color:#9A7B57;">Weight</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.weight)}</td></tr>
-      <tr><td style="padding:6px 0;color:#9A7B57;">Shape</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.shape)}</td></tr>
-      <tr><td style="padding:6px 0;color:#9A7B57;">Eggless</td><td style="padding:6px 0;text-align:right;font-weight:600;">${order.eggless ? "Yes" : "No"}</td></tr>
-      <tr><td style="padding:6px 0;color:#9A7B57;">Delivery date</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.date)}</td></tr>
-      <tr><td style="padding:6px 0;color:#9A7B57;">Est. price</td><td style="padding:6px 0;text-align:right;font-weight:600;">₹${order.price}</td></tr>
-      ${order.hasImage ? `<tr><td style="padding:6px 0;color:#9A7B57;">Reference photo</td><td style="padding:6px 0;text-align:right;font-weight:600;">Attached ✓ (view in DB)</td></tr>` : ""}
+      <tr><td style="padding:6px 0;color:#7A5A4C;">Flavor</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.flavor)}</td></tr>
+      <tr><td style="padding:6px 0;color:#7A5A4C;">Weight</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.weight)}</td></tr>
+      <tr><td style="padding:6px 0;color:#7A5A4C;">Shape</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.shape)}</td></tr>
+      <tr><td style="padding:6px 0;color:#7A5A4C;">Eggless</td><td style="padding:6px 0;text-align:right;font-weight:600;">${order.eggless ? "Yes" : "No"}</td></tr>
+      <tr><td style="padding:6px 0;color:#7A5A4C;">Delivery date</td><td style="padding:6px 0;text-align:right;font-weight:600;">${escapeHtml(order.date)}</td></tr>
+      <tr><td style="padding:6px 0;color:#7A5A4C;">Est. price</td><td style="padding:6px 0;text-align:right;font-weight:600;">₹${order.price}</td></tr>
+      ${order.hasImage ? `<tr><td style="padding:6px 0;color:#7A5A4C;">Reference photo</td><td style="padding:6px 0;text-align:right;font-weight:600;">Attached ✓ (view in DB)</td></tr>` : ""}
     </table>
-    ${order.message ? `<p style="margin:14px 0 0;padding:12px 14px;background:#FFF9F1;border-radius:12px;font-size:14px;color:${INK};">"${escapeHtml(order.message)}"</p>` : ""}
-    <div style="border-top:1px solid #F0E2CE;margin-top:16px;padding-top:14px;font-size:14px;color:#5b5b62;">
+    ${order.message ? `<p style="margin:14px 0 0;padding:12px 14px;background:#FDF7EC;border-radius:12px;font-size:14px;color:${INK};">"${escapeHtml(order.message)}"</p>` : ""}
+    <div style="border-top:1px solid #EBDCC3;margin-top:16px;padding-top:14px;font-size:14px;color:#4E3127;">
       <p style="margin:0 0 4px;"><b>Phone:</b> <a href="tel:+91${escapeHtml(order.phone)}">${escapeHtml(order.phone)}</a></p>
       ${order.email ? `<p style="margin:0;"><b>Email:</b> <a href="mailto:${escapeHtml(order.email)}">${escapeHtml(order.email)}</a></p>` : ""}
     </div>
