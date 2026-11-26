@@ -118,33 +118,33 @@ export default function AboutPage() {
               </div>
 
               <div className="relative mx-auto max-w-2xl text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-flame-400">One warm light</p>
-                <h2 className="font-display mt-3 text-[clamp(1.9rem,4vw,3rem)] font-semibold leading-[1.05] tracking-tighter2 text-white">
-                  Made to be <span className="italic text-flame-400">unwrapped</span>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-butter">Say it with icing</p>
+                <h2 className="font-display mt-3 text-[clamp(1.9rem,4vw,3rem)] font-semibold leading-[1.05] tracking-tight text-cream">
+                  made to be <span className="text-butter">unwrapped.</span>
                 </h2>
-                <p className="mt-4 leading-relaxed text-white/65">
-                  Warm minimalism, end to end — a cream box, an ember ribbon, a hand-tied tag. Every order arrives
-                  looking like the moment it was made for.
+                <p className="mt-4 leading-relaxed text-cream/75">
+                  Sprinkles on the lid, the piped TM on the cake, a scalloped tag with your message. Every order
+                  arrives looking like the moment it was made for.
                 </p>
               </div>
 
-              <div className="relative mt-11 grid gap-5 md:grid-cols-3">
+              <div className="relative mt-11 grid gap-4 md:grid-cols-2 md:gap-5">
                 {[
-                  { src: "/brand/mockups/packaging_box.png", label: "The signature box" },
-                  { src: "/brand/mockups/hang_tag.png", label: "A hand-tied tag" },
-                  { src: "/brand/mockups/signage.png", label: "The storefront" },
+                  { src: "/brand/v5/mockups/pastry-bags.jpg", label: "kraft pastry bags", alt: "Kraft pastry bags sealed with the TM roundel and pastel scalloped labels", cls: "aspect-[4/3] md:row-span-2 md:aspect-auto md:min-h-full", pos: "object-center" },
+                  { src: "/brand/v5/mockups/cake-box.jpg", label: "the celebration box", alt: "Sprinkle-print cake box lid, a cake piped with the TM mark, and a scalloped gift tag", cls: "aspect-[2/1]", pos: "object-center" },
+                  { src: "/brand/v5/mockups/cookie-tin.jpg", label: "the cookie tin", alt: "Blush rosette-print cookie tin sealed with the Tastemakerrs roundel beside a plate of cookies", cls: "aspect-[2/1]", pos: "object-center" },
+                  { src: "/brand/v5/mockups/carrier-bags.jpg", label: "carrier bags", alt: "Cocoa, cream and kraft carrier bags with the piped TM mark and roundel", cls: "aspect-[16/10]", pos: "object-center" },
+                  { src: "/brand/v5/mockups/social.jpg", label: "on instagram", alt: "Tastemakerrs Instagram feed and post templates in sprinkles, cocoa and cream", cls: "aspect-[16/10]", pos: "object-center" },
                 ].map((m) => (
-                  <figure key={m.label} className="group overflow-hidden rounded-[1.25rem] border border-white/10 bg-black/20">
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <Image
-                        src={m.src}
-                        alt={m.label}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      />
-                    </div>
-                    <figcaption className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-white/55">
+                  <figure key={m.label} className={`group relative overflow-hidden rounded-[1.25rem] border border-cream/10 bg-cocoa-deep ${m.cls}`}>
+                    <Image
+                      src={m.src}
+                      alt={m.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className={`object-cover ${m.pos} transition-transform duration-700 ease-out group-hover:scale-[1.04]`}
+                    />
+                    <figcaption className="absolute bottom-3 left-3 rounded-pill bg-cocoa/85 px-3 py-1 text-xs font-semibold text-cream backdrop-blur">
                       {m.label}
                     </figcaption>
                   </figure>
