@@ -53,13 +53,13 @@ export const metadata: Metadata = {
     siteName: "The Taste Makerrs",
     locale: "en_IN",
     url: "/",
-    images: [{ url: "/images/hero-og.jpg", width: 1200, height: 630, alt: "The Taste Makerrs celebration cakes" }],
+    images: [{ url: "/images/og-brand.jpg", width: 1200, height: 630, alt: "tastemakerrs — cakes that say it for you" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "The Taste Makerrs",
     description: "A cake for your favorite memories.",
-    images: ["/images/hero-og.jpg"],
+    images: ["/images/og-brand.jpg"],
   },
   icons: {
     icon: [
