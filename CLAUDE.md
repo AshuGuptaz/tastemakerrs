@@ -7,11 +7,13 @@
 - MongoDB + Mongoose, Razorpay + Stripe, OTP via Resend (email) + Fast2SMS (SMS)
 - Lenis smooth scroll (duration 1.2, wheelMultiplier 0.9, touchMultiplier 1.8)
 
-## Design tokens
-- **Fonts**: Fraunces (`font-display`, variable serif for headings/prices/wordmark) + Inter (`font-sans`, body)
-- **Palette**: `#FBF8F3` canvas · `#B05628` flame (AA-contrast with white text/canvas; `flame-400/500` `#E08B5A/#D67A47` kept for decorative fills only — never put text on them) · `#1C1714` ink
-- **Classes**: `bg-canvas`, `bg-surface`, `text-flame`, `text-ink`, `text-ink-mut`, `border-line`, `shadow-e1/e2/e3`, `btn-accent`, `btn-line`, `rounded-pill`, `focus-ring`
-- Grain texture via `.grain` on `<body>`
+## Design tokens (Brand Identity v5 — "say it with icing")
+- **Logo**: piped "Tm" mark in a cocoa disc with a cream dot border. Assets in `public/brand/v5/` (`lockup-horizontal[-reversed].svg`, `lockup-vertical[-reversed].svg`, `mark-cocoa/cream.svg`, `roundel.svg`, `stroke-cocoa/cream.svg`, `wordmark-cocoa/cream.svg`, PNG lockup for email). Never retype the name in a font, recolour off-palette, outline, rotate or add effects. Below 48px use the stroke-only TM (favicon). Old `public/brand/logo-redesign-*` files stay only because already-sent emails hotlink them.
+- **Fonts**: Fredoka SemiBold (`font-display`, headlines/prices, rounded "piped" voice, no italic → `font-synthesis-style: none`) + DM Sans (`font-sans`, body)
+- **Palette**: paper `#FBF5EA` canvas · cocoa `#6A2A1B` primary (buttons, headlines, dark surfaces) · cream `#F6E7C9` · kraft `#E4C79D` · accents blush `#F0A7B8`, sage `#A8C3A0`, periwinkle `peri` `#8F9FD3`, butter `#F4CF7A` (one or two at a time) · ink `#2A140D` small text
+- **Legacy token names remapped**: `flame` = cocoa, `flame-700` = deep cocoa, `flame-400` = butter (accents ON dark only), `text-gradient` = cocoa shades (butter→cream inside `.on-dark`/`.band-dark`). Dark surfaces use `bg-cocoa` + `on-dark` class so accents/buttons flip to cream/butter.
+- **Classes**: `bg-canvas`, `bg-surface`, `bg-cocoa`, `text-cocoa`, `text-ink`, `text-ink-mut`, `border-line`, `shadow-e1/e2/e3`, `btn-accent`, `btn-line`, `rounded-pill`, `focus-ring`, `on-dark`
+- Grain texture via `.grain` on `<body>`. Mockups (packaging/social) in `public/brand/v5/mockups/`; OG card `public/images/og-brand.jpg`.
 
 ## Critical architecture rules
 
